@@ -22,7 +22,6 @@ setup(
     version='0.0',
     description='skosprovider_rdf',
     long_description=README + '\n\n' + CHANGES,
-    packages=packages,
     package_data={'': ['LICENSE']},
     package_dir={'skosprovider_rdf': 'skosprovider_rdf'},
     include_package_data=True,
@@ -40,9 +39,6 @@ setup(
     url='',
     keywords='rdf skos skosprovider',
     packages=find_packages(),
-    include_package_data=True,
-    zip_safe=False,
-    install_requires=requires,
     tests_require=requires,
     test_suite="skosprovider_rdf",
     entry_points="""\

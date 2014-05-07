@@ -4,7 +4,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from skosprovider.providers import VocabularyProvider
+from skosprovider.providers import MemoryProvider
 
 from skosprovider.skos import (
     Concept,
@@ -13,48 +13,76 @@ from skosprovider.skos import (
     Note
 )
 
+from rdflib.namespace import RDF, SKOS
 
-class RDFProvider(VocabularyProvider):
+
+class RDFProvider(MemoryProvider):
     '''
-    A :class:`skosprovider.providers.VocabularyProvider` that uses RDF
+    A :class:`skosprovider_rdf.providers.RDFProvider` simple vocab provider that use a RDFLib graph as input.
+    The provider expects a RDF graph with elements that represent
+    the concepts.
     '''
 
-    def get_all(self, **kwargs):
-        super(RDFProvider, self).get_all(**kwargs)
+    def __init__(self, metadata, graph, **kwargs):
+        super(RDFProvider, self).__init__(metadata, [], **kwargs)
+        self.conceptscheme_id = metadata.get(
+            'conceptscheme_id', metadata.get('id')
+        )
+        self.graph = graph
+        self.list = self._from_graph()
 
-    def find(self, query, **kwargs):
-        super(RDFProvider, self).find(query, **kwargs)
+    def _from_graph(self):
+        list = []
+        for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
+            con = Concept(sub)
+            con.uri = sub
+            con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
+            con.narrower = self._create_from_subject_predicate(sub, SKOS.narrower)
+            con.related = self._create_from_subject_predicate(sub, SKOS.related)
+            con.notes = self._create_from_subject_predicate(sub, SKOS.notes)
+            con.labels = self._create_from_subject_predicate(sub, SKOS.prefLabel) + \
+                         self._create_from_subject_predicate(sub, SKOS.altLabel) + \
+                         self._create_from_subject_predicate(sub, SKOS.hiddenLabel)
+            list.append(con)
 
-    def expand(self, id):
-        super(RDFProvider, self).expand(id)
+        for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
+            col = Collection(sub)
+            col.uri = sub
+            col.members = self._create_from_subject_predicate(sub, SKOS.members)
+            col.labels = self._create_from_subject_predicate(sub, SKOS.prefLabel) + \
+                         self._create_from_subject_predicate(sub, SKOS.altLabel) + \
+                         self._create_from_subject_predicate(sub, SKOS.hiddenLabel)
+            list.append(col)
 
-    def expand_concept(self, id):
-        super(RDFProvider, self).expand_concept(id)
+        return list
 
-    def get_by_uri(self, uri):
-        super(RDFProvider, self).get_by_uri(uri)
+    def _create_from_subject_predicate(self, subject, predicate):
+        list = []
+        for s, p, o in self.graph.triples((subject, predicate, None)):
+            type = predicate.split('#')[-1]
+            if Label.is_valid_type(type):
+                o = self._create_label(o, type)
+            if Note.is_valid_type(type):
+                o = self._create_note(o, type)
+            list.append(o)
+        return list
 
-    def get_vocabulary_id(self):
-        return super(RDFProvider, self).get_vocabulary_id()
+    def _create_label(self, literal, type):
+        if not Label.is_valid_type(type):
+            raise ValueError(
+                'Type of Label is not valid.'
+            )
+        return Label(literal, type, self._get_language_from_literal(literal))
 
-    def get_top_display(self, **kwargs):
-        super(RDFProvider, self).get_top_display(**kwargs)
+    def _create_note(self, literal, type):
+        if not Note.is_valid_type(type):
+            raise ValueError(
+                'Type of Note is not valid.'
+            )
 
-    def __init__(self, metadata, **kwargs):
-        super(RDFProvider, self).__init__(metadata, **kwargs)
+        return Note(literal, type, self._get_language_from_literal(literal))
 
-    def get_top_concepts(self, **kwargs):
-        super(RDFProvider, self).get_top_concepts(**kwargs)
-
-    def get_by_id(self, id):
-        super(RDFProvider, self).get_by_id(id)
-
-    def get_metadata(self):
-        return super(RDFProvider, self).get_metadata()
-
-    def _get_language(self, **kwargs):
-        return super(RDFProvider, self)._get_language(**kwargs)
-
-    def get_children_display(self, id, **kwargs):
-        super(RDFProvider, self).get_children_display(id, **kwargs)
-
+    def _get_language_from_literal(self, data):
+        if data.language is None:
+            return None
+        return data.language.encode("ascii")

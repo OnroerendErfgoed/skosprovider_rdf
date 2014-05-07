@@ -1,0 +1,25 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix ex: <http://www.products.com/>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+
+ex:Products rdf:type owl:Class;
+  a skos:Collection;
+  skos:prefLabel "Products"@en;
+  skos:altLabel "Things"@en;
+  skos:altLabel "Producten"@nl;
+  skos:member ex:Product;
+  skos:member ex:Jewellery.
+
+ex:Product rdf:type owl:Class;
+  a skos:Concept;
+  skos:prefLabel "Product"@en;
+  skos:altLabel "Produkt"@nl;
+  skos:altLabel "Produkt"@nl.
+
+ex:Jewellery rdf:type owl:Class;
+  a skos:Concept;
+  skos:prefLabel "Jewellery";
+  skos:altLabel "Jewelry"@en;
+  skos:altLabel "Jewelery"@en;
+  skos:broader ex:Product.

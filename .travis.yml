@@ -1,12 +1,14 @@
 language: python
 python:
- - 2.6
- - 2.7
- - 3.2
- - 3.3
+ - "2.7"
+ - "3.2"
+ - "3.3"
+ - "3.4"
 install:
+ - easy_install -U setuptools
  - python setup.py -q install
- - pip install nose
- # Install unittest2 on 2.6
- - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi"
-script: nosetests
+ - pip install -U pytest pytest-cov coveralls webtest
+script:
+  py.test --cov skosprovider_rdf --cov-report term-missing tests
+after_success:
+  coveralls

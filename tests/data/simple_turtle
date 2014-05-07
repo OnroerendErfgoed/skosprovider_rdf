@@ -1,0 +1,19 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix skos: <http://www.w3.org/2008/05/skos#>.
+@prefix ac:http://agtivity.com/xml/.
+ 
+ac:agent_based_computing rdf:type skos:Concept;
+  skos:prefLabel "Agent-Based Computing"@en;
+  skos:altLabel "ABC"@en.
+ac:resource_description_framework rdf:type skos:Concept;
+  skos:prefLabel "Resource Description Framework"@en;
+  skos:altLabel "RDF"@en.
+ac:really_simple_syndication rdf:type skos:Concept;
+  skos:prefLabel "Really Simple Syndication"@en;
+  skos:altLabel "RSS"@en.
+ac:rich_site_summary rdf:type skos:Concept;
+  skos:prefLabel "Rich Site Summary"@en;
+  skos:altLabel "RSS"@en.
+ac:rdf_site_summary rdf:type skos:Concept;
+  skos:prefLabel "RDF Site Summary"@en;
+  skos:altLabel "RSS"@en.

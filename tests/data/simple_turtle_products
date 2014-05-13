@@ -9,6 +9,7 @@ ex:Stuff rdf:type owl:Class;
   skos:altLabel "Things you can find in a store"@en;
   skos:altLabel "Producten uit de winkel"@nl;
   skos:member ex:Product;
+  skos:member ex:Perfume;
   skos:member ex:Jewellery.
 
 ex:Product rdf:type owl:Class;
@@ -26,7 +27,7 @@ ex:Jewellery rdf:type owl:Class;
   skos:altLabel "Jewelery"@en;
   skos:broader ex:Product;
   skos:related ex:Perfume;
-  skos:note "Everything on your body that reflects when the sun shines".
+  skos:note "Everything on your body that reflects when the sun shines"@en.
   
 ex:Perfume rdf:type owl:Class;
   a skos:Concept;

@@ -38,7 +38,7 @@ def rdf_dumper(provider):
             predicate = URIRef(SKOS + l.type)
             lang=l.language
             if lang:
-                lang=lang.decode("utf-8")
+                lang=lang.decode("latin-1")
             graph.add((subject, predicate, Literal(l.label, lang=lang)))
         if isinstance(c, Concept):
             graph.add((subject, RDF.type, SKOS.Concept))
@@ -52,7 +52,7 @@ def rdf_dumper(provider):
                 predicate = URIRef(SKOS + "#" + n.type)
                 lang=n.language
                 if lang:
-                    lang=lang.decode("utf-8")
+                    lang=lang.decode("latin-1")
                 graph.add((subject, predicate, Literal(n.note, lang=lang)))
         elif isinstance(c, Collection):
             graph.add((subject, RDF.type, SKOS.Collection))

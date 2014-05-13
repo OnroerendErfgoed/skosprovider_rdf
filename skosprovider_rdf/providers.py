@@ -39,7 +39,8 @@ class RDFProvider(MemoryProvider):
             con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
             con.narrower = self._create_from_subject_predicate(sub, SKOS.narrower)
             con.related = self._create_from_subject_predicate(sub, SKOS.related)
-            con.notes = self._create_from_subject_predicate(sub, SKOS.notes)
+            ##TODO implement all other note-types of SKOS: historyNote,example,...
+            con.notes = self._create_from_subject_predicate(sub, SKOS.note)
             con.labels = self._create_from_subject_predicate(sub, SKOS.prefLabel) + \
                          self._create_from_subject_predicate(sub, SKOS.altLabel) + \
                          self._create_from_subject_predicate(sub, SKOS.hiddenLabel)
@@ -48,7 +49,7 @@ class RDFProvider(MemoryProvider):
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
             col = Collection(sub)
             col.uri = sub
-            col.members = self._create_from_subject_predicate(sub, SKOS.members)
+            col.members = self._create_from_subject_predicate(sub, SKOS.member)
             col.labels = self._create_from_subject_predicate(sub, SKOS.prefLabel) + \
                          self._create_from_subject_predicate(sub, SKOS.altLabel) + \
                          self._create_from_subject_predicate(sub, SKOS.hiddenLabel)

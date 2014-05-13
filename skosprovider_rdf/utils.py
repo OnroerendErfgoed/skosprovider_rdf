@@ -36,7 +36,10 @@ def rdf_dumper(provider):
 
         for l in c.labels:
             predicate = URIRef(SKOS + l.type)
-            graph.add((subject, predicate, Literal(l.label, lang=l.language)))
+            lang=l.language
+            if lang:
+                lang=lang.decode("utf-8")
+            graph.add((subject, predicate, Literal(l.label, lang=lang)))
         if isinstance(c, Concept):
             graph.add((subject, RDF.type, SKOS.Concept))
             for b in c.broader:
@@ -47,7 +50,10 @@ def rdf_dumper(provider):
                 graph.add((subject, SKOS.related, r))
             for n in c.notes:
                 predicate = URIRef(SKOS + "#" + n.type)
-                graph.add((subject, predicate, Literal(n.note, lang=n.language)))
+                lang=n.language
+                if lang:
+                    lang=lang.decode("utf-8")
+                graph.add((subject, predicate, Literal(n.note, lang=lang)))
         elif isinstance(c, Collection):
             graph.add((subject, RDF.type, SKOS.Collection))
             for m in c.members:

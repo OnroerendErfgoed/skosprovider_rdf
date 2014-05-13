@@ -1,4 +1,5 @@
 import unittest
+import os
 from rdflib import Graph
 from rdflib.namespace import RDF, SKOS
 from skosprovider_rdf.providers import RDFProvider
@@ -25,7 +26,9 @@ class RDFProviderTests(unittest.TestCase):
 
     def _create_test_data(self):
         self.graph = Graph()
-        self.graph.parse("../tests/data/simple_turtle_products", format="turtle")
+        curdir=os.curdir
+        abspath=os.path.abspath(curdir + "/data/simple_turtle_products")
+        self.graph.parse(abspath, format="turtle")
 
         self.u_products=URIRef("http://www.products.com/")
         self.u_jewellery=URIRef("http://www.products.com/Jewellery")

@@ -26,8 +26,8 @@ class RDFProviderTests(unittest.TestCase):
 
     def _create_test_data(self):
         self.graph = Graph()
-        curdir=os.curdir
-        abspath=os.path.abspath(curdir + "/data/simple_turtle_products")
+        filepath=os.path.dirname(os.path.realpath(__file__))
+        abspath=os.path.abspath(filepath + "/data/simple_turtle_products")
         self.graph.parse(abspath, format="turtle")
 
         self.u_products=URIRef("http://www.products.com/")

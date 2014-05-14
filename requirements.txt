@@ -1,0 +1,8 @@
+
+# skos
+#skosprovider>=0.3.0a1
+-e git+https://github.com/koenedaele/skosprovider.git#egg=skosprovider
+
+#rdflib>=0.3.0a1
+rdflib==4.1.2
+

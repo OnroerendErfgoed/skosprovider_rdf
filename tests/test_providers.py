@@ -74,7 +74,7 @@ class RDFProviderTests(unittest.TestCase):
 
     def test_concept_has_correct_note(self):
         con = self.provider.get_by_id(self.u_jewellery)
-        self.assertEqual(1, len(con.notes))
+        self.assertEqual(2, len(con.notes))
         self.assertIsInstance(con.notes[0], Note)
 
     def test_get_collection_by_id(self):
@@ -155,12 +155,6 @@ class RDFProviderTests(unittest.TestCase):
     def test_expand_collection(self):
         ids = self.provider.expand(self.u_stuff)
         self.assertIn(self.u_perfume, ids)
-
-
-    ##TODO rewrite testfuntion?
-    def test_expand_concept_without_narrower(self):
-        ids = self.provider.expand(self.u_product)
-        self.assertEquals(3, len(ids))
 
     def test_expand_unexisting(self):
         ids = self.provider.expand(404)

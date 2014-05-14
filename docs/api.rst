@@ -5,17 +5,12 @@ API Documentation
 Providers module
 ----------------
 
-.. automodule:: skosprovider_sqlalchemy.providers
-   :members:
-
-Models module
--------------
-
-.. automodule:: skosprovider_sqlalchemy.models
-   :members:
+.. automodule:: skosprovider_rdf.providers
+   :members: 
 
 Utils module
----------------
+-------------
 
-.. automodule:: skosprovider_sqlalchemy.utils
+.. automodule:: skosprovider_rdf.utils
    :members:
+   

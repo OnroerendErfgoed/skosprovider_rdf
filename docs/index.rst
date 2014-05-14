@@ -1,27 +1,27 @@
-.. Skosprovider_sqlalchemy documentation master file, created by
+.. Skosprovider_rdf documentation master file, created by
    sphinx-quickstart on Thu Oct 24 08:21:49 2013.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Skosprovider_sqlalchemy's documentation!
+Welcome to Skosprovider_rdf's documentation!
 ===================================================
 
 This library offers an implementation of the 
 :class:`skosprovider.providers.VocabularyProvider`
-interface that uses a SQLALchemy_ backend. While a 
-:class:`VocabularyProvider <skosprovider.providers.VocabularyProvider>` is
-a read-only interface, the underlying SQLAlchemy_ domain model is fully 
-writeable.
+interface that uses a RDFlib graph as input. 
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
-
+	
+   intro
+   development
    api
    changes
+   glossary
 
-.. _SQLAlchemy: http://docs.sqlalchemy.org/
+.. _RDFlib: http://rdflib.readthedocs.org/
 
 Indices and tables
 ==================

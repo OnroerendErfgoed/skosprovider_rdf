@@ -27,7 +27,8 @@ ex:Jewellery rdf:type owl:Class;
   skos:altLabel "Jewelery"@en;
   skos:broader ex:Product;
   skos:related ex:Perfume;
-  skos:note "Everything on your body that reflects when the sun shines"@en.
+  skos:note "Everything on your body that reflects when the sun shines"@en;
+  skos:example "A watch".
   
 ex:Perfume rdf:type owl:Class;
   a skos:Concept;

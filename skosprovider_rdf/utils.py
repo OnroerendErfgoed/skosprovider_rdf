@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 '''
 This module contains utility functions for dealing with skos providers.
 '''
@@ -24,8 +23,6 @@ def rdf_dumper(provider):
     :param skosprovider.providers.VocabularyProvider provider: The provider
         that wil be turned into a `RDF graph`.
     :rtype: A :class:`rdflib.Graph`.
-
-    .. versionadded:: 0.0.1
     '''
     graph = Graph()
     graph.namespace_manager.bind("skos", SKOS)

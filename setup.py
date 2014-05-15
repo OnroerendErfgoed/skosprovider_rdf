@@ -1,6 +1,10 @@
 import os
-from setuptools import setup, find_packages
+import sys
 
+try:
+    from setuptools import setup, find_packages
+except ImportError:
+    from distutils.core import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.txt')) as f:
@@ -12,14 +16,13 @@ packages = [
     'skosprovider_rdf',
 ]
 
-requires = [
-    'skosprovider',
-    'rdflib',
+requires = ['skosprovider>=0.3.0',
+	'rdflib==4.1.2'
 ]
 
 setup(
     name='skosprovider_rdf',
-    version='0.0',
+    version='0.1',
     description='skosprovider_rdf',
     long_description=README + '\n\n' + CHANGES,
     package_data={'': ['LICENSE']},
@@ -29,20 +32,19 @@ setup(
     license='MIT',
     zip_safe=False,
     classifiers=[
-        "Programming Language :: Python",
-        "Framework :: Pyramid",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ],
-    author='',
-    author_email='',
-    url='',
+    author='Karel Dieussaert',
+    author_email='karel.dieussaert@geosolutions.be',
+    url='http://github.com/OnroerendErfgoed/skosprovider_rdf',
     keywords='rdf skos skosprovider',
     packages=find_packages(),
     tests_require=requires,
-    test_suite="skosprovider_rdf",
-    entry_points="""\
-    [paste.app_factory]
-    main = skosprovider_rdf:main
-    """,
+    test_suite="skosprovider_rdf"
 )

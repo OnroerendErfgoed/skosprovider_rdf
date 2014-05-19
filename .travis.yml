@@ -7,6 +7,7 @@ install:
  - easy_install -U setuptools
  - python setup.py -q install
  - pip install -U pytest pytest-cov coveralls webtest
+ - pip install -r requirements.txt
 script:
   py.test --cov skosprovider_rdf --cov-report term-missing tests
 after_success:

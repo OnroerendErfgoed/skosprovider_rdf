@@ -16,8 +16,9 @@ packages = [
     'skosprovider_rdf',
 ]
 
-requires = ['skosprovider>=0.3.0',
-	'rdflib==4.1.2'
+requires = [
+    'skosprovider',
+    'rdflib'
 ]
 
 setup(

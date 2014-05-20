@@ -41,7 +41,7 @@ class RDFProviderUtilsTests(unittest.TestCase):
 
     def test_dump_rdf(self):
         graph_dump=utils.rdf_dumper(self.provider)
-        xml=graph_dump.serialize(format='xml',encoding="latin-1").decode()
+        xml=graph_dump.serialize(format='xml',encoding="UTF-8").decode()
         self.assertEquals("<?xml", xml[:5])
 
     def test_compare_dump_rdf(self):

@@ -41,11 +41,17 @@ def rdf_dumper(provider):
         if isinstance(c, Concept):
             graph.add((subject, RDF.type, SKOS.Concept))
             for b in c.broader:
-                graph.add((subject, SKOS.broader, b))
+                broader = provider.get_by_id(b)
+                object = URIRef(broader.uri)
+                graph.add((subject, SKOS.broader, object))
             for n in c.narrower:
-                graph.add((subject, SKOS.narrower, n))
+                narrower = provider.get_by_id(n)
+                object = URIRef(narrower.uri)
+                graph.add((subject, SKOS.narrower, object))
             for r in c.related:
-                graph.add((subject, SKOS.related, r))
+                related = provider.get_by_id(r)
+                object = URIRef(related.uri)
+                graph.add((subject, SKOS.related, object))
             for n in c.notes:
                 predicate = URIRef(SKOS + "#" + n.type)
                 lang = n.language
@@ -55,6 +61,8 @@ def rdf_dumper(provider):
         elif isinstance(c, Collection):
             graph.add((subject, RDF.type, SKOS.Collection))
             for m in c.members:
-                graph.add((subject, SKOS.member, m))
+                member = provider.get_by_id(m)
+                object = URIRef(member.uri)
+                graph.add((subject, SKOS.member, object))
 
     return graph

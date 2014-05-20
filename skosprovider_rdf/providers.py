@@ -96,4 +96,4 @@ class RDFProvider(MemoryProvider):
     def _get_language_from_literal(self, data):
         if data.language is None:
             return None
-        return data.language.encode("latin-1")
+        return data.language.encode("utf-8")

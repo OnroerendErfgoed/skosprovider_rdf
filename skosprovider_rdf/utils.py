@@ -15,6 +15,7 @@ from skosprovider.skos import (
     Collection
 )
 
+
 def rdf_dumper(provider):
     '''
     Dump a provider to a format that can be passed to a
@@ -29,13 +30,13 @@ def rdf_dumper(provider):
     # Add triples using store's add method.
     for stuff in provider.get_all():
         c = provider.get_by_id(stuff['id'])
-        subject = c.uri
+        subject = URIRef(c.uri)
 
         for l in c.labels:
             predicate = URIRef(SKOS + l.type)
-            lang=l.language
+            lang = l.language
             if lang:
-                lang=lang.decode("latin-1")
+                lang = lang.decode("UTF-8")
             graph.add((subject, predicate, Literal(l.label, lang=lang)))
         if isinstance(c, Concept):
             graph.add((subject, RDF.type, SKOS.Concept))
@@ -47,9 +48,9 @@ def rdf_dumper(provider):
                 graph.add((subject, SKOS.related, r))
             for n in c.notes:
                 predicate = URIRef(SKOS + "#" + n.type)
-                lang=n.language
+                lang = n.language
                 if lang:
-                    lang=lang.decode("latin-1")
+                    lang = lang.decode("UTF-8")
                 graph.add((subject, predicate, Literal(n.note, lang=lang)))
         elif isinstance(c, Collection):
             graph.add((subject, RDF.type, SKOS.Collection))

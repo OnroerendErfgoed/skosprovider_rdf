@@ -23,7 +23,7 @@ requires = [
 
 setup(
     name='skosprovider_rdf',
-    version='0.1',
+    version='0.1.1',
     description='skosprovider_rdf',
     long_description=README + '\n\n' + CHANGES,
     package_data={'': ['LICENSE']},

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 import os
 from rdflib import Graph
@@ -113,7 +114,9 @@ class RDFProviderUtilsTests(unittest.TestCase):
 
     def test_dump_rdf_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.rdf_products_provider)
-        xml = graph_dump.serialize(format='xml', encoding="UTF-8").decode()
+        xml = graph_dump.serialize(format='xml', encoding="UTF-8")
+        if isinstance(xml,bytes):
+            xml=xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
 
     def test_dump_rdf_compare_type(self):
@@ -122,7 +125,9 @@ class RDFProviderUtilsTests(unittest.TestCase):
 
     def test_dump_tree_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.tree_provider)
-        xml = graph_dump.serialize(format='xml', encoding="UTF-8").decode()
+        xml = graph_dump.serialize(format='xml', encoding="UTF-8")
+        if isinstance(xml,bytes):
+            xml=xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
 
     def test_include_me(self):

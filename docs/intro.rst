@@ -4,7 +4,15 @@ Introduction
 ============
 
 This library offers an implementation of the 
-:class:`skosprovider.providers.VocabularyProvider`
-interface that uses a :class:`rdflib.Graph` as input. 
-It also provides the utility to dump any implementation 
-of :class:`skosprovider.providers.VocabularyProvider` to a :class:`rdflib.Graph`
+:class:`skosprovider.providers.VocabularyProvider` interface that uses an 
+:class:`rdflib.Graph` as input. This provider can be used to add a :term:`SKOS` 
+vocabulary contained in an :term:`RDF` file to your application. The provider
+itself does not read the :term:`SKOS` file, but expects to be passed an 
+:class:`rdflib.Graph`. So any type of RDF serialisation that can be read by
+:mod:`rdflib`, can be used with this provider.
+
+It also provides a utility function to dump any implementation 
+of :class:`skosprovider.providers.VocabularyProvider` to a 
+:class:`rdflib.Graph`. Again, since the provider only deals with the 
+:class:`rdflib.Graph` object, it's possible to serialise a VocabularyProvider
+to whatever RDF serialisations :mod:`rdflib` allows.

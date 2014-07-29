@@ -8,9 +8,7 @@ Welcome to Skosprovider_rdf's documentation!
 
 This library offers an implementation of the 
 :class:`skosprovider.providers.VocabularyProvider`
-interface that uses a RDFlib graph as input. 
-
-Contents:
+interface that uses an RDFlib_ graph as input. 
 
 .. toctree::
    :maxdepth: 2

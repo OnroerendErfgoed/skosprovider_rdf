@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 '''
-This module contains a RDFProvider, an implementation of the :class:`skosprovider.providers.VocabularyProvider` interface that uses a  :class:`rdflib.graph` as input.
+This module contains an RDFProvider, an implementation of the 
+:class:`skosprovider.providers.VocabularyProvider` interface that uses a 
+:class:`rdflib.graphi.Graph` as input.
 '''
 
 import logging
 log = logging.getLogger(__name__)
+
 from skosprovider.providers import MemoryProvider
 from skosprovider.skos import (
     Concept,
@@ -19,9 +22,11 @@ from rdflib.namespace import RDF, SKOS
 
 class RDFProvider(MemoryProvider):
     '''
-    A simple vocabulary provider that use a RDFLib graph as input.
-    The provider expects a RDF graph with elements that represent
+    A simple vocabulary provider that use an :class:`rdflib.graph.Graph`
+    as input. The provider expects a RDF graph with elements that represent
     the SKOS concepts and collections.
+
+    Please be aware that this provider needs to load the entire graph in memory.
     '''
 
     def __init__(self, metadata, graph, **kwargs):

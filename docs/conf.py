@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'skosprovider_rdf'
-copyright = u'2014, Karel Dieussaert'
+copyright = u'2014, Flanders Heritage Agency'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -206,7 +206,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'skosprovider_rdf.tex', u'skosprovider\\_rdf Documentation',
-   u'Karel Dieussaert', 'manual'),
+   u'Flanders Heritage Agency', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -236,7 +236,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'skosprovider_rdf', u'skosprovider_rdf Documentation',
-     [u'Karel Dieussaert'], 1)
+     [u'Flanders Heritage Agency'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -250,7 +250,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'skosprovider_rdf', u'skosprovider_rdf Documentation',
-   u'Karel Dieussaert', 'skosprovider_rdf', 'One line description of project.',
+   u'Flanders Heritage Agency', 'skosprovider_rdf', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -272,8 +272,8 @@ texinfo_documents = [
 # Bibliographic Dublin Core info.
 epub_title = u'skosprovider_rdf'
 epub_author = u'Karel Dieussaert'
-epub_publisher = u'Karel Dieussaert'
-epub_copyright = u'2014, Karel Dieussaert'
+epub_publisher = u'Flanders Heritage Agency'
+epub_copyright = u'2014, Flanders Heritage Agency'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'skosprovider_rdf'

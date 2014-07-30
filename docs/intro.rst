@@ -16,3 +16,6 @@ of :class:`skosprovider.providers.VocabularyProvider` to a
 :class:`rdflib.graph.Graph`. Again, since the provider only deals with the 
 :class:`~rdflib.graph.Graph` object, it's possible to serialise a VocabularyProvider
 to whatever RDF serialisations :mod:`rdflib` allows.
+
+.. literalinclude:: /../examples/dump.py
+    :language: python

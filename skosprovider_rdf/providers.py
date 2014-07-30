@@ -3,7 +3,7 @@
 '''
 This module contains an RDFProvider, an implementation of the 
 :class:`skosprovider.providers.VocabularyProvider` interface that uses a 
-:class:`rdflib.graphi.Graph` as input.
+:class:`rdflib.graph.Graph` as input.
 '''
 
 import logging

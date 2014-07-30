@@ -22,8 +22,9 @@ def rdf_dumper(provider):
     :class:`skosprovider.providers.RDFProvider`.
 
     :param skosprovider.providers.VocabularyProvider provider: The provider
-        that wil be turned into a `RDF graph`.
-    :rtype: A :class:`rdflib.Graph`.
+        that wil be turned into an :class:`rdflib.graph.Graph`.
+
+    :rtype: A :class:`rdflib.rdflib.Graph`.
     '''
     graph = Graph()
     graph.namespace_manager.bind("skos", SKOS)

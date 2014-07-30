@@ -33,3 +33,9 @@ python.
 Please provide new unit tests to maintain 100% coverage. If you send us a pull request
 and this build doesn't function, please correct the issue at hand or let us 
 know why it's not working.
+
+.. _Flanders Heritage Agency: https://www.onroerenderfgoed.be
+.. _Travis-ci: https://travis-ci.org/OnroerendErfgoed/atramhasis
+.. _Coveralls: https://coveralls.io/r/OnroerendErfgoed/atramhasis
+.. _pytest: http://pytest.org
+.. _tox: http://tox.readthedocs.org

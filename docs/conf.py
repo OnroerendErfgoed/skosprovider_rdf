@@ -339,5 +339,6 @@ epub_exclude_files = ['search.html']
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('http://docs.python.org/', None),
-    'skosprovider': ('http://skosprovider.readthedocs.org/en/latest', None)
+    'skosprovider': ('http://skosprovider.readthedocs.org/en/latest', None),
+    'rdflib': ('http://rdflib.readthedocs.org/en/latest', None)
 }

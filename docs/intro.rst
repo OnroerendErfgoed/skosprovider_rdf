@@ -13,6 +13,6 @@ itself does not read the :term:`SKOS` file, but expects to be passed a
 
 It also provides a utility function to dump any implementation 
 of :class:`skosprovider.providers.VocabularyProvider` to a 
-:class:`rdflib.rdflib.Graph`. Again, since the provider only deals with the 
+:class:`rdflib.graph.Graph`. Again, since the provider only deals with the 
 :class:`~rdflib.graph.Graph` object, it's possible to serialise a VocabularyProvider
 to whatever RDF serialisations :mod:`rdflib` allows.

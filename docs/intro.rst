@@ -11,6 +11,9 @@ itself does not read the :term:`SKOS` file, but expects to be passed a
 :class:`~rdflib.graph.Graph`. So any type of RDF serialisation that can be read by
 :mod:`rdflib`, can be used with this provider.
 
+.. literalinclude:: /../examples/load_skos.py
+    :language: python
+
 It also provides a utility function to dump any implementation 
 of :class:`skosprovider.providers.VocabularyProvider` to a 
 :class:`rdflib.graph.Graph`. Again, since the provider only deals with the 

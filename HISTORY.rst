@@ -1,7 +1,8 @@
-next version
-------------
+0.1.2 (31-07-2014)
+------------------
 
 - Documentation fixes and cleanup
+- Removed RDFlib artefacts from output.
 
 0.1.1 (20-05-2014)
 ------------------

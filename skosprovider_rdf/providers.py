@@ -40,8 +40,8 @@ class RDFProvider(MemoryProvider):
     def _from_graph(self):
         list = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
-            con = Concept(sub)
-            con.uri = sub
+            uri = str(sub)
+            con = Concept(uri, uri=uri)
             con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
             con.narrower = self._create_from_subject_predicate(sub, SKOS.narrower)
             con.related = self._create_from_subject_predicate(sub, SKOS.related)
@@ -50,8 +50,8 @@ class RDFProvider(MemoryProvider):
             list.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
-            col = Collection(sub)
-            col.uri = sub
+            uri = str(sub)
+            col = Collection(uri, uri=uri)
             col.members = self._create_from_subject_predicate(sub, SKOS.member)
             col.labels = self._create_from_subject_typelist(sub,Label.valid_types)
             list.append(col)
@@ -78,8 +78,10 @@ class RDFProvider(MemoryProvider):
             type = predicate.split('#')[-1]
             if Label.is_valid_type(type):
                 o = self._create_label(o, type)
-            if Note.is_valid_type(type):
+            elif Note.is_valid_type(type):
                 o = self._create_note(o, type)
+            else:
+                o = str(o)
             list.append(o)
         return list
 
@@ -88,7 +90,7 @@ class RDFProvider(MemoryProvider):
             raise ValueError(
                 'Type of Label is not valid.'
             )
-        return Label(literal, type, self._get_language_from_literal(literal))
+        return Label(str(literal), type, self._get_language_from_literal(literal))
 
     def _create_note(self, literal, type):
         if not Note.is_valid_type(type):
@@ -96,7 +98,7 @@ class RDFProvider(MemoryProvider):
                 'Type of Note is not valid.'
             )
 
-        return Note(literal, type, self._get_language_from_literal(literal))
+        return Note(str(literal), type, self._get_language_from_literal(literal))
 
     def _get_language_from_literal(self, data):
         if data.language is None:

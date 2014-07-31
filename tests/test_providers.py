@@ -29,12 +29,12 @@ class RDFProviderTests(unittest.TestCase):
         abspath=os.path.abspath(filepath + "/data/simple_turtle_products")
         self.graph.parse(abspath, format="turtle")
 
-        self.u_products=URIRef("http://www.products.com/")
-        self.u_jewellery=URIRef("http://www.products.com/Jewellery")
-        self.u_perfume=URIRef("http://www.products.com/Perfume")
-        self.u_product=URIRef("http://www.products.com/Product")
-        self.u_stuff=URIRef("http://www.products.com/Stuff")
-        self.u_unexistingProduct=URIRef("http://www.products.com/UnexistingProduct")
+        self.u_products="http://www.products.com/"
+        self.u_jewellery="http://www.products.com/Jewellery"
+        self.u_perfume="http://www.products.com/Perfume"
+        self.u_product="http://www.products.com/Product"
+        self.u_stuff="http://www.products.com/Stuff"
+        self.u_unexistingProduct="http://www.products.com/UnexistingProduct"
 
     def test_include(self):
         return

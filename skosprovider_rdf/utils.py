@@ -54,7 +54,7 @@ def rdf_dumper(provider):
                 object = URIRef(related.uri)
                 graph.add((subject, SKOS.related, object))
             for n in c.notes:
-                predicate = URIRef(SKOS + "#" + n.type)
+                predicate = URIRef(SKOS + n.type)
                 lang = n.language
                 if isinstance(lang, bytes):
                     lang = lang.decode("UTF-8")

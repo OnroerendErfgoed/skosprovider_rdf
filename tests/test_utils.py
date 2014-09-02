@@ -112,6 +112,30 @@ class RDFProviderUtilsTests(unittest.TestCase):
         self.rdf_products_provider = RDFProvider(
             {'id': 'PRODUCTS', 'conceptscheme_id': 1}, self.graph)
 
+
+    def _get_materials_provider(self):
+        import json
+        materials_data = json.load(
+        open(os.path.join(os.path.dirname(__file__), 'data', 'materiaal.txt')),
+        )['materiaal']
+        from skosprovider.providers import DictionaryProvider
+        from skosprovider.uri import UriPatternGenerator
+        materials = DictionaryProvider(
+            {'id': 'Materials'},
+            materials_data,
+            uri_generator=UriPatternGenerator('https://id.erfgoed.net/thesauri/materialen/%s')
+        )
+        return materials
+
+    def test_dump_dictionary_to_rdf(self):
+        graph_dump = utils.rdf_dumper(self._get_materials_provider())
+        xml = graph_dump.serialize(format='xml', encoding="UTF-8")
+        if isinstance(xml,bytes):
+            xml=xml.decode("UTF-8")
+        self.assertEquals("<?xml", xml[:5])
+        bont_skos_definition = '<skos:definition xml:lang="nl-BE">Bont is een gelooide dierlijke huid, dicht bezet met haren. Het wordt voornamelijk gebruikt voor het maken van kleding.</skos:definition>'
+        self.assertIn(bont_skos_definition, xml)
+
     def test_dump_rdf_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.rdf_products_provider)
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")

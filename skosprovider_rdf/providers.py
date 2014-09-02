@@ -38,32 +38,34 @@ class RDFProvider(MemoryProvider):
         self.list = self._from_graph()
 
     def _from_graph(self):
-        list = []
+        clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
             uri = str(sub)
             con = Concept(uri, uri=uri)
             con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
             con.narrower = self._create_from_subject_predicate(sub, SKOS.narrower)
             con.related = self._create_from_subject_predicate(sub, SKOS.related)
-            con.notes =self._create_from_subject_typelist(sub,Note.valid_types)
-            con.labels = self._create_from_subject_typelist(sub,Label.valid_types)
-            list.append(con)
+            con.notes = self._create_from_subject_typelist(sub, Note.valid_types)
+            con.labels = self._create_from_subject_typelist(sub, Label.valid_types)
+            clist.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
             uri = str(sub)
             col = Collection(uri, uri=uri)
             col.members = self._create_from_subject_predicate(sub, SKOS.member)
-            col.labels = self._create_from_subject_typelist(sub,Label.valid_types)
-            list.append(col)
-        self._fill_member_of(list)
+            col.labels = self._create_from_subject_typelist(sub, Label.valid_types)
+            clist.append(col)
+        self._fill_member_of(clist)
 
-        return list
+        return clist
 
-    def _fill_member_of(self,list):
-        for col in [e for e in list if type(e)==Collection]:
-            for l in list:
-                 if l.id in col.members:
-                    l.member_of.append(col.id)
+    def _fill_member_of(self, clist):
+        collections = list(set([c for c in clist if isinstance(c, Collection)]))
+        for col in collections:
+            for c in clist:
+                 if c.id in col.members:
+                    c.member_of.append(col.id)
+                    break;
 
     def _create_from_subject_typelist(self,subject,typelist):
         list=[]

@@ -71,7 +71,6 @@ class RDFProviderTests(unittest.TestCase):
         con = self.provider.get_by_uri(self.u_unexistingProduct)
         self.assertFalse(con)
 
-
     def test_concept_has_correct_note(self):
         con = self.provider.get_by_id(self.u_jewellery)
         self.assertEqual(2, len(con.notes))
@@ -82,6 +81,9 @@ class RDFProviderTests(unittest.TestCase):
         self.assertIsInstance(col, Collection)
         self.assertEquals(self.u_stuff, col.id)
         self.assertTrue(self.u_product in col.members)
+        for m in col.members:
+            m = self.provider.get_by_id(m)
+            self.assertIn(col.id, m.member_of)
 
     def test_get_collection_by_uri(self):
         cola = self.provider.get_by_id(self.u_stuff)

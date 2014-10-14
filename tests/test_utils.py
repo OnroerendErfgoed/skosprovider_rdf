@@ -134,7 +134,9 @@ class RDFProviderUtilsTests(unittest.TestCase):
             xml=xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
         bont_skos_definition = '<skos:definition xml:lang="nl-BE">Bont is een gelooide dierlijke huid, dicht bezet met haren. Het wordt voornamelijk gebruikt voor het maken van kleding.</skos:definition>'
+        dc_id_skos_definition =  '<dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</dc:identifier>'
         self.assertIn(bont_skos_definition, xml)
+        self.assertIn(dc_id_skos_definition, xml)
 
     def test_dump_rdf_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.rdf_products_provider)

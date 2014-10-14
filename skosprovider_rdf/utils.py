@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 from rdflib import Graph, Literal
 from rdflib.term import URIRef
-from rdflib.namespace import RDF, SKOS
+from rdflib.namespace import RDF, SKOS, DC
 from skosprovider.skos import (
     Concept,
     Collection
@@ -28,11 +28,13 @@ def rdf_dumper(provider):
     '''
     graph = Graph()
     graph.namespace_manager.bind("skos", SKOS)
+    graph.namespace_manager.bind("dc", DC)
     # Add triples using store's add method.
     for stuff in provider.get_all():
         c = provider.get_by_id(stuff['id'])
         subject = URIRef(c.uri)
 
+        graph.add((subject, DC.identifier, Literal(stuff['id'])))
         for l in c.labels:
             predicate = URIRef(SKOS + l.type)
             lang = l.language

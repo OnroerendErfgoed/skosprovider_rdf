@@ -17,7 +17,7 @@ from skosprovider.skos import (
     Note
 )
 
-from rdflib.namespace import RDF, SKOS
+from rdflib.namespace import RDF, SKOS, DC
 
 
 class RDFProvider(MemoryProvider):
@@ -41,7 +41,7 @@ class RDFProvider(MemoryProvider):
         clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
             uri = str(sub)
-            con = Concept(uri, uri=uri)
+            con = Concept(self._get_id_for_subject(sub, uri), uri=uri)
             con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
             con.narrower = self._create_from_subject_predicate(sub, SKOS.narrower)
             con.related = self._create_from_subject_predicate(sub, SKOS.related)
@@ -51,7 +51,7 @@ class RDFProvider(MemoryProvider):
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
             uri = str(sub)
-            col = Collection(uri, uri=uri)
+            col = Collection(self._get_id_for_subject(sub, uri), uri=uri)
             col.members = self._create_from_subject_predicate(sub, SKOS.member)
             col.labels = self._create_from_subject_typelist(sub, Label.valid_types)
             clist.append(col)
@@ -73,6 +73,12 @@ class RDFProvider(MemoryProvider):
             term=SKOS.term(p)
             list.extend(self._create_from_subject_predicate(subject,term))
         return list
+
+    def _get_id_for_subject(self, subject, uri):
+        if (subject, DC.identifier, None) in self.graph:
+            return self.graph.value(subject=subject, predicate=DC.identifier, any=False)
+        else:
+            return uri
 
     def _create_from_subject_predicate(self, subject, predicate):
         list = []

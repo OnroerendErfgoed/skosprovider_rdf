@@ -25,7 +25,7 @@ setup(
     name='skosprovider_rdf',
     version='0.2.0',
     description='skosprovider_rdf',
-    long_description=README + '\n\n' + CHANGES,
+    long_description=README + '\n\n' + HISTORY,
     package_data={'': ['LICENSE']},
     package_dir={'skosprovider_rdf': 'skosprovider_rdf'},
     include_package_data=True,

@@ -103,7 +103,7 @@ class RDFProvider(MemoryProvider):
             elif Note.is_valid_type(type):
                 o = self._create_note(o, type)
             else:
-                o = unicode(o)
+                o = str(o)
             list.append(o)
         return list
 
@@ -112,14 +112,14 @@ class RDFProvider(MemoryProvider):
             raise ValueError(
                 'Type of Label is not valid.'
             )
-        return Label(unicode(literal), type, self._get_language_from_literal(literal))
+        return Label(str(literal.encode('utf-8')), type, self._get_language_from_literal(literal))
 
     def _create_note(self, literal, type):
         if not Note.is_valid_type(type):
             raise ValueError(
                 'Type of Note is not valid.'
             )
-        return Note(unicode(literal), type, self._get_language_from_literal(literal))
+        return Note(str(literal.encode('utf-8')), type, self._get_language_from_literal(literal))
 
     def _get_language_from_literal(self, data):
         if not isinstance(data, Literal):
@@ -135,7 +135,7 @@ class RDFProvider(MemoryProvider):
             for s, p, o in graph.triples((None, SKOS.member, None)):
                 o = uri_to_id(o)
                 if o:
-                    member_list.append(unicode(o))
+                    member_list.append(str(o))
         return member_list
 
 

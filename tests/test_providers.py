@@ -182,7 +182,7 @@ class RDFProviderTests(unittest.TestCase):
         provider = RDFProvider(
             {'id': '300138225', 'conceptscheme_id': 'aat'}, graph, concept_scheme=concept_scheme)
         graph = rdf_dumper(provider)
-        print graph.serialize(format='n3')
+        print(graph.serialize(format='n3'))
 
     def test_superordinate(self):
         graph = uri_to_graph("http://vocab.getty.edu/aat/300007492")
@@ -190,7 +190,7 @@ class RDFProviderTests(unittest.TestCase):
         provider = RDFProvider(
             {'id': '300007492', 'conceptscheme_id': 'aat'}, graph, concept_scheme=concept_scheme)
         graph = rdf_dumper(provider)
-        print graph.serialize(format='n3')
+        print(graph.serialize(format='n3'))
 
 
 

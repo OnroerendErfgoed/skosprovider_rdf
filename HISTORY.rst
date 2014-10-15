@@ -1,3 +1,9 @@
+0.3.0 (14-10-2004)
+------------------
+
+- Compatibile with `SkosProvider 0.4.0 <http://skosprovider.readthedocs.org/en/0.4.0>`_.
+- Not backwards compatible with `SkosProvider 0.3.0 <http://skosprovider.readthedocs.org/en/0.3.0>`_.
+
 0.2.0 (14-10-2004)
 ------------------
 

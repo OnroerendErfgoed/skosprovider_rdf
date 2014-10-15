@@ -17,13 +17,13 @@ packages = [
 ]
 
 requires = [
-    'skosprovider>=0.3.0',
+    'skosprovider',
     'rdflib'
 ]
 
 setup(
     name='skosprovider_rdf',
-    version='0.2.0',
+    version='0.3.0',
     description='skosprovider_rdf',
     long_description=README + '\n\n' + HISTORY,
     package_data={'': ['LICENSE']},

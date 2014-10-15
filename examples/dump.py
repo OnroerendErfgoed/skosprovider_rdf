@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 This script demonstrates dumping a 
-:class:`skosprovider.providers.SimpleCsvProvider` as and RDF Graph. In this 
+:class:`skosprovider.providers.SimpleCsvProvider` as a RDF Graph. In this
 case, `n3` serialisation is used, other serialisations are available through
 :mod:`rdflib`.
 '''

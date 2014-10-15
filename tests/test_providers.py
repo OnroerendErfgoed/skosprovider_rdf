@@ -1,12 +1,15 @@
 import unittest,os
 from rdflib import Graph
-from skosprovider.skos import Note,Label,Collection,Concept
+from skosprovider.skos import Note,Label,Collection,Concept, ConceptScheme
 from rdflib.namespace import RDF, SKOS
 from skosprovider_rdf.providers import RDFProvider
 from rdflib.term import URIRef
 
 
 #unittest.TestCase
+from skosprovider_rdf.utils import uri_to_graph, rdf_dumper
+
+
 class RDFProviderTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -172,3 +175,22 @@ class RDFProviderTests(unittest.TestCase):
     def test_expand_unexisting(self):
         ids = self.products_provider.expand(404)
         self.assertFalse(ids)
+
+    def test_suboordinate_arrays(self):
+        graph = uri_to_graph("http://vocab.getty.edu/aat/300138225")
+        concept_scheme =ConceptScheme("http://vocab.getty.edu/aat/")
+        provider = RDFProvider(
+            {'id': '300138225', 'conceptscheme_id': 'aat'}, graph, concept_scheme=concept_scheme)
+        graph = rdf_dumper(provider)
+        print graph.serialize(format='n3')
+
+    def test_superordinate(self):
+        graph = uri_to_graph("http://vocab.getty.edu/aat/300007492")
+        concept_scheme =ConceptScheme("http://vocab.getty.edu/aat/")
+        provider = RDFProvider(
+            {'id': '300007492', 'conceptscheme_id': 'aat'}, graph, concept_scheme=concept_scheme)
+        graph = rdf_dumper(provider)
+        print graph.serialize(format='n3')
+
+
+

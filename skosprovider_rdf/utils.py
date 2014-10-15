@@ -65,10 +65,13 @@ def rdf_dumper(provider):
                 object = URIRef(related.uri) if related else URIRef(r)
                 graph.add((subject, SKOS.related, object))
             #question how to solve problem of subordinateArray/list
-            for s in c.subordinate_arrays:
-                member = provider.get_by_id(s)
-                object = URIRef(member.uri) if member else URIRef(s)
-                graph.add((subject, SKOS.member, object))
+            if len(c.subordinate_arrays) > 0:
+                subordinate_array = URIRef("subordinateArray")
+                graph.add((subject, SKOS_THES.subordinateArray, subordinate_array))
+                for s in c.subordinate_arrays:
+                    member = provider.get_by_id(s)
+                    object = URIRef(member.uri) if member else URIRef(s)
+                    graph.add((subordinate_array, SKOS.member, object))
         elif isinstance(c, Collection):
             graph.add((subject, RDF.type, SKOS.Collection))
             for m in c.members:

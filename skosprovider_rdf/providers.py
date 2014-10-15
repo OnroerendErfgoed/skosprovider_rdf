@@ -46,7 +46,6 @@ class RDFProvider(MemoryProvider):
     def _from_graph(self):
         clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
-            con = None
             uri = str(sub)
             con = Concept(self._get_id_for_subject(sub, uri), uri=uri)
             con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
@@ -56,10 +55,10 @@ class RDFProvider(MemoryProvider):
             con.labels = self._create_from_subject_typelist(sub, Label.valid_types)
             con.subordinate_arrays = self._get_array_members(self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray))
             con.concept_scheme = self.concept_scheme
+            con.member_of = []
             clist.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
-            col = None
             uri = str(sub)
             col = Collection(self._get_id_for_subject(sub, uri), uri=uri)
             col.members = self._create_from_subject_predicate(sub, SKOS.member)
@@ -67,19 +66,18 @@ class RDFProvider(MemoryProvider):
             col.notes = self._create_from_subject_typelist(sub, (Note.valid_types))
             col.superordinates = self._create_from_subject_predicate(sub, SKOS_THES.superOrdinate)
             col.concept_scheme = self.concept_scheme
+            col.member_of = []
             clist.append(col)
         self._fill_member_of(clist)
-
         return clist
 
     def _fill_member_of(self, clist):
-        collections = None
         collections = list(set([c for c in clist if isinstance(c, Collection)]))
         for col in collections:
             for c in clist:
-                 if c.id in col.members:
+                if c.id in col.members:
                     c.member_of.append(col.id)
-                    break
+        return
 
     def _create_from_subject_typelist(self,subject,typelist):
         list = []

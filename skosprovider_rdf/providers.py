@@ -8,8 +8,7 @@ This module contains an RDFProvider, an implementation of the
 
 import logging
 import rdflib
-from rdflib.term import Literal
-from skosprovider_rdf.utils import uri_to_graph, uri_to_id
+from rdflib.term import Literal, URIRef
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +52,10 @@ class RDFProvider(MemoryProvider):
             con.related = self._create_from_subject_predicate(sub, SKOS.related)
             con.notes = self._create_from_subject_typelist(sub, Note.valid_types)
             con.labels = self._create_from_subject_typelist(sub, Label.valid_types)
-            con.subordinate_arrays = self._get_array_members(self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray))
+            con.subordinate_arrays = self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray)
+            for k in con.matches.keys():
+                con.matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS + k +'Match'))
+            self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray)
             con.concept_scheme = self.concept_scheme
             con.member_of = []
             clist.append(con)
@@ -101,7 +103,8 @@ class RDFProvider(MemoryProvider):
             elif Note.is_valid_type(type):
                 o = self._create_note(o, type)
             else:
-                o = str(o)
+                #o = str(o)
+                o = self._get_id_for_subject(o, str(o))
             list.append(o)
         return list
 
@@ -125,15 +128,5 @@ class RDFProvider(MemoryProvider):
         if data.language is None:
             return None
         return data.language.encode("utf-8")
-
-    def _get_array_members(self, arr):
-        member_list = []
-        if len(arr) > 0:
-            graph = uri_to_graph(arr[0])
-            for s, p, o in graph.triples((None, SKOS.member, None)):
-                o = uri_to_id(o)
-                if o:
-                    member_list.append(str(o))
-        return member_list
 
 

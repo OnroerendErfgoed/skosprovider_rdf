@@ -9,7 +9,7 @@ from skosprovider_rdf import utils
 from rdflib.term import URIRef
 
 
-#unittest.TestCase
+# unittest.TestCase
 class RDFProviderUtilsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -78,7 +78,8 @@ class RDFProviderUtilsTests(unittest.TestCase):
             'narrower': [],
             'broader': [],
             'related': [],
-            'member_of': ['3']
+            'member_of': ['3'],
+            'subordinate_arrays': ['3']
         }
         self.species_dump = {
             'id': 3,
@@ -89,7 +90,8 @@ class RDFProviderUtilsTests(unittest.TestCase):
             ],
             'type': 'collection',
             'members': ['1', '2'],
-            'member_of': []
+            'member_of': [],
+            'superordinates': ['6']
         }
         self.world_dump = {
             'id': '1',
@@ -103,10 +105,12 @@ class RDFProviderUtilsTests(unittest.TestCase):
             'narrower': [2, 3],
             'broader': [],
             'related': [],
-            'member_of': []
+            'member_of': [],
+            'subordinate_arrays': []
         }
 
-        self.tree_provider = DictionaryProvider({'id': 'TREE'}, [self.larch_dump,self.chestnut_dump,self.species_dump])
+        self.tree_provider = DictionaryProvider({'id': 'TREE'},
+                                                [self.larch_dump, self.chestnut_dump, self.species_dump])
         self.world_provider = DictionaryProvider({'id': 'WORLD'}, [self.world_dump])
         # Set up rdf_provider
         self.rdf_products_provider = RDFProvider(
@@ -115,11 +119,13 @@ class RDFProviderUtilsTests(unittest.TestCase):
 
     def _get_materials_provider(self):
         import json
+
         materials_data = json.load(
-        open(os.path.join(os.path.dirname(__file__), 'data', 'materiaal.txt')),
+            open(os.path.join(os.path.dirname(__file__), 'data', 'materiaal.txt')),
         )['materiaal']
         from skosprovider.providers import DictionaryProvider
         from skosprovider.uri import UriPatternGenerator
+
         materials = DictionaryProvider(
             {'id': 'Materials'},
             materials_data,
@@ -130,19 +136,19 @@ class RDFProviderUtilsTests(unittest.TestCase):
     def test_dump_dictionary_to_rdf(self):
         graph_dump = utils.rdf_dumper(self._get_materials_provider())
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
-        if isinstance(xml,bytes):
-            xml=xml.decode("UTF-8")
+        if isinstance(xml, bytes):
+            xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
         bont_skos_definition = '<skos:definition xml:lang="nl-BE">Bont is een gelooide dierlijke huid, dicht bezet met haren. Het wordt voornamelijk gebruikt voor het maken van kleding.</skos:definition>'
-        dc_id_skos_definition =  '<dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</dc:identifier>'
+        dc_id_skos_definition = '<dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</dc:identifier>'
         self.assertIn(bont_skos_definition, xml)
         self.assertIn(dc_id_skos_definition, xml)
 
     def test_dump_rdf_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.rdf_products_provider)
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
-        if isinstance(xml,bytes):
-            xml=xml.decode("UTF-8")
+        if isinstance(xml, bytes):
+            xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
 
     def test_dump_rdf_compare_type(self):
@@ -152,8 +158,9 @@ class RDFProviderUtilsTests(unittest.TestCase):
     def test_dump_tree_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.tree_provider)
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
-        if isinstance(xml,bytes):
-            xml=xml.decode("UTF-8")
+        print(xml)
+        if isinstance(xml, bytes):
+            xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
 
     def test_include_me(self):

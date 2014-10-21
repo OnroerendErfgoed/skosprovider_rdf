@@ -1,5 +1,6 @@
 import unittest,os
 from rdflib import Graph
+import rdflib
 from skosprovider.skos import Note,Label,Collection,Concept, ConceptScheme
 from rdflib.namespace import RDF, SKOS
 from skosprovider_rdf.providers import RDFProvider
@@ -7,7 +8,7 @@ from rdflib.term import URIRef
 
 
 #unittest.TestCase
-from skosprovider_rdf.utils import uri_to_graph, rdf_dumper
+from skosprovider_rdf.utils import rdf_dumper
 
 
 class RDFProviderTests(unittest.TestCase):
@@ -192,5 +193,29 @@ class RDFProviderTests(unittest.TestCase):
         graph = rdf_dumper(provider)
         print(graph.serialize(format='n3'))
 
+    def test_suboordinate_arrays(self):
+        graph = uri_to_graph("http://vocab.getty.edu/aat/")
+        concept_scheme =ConceptScheme("http://vocab.getty.edu/aat/")
+        provider = RDFProvider(
+            {'id': '1', 'conceptscheme_id': 'aat'}, graph, concept_scheme=concept_scheme)
+        graph = rdf_dumper(provider)
+        print(graph.serialize(format='n3'))
+
+def uri_to_id(uri):
+    return uri.strip('/').rsplit('/', 1)[1]
+
+def uri_to_graph(uri):
+    graph = rdflib.Graph()
+    try:
+        graph.parse(uri)
+        return graph
+    # for python2.7 this is urllib2.HTTPError
+    # for python3 this is urllib.error.HTTPError
+    except Exception as err:
+        if hasattr(err, 'code'):
+            if err.code == 404:
+                return False
+        else:
+            raise
 
 

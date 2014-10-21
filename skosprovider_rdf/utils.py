@@ -4,6 +4,7 @@ This module contains utility functions for dealing with skos providers.
 '''
 from __future__ import unicode_literals
 import logging
+import warnings
 import rdflib
 
 log = logging.getLogger(__name__)
@@ -54,54 +55,47 @@ def rdf_dumper(provider):
             graph.add((subject, RDF.type, SKOS.Concept))
             for b in c.broader:
                 broader = provider.get_by_id(b)
-                object = URIRef(broader.uri) if broader else URIRef(b)
-                graph.add((subject, SKOS.broader, object))
+                if broader:
+                    graph.add((subject, SKOS.broader, URIRef(broader.uri)))
+                else:
+                    warnings.warn(_warning(b), UserWarning)
             for n in c.narrower:
                 narrower = provider.get_by_id(n)
-                object = URIRef(narrower.uri) if narrower else URIRef(n)
-                graph.add((subject, SKOS.narrower, object))
+                if narrower:
+                    graph.add((subject, SKOS.narrower, URIRef(narrower.uri)))
+                else:
+                    warnings.warn(_warning(n), UserWarning)
             for r in c.related:
                 related = provider.get_by_id(r)
-                object = URIRef(related.uri) if related else URIRef(r)
-                graph.add((subject, SKOS.related, object))
-            #question how to solve problem of subordinateArray/list
-            if len(c.subordinate_arrays) > 0:
-                subordinate_array = URIRef("subordinateArray")
-                graph.add((subject, SKOS_THES.subordinateArray, subordinate_array))
-                for s in c.subordinate_arrays:
-                    member = provider.get_by_id(s)
-                    object = URIRef(member.uri) if member else URIRef(s)
-                    graph.add((subordinate_array, SKOS.member, object))
+                if related:
+                    graph.add((subject, SKOS.related, URIRef(related.uri)))
+                else:
+                    warnings.warn(_warning(r), UserWarning)
+            for s in c.subordinate_arrays:
+                subordinate_array = provider.get_by_id(s)
+                if subordinate_array:
+                    graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
+                else:
+                    warnings.warn(_warning(s), UserWarning)
+            for k in c.matches.keys():
+                for uri in c.matches[k]:
+                    graph.add((subject, URIRef(SKOS + k +'Match'), URIRef(uri)))
         elif isinstance(c, Collection):
             graph.add((subject, RDF.type, SKOS.Collection))
             for m in c.members:
                 member = provider.get_by_id(m)
-                object = URIRef(member.uri) if member else URIRef(m)
-                graph.add((subject, SKOS.member, object))
+                if member:
+                    graph.add((subject, SKOS.member, URIRef(member.uri)))
+                else:
+                    warnings.warn(_warning(m), UserWarning)
             for s in c.superordinates:
                 superordinate = provider.get_by_id(s)
-                object = URIRef(superordinate.uri) if superordinate else URIRef(s)
-                graph.add((subject, SKOS_THES.superOrdinate, object))
+                if superordinate:
+                    graph.add((subject, SKOS_THES.superOrdinate, URIRef(superordinate.uri)))
+                else:
+                    warnings.warn(_warning(s), UserWarning)
 
     return graph
 
-def uri_to_id(uri):
-    #question: not every uri can be converted to a graph, how can we get the id with a generalised method
-    graph = uri_to_graph(uri)
-    for s, p, o in graph.triples((uri, DC.identifier, None)):
-        return o
-    return False
-
-def uri_to_graph(uri):
-    graph = rdflib.Graph()
-    try:
-        graph.parse(uri)
-        return graph
-    # for python2.7 this is urllib2.HTTPError
-    # for python3 this is urllib.error.HTTPError
-    except Exception as err:
-        if hasattr(err, 'code'):
-            if err.code == 404:
-                return False
-        else:
-            raise
+def _warning(id):
+    return 'id %s could not be resolved' % id

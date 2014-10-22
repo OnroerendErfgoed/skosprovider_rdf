@@ -79,7 +79,38 @@ class RDFProviderUtilsTests(unittest.TestCase):
             'broader': [],
             'related': [],
             'member_of': ['3'],
-            'subordinate_arrays': ['3']
+            'subordinate_arrays': []
+        }
+        self.oak_dump = {
+            'id': '4',
+            'uri': 'http://id.trees.org/4',
+            'type': 'concept',
+            'labels': [
+                {'type': 'prefLabel',
+                 'language': 'en',
+                 'label': 'The Oak'},
+                {'type': 'altLabel',
+                 'language': 'nl',
+                 'label': 'De Eik'},
+                {'type': 'altLabel',
+                 'language': 'fr',
+                 'label': 'le chêne'}
+            ],
+            'notes': [
+                {
+                    'type': 'definition', 'language': 'en',
+                    'note': 'A different type of tree.'
+                }
+            ],
+            'narrower': ['6'],
+            'broader': ['6'],
+            'related': ['6'],
+            'member_of': ['6'],
+            'subordinate_arrays': ['6', '3'],
+            'matches': {
+                'exact': ['http://blabla/2'],
+                'narrow': ['http://blabla/1', 'http://blabla/5'],
+            }
         }
         self.species_dump = {
             'id': 3,
@@ -91,7 +122,7 @@ class RDFProviderUtilsTests(unittest.TestCase):
             'type': 'collection',
             'members': ['1', '2'],
             'member_of': [],
-            'superordinates': ['6']
+            'superordinates': ['6', '4']
         }
         self.world_dump = {
             'id': '1',
@@ -111,6 +142,8 @@ class RDFProviderUtilsTests(unittest.TestCase):
 
         self.tree_provider = DictionaryProvider({'id': 'TREE'},
                                                 [self.larch_dump, self.chestnut_dump, self.species_dump])
+        self.tree_provider2 = DictionaryProvider({'id': 'TREE'},
+                                                [self.oak_dump, self.chestnut_dump, self.species_dump])
         self.world_provider = DictionaryProvider({'id': 'WORLD'}, [self.world_dump])
         # Set up rdf_provider
         self.rdf_products_provider = RDFProvider(
@@ -158,7 +191,13 @@ class RDFProviderUtilsTests(unittest.TestCase):
     def test_dump_tree_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.tree_provider)
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
-        print(xml)
+        if isinstance(xml, bytes):
+            xml = xml.decode("UTF-8")
+        self.assertEquals("<?xml", xml[:5])
+
+    def test_dump_tree_to_rdf(self):
+        graph_dump = utils.rdf_dumper(self.tree_provider2)
+        xml = graph_dump.serialize(format='xml', encoding="UTF-8")
         if isinstance(xml, bytes):
             xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])

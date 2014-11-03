@@ -13,6 +13,8 @@ from skosprovider.providers import SimpleCsvProvider
 
 from skosprovider.uri import UriPatternGenerator
 
+from skosprovider.skos import ConceptScheme, Label, Note
+
 from skosprovider_rdf.utils import rdf_dumper
 
 ifile = open(
@@ -25,7 +27,12 @@ reader = csv.reader(ifile)
 csvprovider = SimpleCsvProvider(
     {'id': 'MENU'},
     reader,
-    uri_generator=UriPatternGenerator('http://id.python.org/menu/%s')
+    uri_generator=UriPatternGenerator('http://id.python.org/menu/%s'),
+    concept_scheme=ConceptScheme(
+        uri='http://id.python.org/menu',
+        labels=[Label(type='prefLabel', language='en', label='A pythonesque menu.')],
+        notes=[Note(type='changeNote', language='en', note="We didn't need no change notes when I was younger.")]
+    )
 )
 
 graph = rdf_dumper(csvprovider)

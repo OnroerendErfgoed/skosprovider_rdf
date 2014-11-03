@@ -33,24 +33,17 @@ def rdf_dumper(provider):
     graph.namespace_manager.bind("skos", SKOS)
     graph.namespace_manager.bind("dc", DC)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
+    conceptscheme=URIRef(provider.concept_scheme.uri)
+    _add_labels(graph, provider.concept_scheme, conceptscheme)
+    _add_notes(graph, provider.concept_scheme, conceptscheme)
     # Add triples using store's add method.
     for stuff in provider.get_all():
         c = provider.get_by_id(stuff['id'])
         subject = URIRef(c.uri)
         graph.add((subject, DC.identifier, Literal(stuff['id'])))
-        graph.add((subject, SKOS.ConceptScheme, URIRef(provider.concept_scheme.uri)))
-        for l in c.labels:
-            predicate = URIRef(SKOS + l.type)
-            lang = l.language
-            if isinstance(lang, bytes):
-                lang = lang.decode("UTF-8")
-            graph.add((subject, predicate, Literal(l.label, lang=lang)))
-        for n in c.notes:
-            predicate = URIRef(SKOS + n.type)
-            lang = n.language
-            if isinstance(lang, bytes):
-                lang = lang.decode("UTF-8")
-            graph.add((subject, predicate, Literal(n.note, lang=lang)))
+        graph.add((subject, SKOS.ConceptScheme, conceptscheme))
+        _add_labels(graph, c, subject)
+        _add_notes(graph, c, subject)
         if isinstance(c, Concept):
             graph.add((subject, RDF.type, SKOS.Concept))
             for b in c.broader:
@@ -99,3 +92,20 @@ def rdf_dumper(provider):
 
 def _warning(id):
     return 'id %s could not be resolved' % id
+
+
+def _add_labels(graph, c, subject):
+    for l in c.labels:
+        predicate = URIRef(SKOS + l.type)
+        lang = l.language
+        if isinstance(lang, bytes):
+            lang = lang.decode("UTF-8")
+        graph.add((subject, predicate, Literal(l.label, lang=lang)))
+
+def _add_notes(graph, c, subject):
+    for n in c.notes:
+        predicate = URIRef(SKOS + n.type)
+        lang = n.language
+        if isinstance(lang, bytes):
+            lang = lang.decode("UTF-8")
+        graph.add((subject, predicate, Literal(n.note, lang=lang)))

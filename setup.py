@@ -17,7 +17,7 @@ packages = [
 ]
 
 requires = [
-    'skosprovider',
+    'skosprovider>0.4.2',
     'rdflib'
 ]
 

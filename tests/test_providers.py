@@ -21,9 +21,9 @@ class RDFProviderTests(unittest.TestCase):
 
         # Set up providers
         self.products_provider = RDFProvider(
-            {'id': 'PRODUCTS', 'conceptscheme_id': 1}, self.products_graph)
+            {'id': 'PRODUCTS'}, self.products_graph)
         self.toepassingen_provider = RDFProvider(
-            {'id': 'TOEPASSINGEN', 'conceptscheme_id': 2}, self.toepassingen_graph)
+            {'id': 'TOEPASSINGEN'}, self.toepassingen_graph)
 
     def tearDown(self):
         return
@@ -51,6 +51,20 @@ class RDFProviderTests(unittest.TestCase):
 
     def test_get_vocabulary_id(self):
         self.assertEquals('PRODUCTS', self.products_provider.get_vocabulary_id())
+
+    def test_conceptscheme(self):
+        assert self.u_products + 'Scheme' == self.products_provider.concept_scheme.uri
+        assert self.products_provider.concept_scheme.label('en') is not None
+
+    def test_too_many_conceptscheme(self):
+        self.toepassingen_graph = Graph()
+        filepath=os.path.dirname(os.path.realpath(__file__))
+        abspath=os.path.abspath(filepath + "/data/schemes.xml")
+        self.toepassingen_graph.parse(abspath, format="application/rdf+xml")
+        with self.assertRaises(RuntimeError):
+            self.toepassingen_provider = RDFProvider(
+                {'id': 'TOEPASSINGEN'}, self.toepassingen_graph
+            )
 
     def test_get_concept_by_id(self):
         from skosprovider.skos import Concept

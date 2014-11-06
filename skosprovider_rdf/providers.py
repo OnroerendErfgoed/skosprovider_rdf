@@ -13,9 +13,13 @@ from rdflib.term import Literal, URIRef
 log = logging.getLogger(__name__)
 
 from skosprovider.providers import MemoryProvider
+from skosprovider.uri import (
+    DefaultConceptSchemeUrnGenerator
+)
 from skosprovider.skos import (
     Concept,
     Collection,
+    ConceptScheme,
     Label,
     Note
 )
@@ -34,13 +38,32 @@ class RDFProvider(MemoryProvider):
     '''
 
     def __init__(self, metadata, graph, **kwargs):
-        super(RDFProvider, self).__init__(metadata, [], **kwargs)
-        self.conceptscheme_id = metadata.get(
-        'conceptscheme_id', metadata.get('id')
-        )
         self.graph = graph
+        if not 'concept_scheme' in kwargs:
+            kwargs['concept_scheme'] = self._cs_from_graph(metadata)
+        super(RDFProvider, self).__init__(metadata, [], **kwargs)
         self.list = self._from_graph()
 
+    def _cs_from_graph(self, metadata):
+        cslist = []
+        for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.ConceptScheme)):
+            uri = str(sub)
+            cs = ConceptScheme(uri=uri)
+            cs.labels = self._create_from_subject_typelist(sub, Label.valid_types)
+            cs.notes = self._create_from_subject_typelist(sub, Note.valid_types)
+            cslist.append(cs)
+        if len(cslist) == 0:
+            return ConceptScheme(
+                uri=DefaultConceptSchemeUrnGenerator().generate(
+                    id=metadata.get('id')
+                )
+            )
+        elif len(cslist) == 1:
+            return cslist[0]
+        else:
+            raise RuntimeError(
+                'This RDF file contains more than one ConceptScheme.'
+            )
 
     def _from_graph(self):
         clist = []

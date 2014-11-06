@@ -3,8 +3,13 @@
 @prefix ex: <http://www.products.com/>.
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 
+ex:Scheme rdf:type owl:Class;
+  a skos:ConceptScheme;
+  skos:prefLabel "Products"@en.
+
 ex:Stuff rdf:type owl:Class;
   a skos:Collection;
+  skos:inScheme ex:Scheme;
   skos:prefLabel "Stuff people can buy"@en;
   skos:altLabel "Things you can find in a store"@en;
   skos:altLabel "Producten uit de winkel"@nl;
@@ -14,6 +19,7 @@ ex:Stuff rdf:type owl:Class;
 
 ex:Product rdf:type owl:Class;
   a skos:Concept;
+  skos:inScheme ex:Scheme;
   skos:prefLabel "Product"@en;
   skos:altLabel "Produkt"@nl;
   skos:altLabel "Produkt"@nl;
@@ -22,6 +28,7 @@ ex:Product rdf:type owl:Class;
 
 ex:Jewellery rdf:type owl:Class;
   a skos:Concept;
+  skos:inScheme ex:Scheme;
   skos:prefLabel "Jewellery";
   skos:altLabel "Jewelry"@en;
   skos:altLabel "Jewelery"@en;
@@ -32,6 +39,7 @@ ex:Jewellery rdf:type owl:Class;
   
 ex:Perfume rdf:type owl:Class;
   a skos:Concept;
+  skos:inScheme ex:Scheme;
   skos:prefLabel "Perfume";
   skos:altLabel "Parfum"@nl;
   skos:altLabel "Reukwaar"@nl;

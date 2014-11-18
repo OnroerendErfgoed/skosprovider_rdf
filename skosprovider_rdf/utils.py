@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import logging
 import warnings
 import rdflib
+import sys
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +18,13 @@ from skosprovider.skos import (
     Concept,
     Collection
 )
+
+PY3 = sys.version_info[0] == 3
+
+if PY3:  # pragma: no cover
+    binary_type = bytes
+else:  # pragma: no cover
+    binary_type = str
 
 
 def rdf_dumper(provider):
@@ -97,15 +105,28 @@ def _warning(id):
 def _add_labels(graph, c, subject):
     for l in c.labels:
         predicate = URIRef(SKOS + l.type)
-        lang = l.language
-        if isinstance(lang, bytes):
-            lang = lang.decode("UTF-8")
+        lang = extract_language(l.language)
         graph.add((subject, predicate, Literal(l.label, lang=lang)))
+
 
 def _add_notes(graph, c, subject):
     for n in c.notes:
         predicate = URIRef(SKOS + n.type)
-        lang = n.language
-        if isinstance(lang, bytes):
-            lang = lang.decode("UTF-8")
+        lang = extract_language(n.language)
         graph.add((subject, predicate, Literal(n.note, lang=lang)))
+
+
+def extract_language(lang):
+    if lang is None:
+        lang = 'und'  # return undefined code when no language
+    else:
+        lang = text_(lang, encoding="UTF-8")
+    return lang
+
+
+def text_(s, encoding='latin-1', errors='strict'):
+    """ If ``s`` is an instance of ``binary_type``, return
+    ``s.decode(encoding, errors)``, otherwise return ``s``"""
+    if isinstance(s, binary_type):
+        return s.decode(encoding, errors)
+    return s

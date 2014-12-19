@@ -14,7 +14,7 @@ This easiest way to install this library is through :command:`pip` or
 
 .. code-block:: bash    
     
-    $ pip install skosprovider_ref
+    $ pip install skosprovider_rdf
 
 This will download and install :mod:`skosprovider_rdf` and a few libraries it 
 depends on.

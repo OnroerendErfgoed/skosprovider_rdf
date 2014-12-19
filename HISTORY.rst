@@ -1,8 +1,7 @@
-0.3.0 (??-??-2004)
+0.3.0 (19-12-2014)
 ------------------
 
-- Compatibile with `SkosProvider 0.4.0 <http://skosprovider.readthedocs.org/en/0.4.0>`_.
-- Not backwards compatible with `SkosProvider 0.3.0 <http://skosprovider.readthedocs.org/en/0.3.0>`_.
+- Compatibile with `SkosProvider 0.5.0 <http://skosprovider.readthedocs.org/en/0.5.0>`_.
 - Dumping to an RDF file now also dumps information on the Conceptscheme.
 - Dumping to an RDF file now also adds notes to a Collection, not just to a
   Concept.

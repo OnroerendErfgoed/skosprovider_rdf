@@ -17,7 +17,7 @@ packages = [
 ]
 
 requires = [
-    'skosprovider>=0.4.2',
+    'skosprovider>=0.5.0',
     'rdflib'
 ]
 
@@ -44,7 +44,7 @@ setup(
     author='Flanders Heritage Agency',
     author_email='ict@onroerenderfgoed.be',
     url='http://github.com/OnroerendErfgoed/skosprovider_rdf',
-    keywords='rdf skos skosprovider',
+    keywords='rdf skos skosprovider vocabularies thesauri',
     packages=find_packages(),
     tests_require=requires,
     test_suite="skosprovider_rdf"

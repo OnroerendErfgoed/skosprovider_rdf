@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 from rdflib import Graph, Literal
 from rdflib.term import URIRef
-from rdflib.namespace import RDF, SKOS, DC
+from rdflib.namespace import RDF, SKOS, DCTERMS
 SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
 from skosprovider.skos import (
     Concept,
@@ -27,7 +27,7 @@ else:  # pragma: no cover
     binary_type = str
 
 
-def rdf_dumper(provider):
+def rdf_dumper(provider, id_list=None):
     '''
     Dump a provider to a format that can be passed to a
     :class:`skosprovider.providers.RDFProvider`.
@@ -35,20 +35,24 @@ def rdf_dumper(provider):
     :param skosprovider.providers.VocabularyProvider provider: The provider
         that wil be turned into an :class:`rdflib.graph.Graph`.
 
+    :param List id_list: List of id's of the data to dump.
+
     :rtype: :class:`rdflib.graph.Graph`
     '''
     graph = Graph()
     graph.namespace_manager.bind("skos", SKOS)
-    graph.namespace_manager.bind("dc", DC)
+    graph.namespace_manager.bind("dcterm", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme=URIRef(provider.concept_scheme.uri)
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     # Add triples using store's add method.
-    for stuff in provider.get_all():
-        c = provider.get_by_id(stuff['id'])
+    if not id_list:
+        id_list = [x['id'] for x in provider.get_all()]
+    for id in id_list:
+        c = provider.get_by_id(id)
         subject = URIRef(c.uri)
-        graph.add((subject, DC.identifier, Literal(stuff['id'])))
+        graph.add((subject, DCTERMS.identifier, Literal(c.id)))
         graph.add((subject, SKOS.ConceptScheme, conceptscheme))
         _add_labels(graph, c, subject)
         _add_notes(graph, c, subject)
@@ -95,6 +99,30 @@ def rdf_dumper(provider):
                     graph.add((subject, SKOS_THES.superOrdinate, URIRef(superordinate.uri)))
                 else:
                     warnings.warn(_warning(s), UserWarning)
+
+    return graph
+
+def rdf_conceptscheme_dumper(provider):
+    '''
+    Dump all information of the conceptscheme of a provider to a format that can be passed to a
+    :class:`skosprovider.providers.RDFProvider`.
+
+    :param skosprovider.providers.VocabularyProvider provider: The provider
+        that wil be turned into an :class:`rdflib.graph.Graph`.
+
+    :rtype: :class:`rdflib.graph.Graph`
+    '''
+    graph = Graph()
+    graph.namespace_manager.bind("skos", SKOS)
+    graph.namespace_manager.bind("dcterm", DCTERMS)
+    graph.namespace_manager.bind("skos-thes", SKOS_THES)
+    conceptscheme=URIRef(provider.concept_scheme.uri)
+    graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
+    _add_labels(graph, provider.concept_scheme, conceptscheme)
+    _add_notes(graph, provider.concept_scheme, conceptscheme)
+    graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
+    for c in provider.get_top_concepts():
+        graph.add((conceptscheme, SKOS.hasTopConcept, URIRef(c['uri'])))
 
     return graph
 

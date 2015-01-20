@@ -67,7 +67,7 @@ def _rdf_dumper(provider, id_list=None):
     '''
     graph = Graph()
     graph.namespace_manager.bind("skos", SKOS)
-    graph.namespace_manager.bind("dcterm", DCTERMS)
+    graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme = URIRef(provider.concept_scheme.uri)
     _add_labels(graph, provider.concept_scheme, conceptscheme)
@@ -140,7 +140,7 @@ def rdf_conceptscheme_dumper(provider):
     '''
     graph = Graph()
     graph.namespace_manager.bind("skos", SKOS)
-    graph.namespace_manager.bind("dcterm", DCTERMS)
+    graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme=URIRef(provider.concept_scheme.uri)
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))

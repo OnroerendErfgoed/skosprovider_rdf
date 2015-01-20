@@ -180,9 +180,9 @@ class RDFProviderUtilsTests(unittest.TestCase):
         print (xml)
         self.assertEquals("<?xml", xml[:5])
         bont_skos_definition = '<skos:definition xml:lang="nl-BE">Bont is een gelooide dierlijke huid, dicht bezet met haren. Het wordt voornamelijk gebruikt voor het maken van kleding.</skos:definition>'
-        dc_id_skos_definition = '<dcterm:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</dcterm:identifier>'
+        dcterms_id_skos_definition = '<dcterms:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</dcterms:identifier>'
         self.assertIn(bont_skos_definition, xml)
-        self.assertIn(dc_id_skos_definition, xml)
+        self.assertIn(dcterms_id_skos_definition, xml)
 
     def test_dump_rdf_to_rdf(self):
         graph_dump = utils.rdf_dumper(self.rdf_products_provider)
@@ -215,6 +215,13 @@ class RDFProviderUtilsTests(unittest.TestCase):
         if isinstance(xml, bytes):
             xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
+
+    def test_dump_one_id_to_rdf_and_reload(self):
+        graph_dump1 = utils.rdf_c_dumper(self.tree_provider, 1)
+        provider = RDFProvider(
+            {'id': 'Number1'}, graph_dump1)
+        graph_dump2 = utils.rdf_dumper(provider)
+        self.assertEquals(len(graph_dump1), len(graph_dump2))
 
     def test_dump_conceptscheme_tree_to_rdf(self):
         graph_dump = utils.rdf_conceptscheme_dumper(self.tree_provider)

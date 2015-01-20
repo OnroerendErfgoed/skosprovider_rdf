@@ -24,7 +24,7 @@ from skosprovider.skos import (
     Note
 )
 
-from rdflib.namespace import RDF, SKOS, DC
+from rdflib.namespace import RDF, SKOS, DC, DCTERMS
 SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
 
 
@@ -112,7 +112,11 @@ class RDFProvider(MemoryProvider):
         return list
 
     def _get_id_for_subject(self, subject, uri):
-        if (subject, DC.identifier, None) in self.graph:
+        for stmt in self.graph:
+            print(stmt)
+        if (subject, DCTERMS.identifier, None) in self.graph:
+            return self.graph.value(subject=subject, predicate=DCTERMS.identifier, any=False)
+        elif (subject, DC.identifier, None) in self.graph:
             return self.graph.value(subject=subject, predicate=DC.identifier, any=False)
         else:
             return uri

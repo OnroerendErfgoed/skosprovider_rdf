@@ -69,7 +69,7 @@ def _rdf_dumper(provider, id_list=None):
     graph.namespace_manager.bind("skos", SKOS)
     graph.namespace_manager.bind("dcterm", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
-    conceptscheme=URIRef(provider.concept_scheme.uri)
+    conceptscheme = URIRef(provider.concept_scheme.uri)
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     # Add triples using store's add method.
@@ -79,7 +79,7 @@ def _rdf_dumper(provider, id_list=None):
         c = provider.get_by_id(id)
         subject = URIRef(c.uri)
         graph.add((subject, DCTERMS.identifier, Literal(c.id)))
-        graph.add((subject, SKOS.ConceptScheme, conceptscheme))
+        graph.add((subject, SKOS.inScheme, conceptscheme))
         _add_labels(graph, c, subject)
         _add_notes(graph, c, subject)
         if isinstance(c, Concept):

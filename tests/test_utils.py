@@ -203,7 +203,7 @@ class RDFProviderUtilsTests(unittest.TestCase):
         self.assertEquals("<?xml", xml[:5])
 
     def test_dump_one_id_to_rdf(self):
-        graph_dump = utils.rdf_dumper(self.tree_provider, [1])
+        graph_dump = utils.rdf_c_dumper(self.tree_provider, 1)
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
         if isinstance(xml, bytes):
             xml = xml.decode("UTF-8")

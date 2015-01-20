@@ -27,7 +27,33 @@ else:  # pragma: no cover
     binary_type = str
 
 
-def rdf_dumper(provider, id_list=None):
+def rdf_dumper(provider):
+    '''
+    Dump a provider to a format that can be passed to a
+    :class:`skosprovider.providers.RDFProvider`.
+
+    :param skosprovider.providers.VocabularyProvider provider: The provider
+        that wil be turned into an :class:`rdflib.graph.Graph`.
+
+    :rtype: :class:`rdflib.graph.Graph`
+    '''
+    return _rdf_dumper(provider, None)
+
+def rdf_c_dumper(provider, c):
+    '''
+    Dump one concept or collection from a provider to a format that can be passed to a
+    :class:`skosprovider.providers.RDFProvider`.
+
+    :param skosprovider.providers.VocabularyProvider provider: The provider
+        that wil be turned into an :class:`rdflib.graph.Graph`.
+
+    :param String c: identifier
+
+    :rtype: :class:`rdflib.graph.Graph`
+    '''
+    return _rdf_dumper(provider, [c])
+
+def _rdf_dumper(provider, id_list=None):
     '''
     Dump a provider to a format that can be passed to a
     :class:`skosprovider.providers.RDFProvider`.

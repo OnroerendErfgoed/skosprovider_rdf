@@ -1,3 +1,16 @@
+0.3.1 (??-??-2015)
+------------------
+
+- Allow dumping a single conceptscheme to RDF. This does not dump the entire
+  conceptscheme with all it's concepts or collections, just information on the
+  conceptscheme itself and it's top concepts.
+- Allow dumping a single concept or collection to RDF, and not just an entire
+  conceptscheme with all concepts or collections.
+- Add skos:inScheme information to RDF dumps.
+- Better handling of dc(t):identifier. When reading an RDF file both 
+  dcterms:identifier and dc:identifier are considered when analysing the 
+  identifier. During dumping, we also dump to dcterms:identifier.
+
 0.3.0 (19-12-2014)
 ------------------
 

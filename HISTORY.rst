@@ -1,4 +1,4 @@
-0.3.1 (??-??-2015)
+0.4.0 (03-03-2015)
 ------------------
 
 - Allow dumping a single conceptscheme to RDF. This does not dump the entire

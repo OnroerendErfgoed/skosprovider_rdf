@@ -39,6 +39,7 @@ def rdf_dumper(provider):
     '''
     return _rdf_dumper(provider, None)
 
+
 def rdf_c_dumper(provider, c):
     '''
     Dump one concept or collection from a provider to a format that can be passed to a
@@ -52,6 +53,7 @@ def rdf_c_dumper(provider, c):
     :rtype: :class:`rdflib.graph.Graph`
     '''
     return _rdf_dumper(provider, [c])
+
 
 def _rdf_dumper(provider, id_list=None):
     '''
@@ -70,11 +72,14 @@ def _rdf_dumper(provider, id_list=None):
     graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme = URIRef(provider.concept_scheme.uri)
+    graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     # Add triples using store's add method.
     if not id_list:
         id_list = [x['id'] for x in provider.get_all()]
+        for c in provider.get_top_concepts():
+            graph.add((conceptscheme, SKOS.hasTopConcept, URIRef(c['uri'])))
     for id in id_list:
         c = provider.get_by_id(id)
         subject = URIRef(c.uri)
@@ -128,6 +133,7 @@ def _rdf_dumper(provider, id_list=None):
 
     return graph
 
+
 def rdf_conceptscheme_dumper(provider):
     '''
     Dump all information of the conceptscheme of a provider to a format that can be passed to a
@@ -142,7 +148,7 @@ def rdf_conceptscheme_dumper(provider):
     graph.namespace_manager.bind("skos", SKOS)
     graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
-    conceptscheme=URIRef(provider.concept_scheme.uri)
+    conceptscheme = URIRef(provider.concept_scheme.uri)
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
@@ -151,6 +157,7 @@ def rdf_conceptscheme_dumper(provider):
         graph.add((conceptscheme, SKOS.hasTopConcept, URIRef(c['uri'])))
 
     return graph
+
 
 def _warning(id):
     return 'id %s could not be resolved' % id

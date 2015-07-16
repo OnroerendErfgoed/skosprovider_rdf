@@ -209,7 +209,7 @@ class RDFProviderUtilsTests(unittest.TestCase):
             xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
 
-    def test_dump_tree_to_rdf(self):
+    def test_dump_tree_to_rdf_2(self):
         graph_dump = utils.rdf_dumper(self.tree_provider2)
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
         if isinstance(xml, bytes):
@@ -220,8 +220,10 @@ class RDFProviderUtilsTests(unittest.TestCase):
         graph_dump1 = utils.rdf_c_dumper(self.tree_provider, 1)
         provider = RDFProvider(
             {'id': 'Number1'}, graph_dump1)
-        graph_dump2 = utils.rdf_dumper(provider)
+        graph_dump2 = utils.rdf_c_dumper(provider, 1)
+        graph_full_dump2 = utils.rdf_dumper(provider)
         self.assertEquals(len(graph_dump1), len(graph_dump2))
+        self.assertGreater(graph_full_dump2, graph_dump2)
 
     def test_dump_conceptscheme_tree_to_rdf(self):
         graph_dump = utils.rdf_conceptscheme_dumper(self.tree_provider)

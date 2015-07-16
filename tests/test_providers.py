@@ -1,8 +1,19 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 import os
+import sys
 
 from rdflib import Graph
 from skosprovider.skos import Note, Collection
+from skosprovider.utils import dict_dumper
+
+PY3 = sys.version_info[0] == 3
+
+if PY3:  # pragma: no cover
+    text_type = str
+else:  # pragma: no cover
+    text_type = unicode
 
 
 
@@ -30,21 +41,26 @@ class RDFProviderTests(unittest.TestCase):
 
     def _create_test_data(self):
         self.products_graph = Graph()
-        filepath=os.path.dirname(os.path.realpath(__file__))
-        abspath=os.path.abspath(filepath + "/data/simple_turtle_products")
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/simple_turtle_products")
         self.products_graph.parse(abspath, format="turtle")
 
-        self.u_products="http://www.products.com/"
-        self.u_jewellery="http://www.products.com/Jewellery"
-        self.u_perfume="http://www.products.com/Perfume"
-        self.u_product="http://www.products.com/Product"
-        self.u_stuff="http://www.products.com/Stuff"
-        self.u_unexistingProduct="http://www.products.com/UnexistingProduct"
+        self.u_products = "http://www.products.com/"
+        self.u_jewellery = "http://www.products.com/Jewellery"
+        self.u_perfume = "http://www.products.com/Perfume"
+        self.u_product = "http://www.products.com/Product"
+        self.u_stuff = "http://www.products.com/Stuff"
+        self.u_unexistingProduct = "http://www.products.com/UnexistingProduct"
 
         self.toepassingen_graph = Graph()
-        filepath=os.path.dirname(os.path.realpath(__file__))
-        abspath=os.path.abspath(filepath + "/data/toepassingen.xml")
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/toepassingen.xml")
         self.toepassingen_graph.parse(abspath, format="application/rdf+xml")
+
+        self.trees_graph = Graph()
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/trees.xml")
+        self.trees_graph.parse(abspath, format="application/rdf+xml")
 
     def test_include(self):
         return
@@ -58,8 +74,8 @@ class RDFProviderTests(unittest.TestCase):
 
     def test_too_many_conceptscheme(self):
         self.toepassingen_graph = Graph()
-        filepath=os.path.dirname(os.path.realpath(__file__))
-        abspath=os.path.abspath(filepath + "/data/schemes.xml")
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/schemes.xml")
         self.toepassingen_graph.parse(abspath, format="application/rdf+xml")
         with self.assertRaises(RuntimeError):
             self.toepassingen_provider = RDFProvider(
@@ -193,5 +209,26 @@ class RDFProviderTests(unittest.TestCase):
     def test_no_literal(self):
         self.assertIsNone(self.products_provider._get_language_from_literal("test"))
 
+    def test_rdf_provider_list(self):
+        rdf_prov = RDFProvider(
+            {'id': 'TREES'},
+            self.trees_graph
+        )
 
+        dump = dict_dumper(rdf_prov)
 
+        self.assertEqual(len(dump), 3)
+        obj_1 = [item for item in dump if item['uri'] == 'http://id.trees.org/2'][0]
+        self.assertEqual(obj_1['broader'], [])
+        self.assertEqual(obj_1['id'], '2')
+        self.assertEqual(obj_1['member_of'], ['3'])
+        self.assertEqual(obj_1['narrower'], [])
+        label_en = [label for label in obj_1['labels'] if label['language'] == 'en'][0]
+        self.assertDictEqual(label_en, {'label': 'The Chestnut', 'language': 'en', 'type': 'prefLabel'})
+        label_nl = [label for label in obj_1['labels'] if label['language'] == 'nl'][0]
+        self.assertDictEqual(label_nl, {'label': 'De Paardekastanje', 'language': 'nl', 'type': 'altLabel'})
+        label_fr = [label for label in obj_1['labels'] if label['language'] == 'fr'][0]
+        self.assertEqual(type(label_fr['label']), text_type)
+        self.assertDictEqual(label_fr, {'label': u'la châtaigne', 'language': 'fr', 'type': 'altLabel'})
+        self.assertDictEqual(obj_1['notes'][0],
+                             {'language': 'en', 'note': 'A different type of tree.', 'type': 'definition'})

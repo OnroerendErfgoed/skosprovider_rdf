@@ -9,6 +9,7 @@ This module contains an RDFProvider, an implementation of the
 import logging
 import rdflib
 from rdflib.term import Literal, URIRef
+from skosprovider_rdf.utils import text_
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ class RDFProvider(MemoryProvider):
     def _cs_from_graph(self, metadata):
         cslist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.ConceptScheme)):
-            uri = str(sub)
+            uri = self.to_text(sub)
             cs = ConceptScheme(uri=uri)
             cs.labels = self._create_from_subject_typelist(sub, Label.valid_types)
             cs.notes = self._create_from_subject_typelist(sub, Note.valid_types)
@@ -68,7 +69,7 @@ class RDFProvider(MemoryProvider):
     def _from_graph(self):
         clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
-            uri = str(sub)
+            uri = self.to_text(sub)
             con = Concept(self._get_id_for_subject(sub, uri), uri=uri)
             con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
             con.narrower = self._create_from_subject_predicate(sub, SKOS.narrower)
@@ -84,7 +85,7 @@ class RDFProvider(MemoryProvider):
             clist.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
-            uri = str(sub)
+            uri = self.to_text(sub)
             col = Collection(self._get_id_for_subject(sub, uri), uri=uri)
             col.members = self._create_from_subject_predicate(sub, SKOS.member)
             col.labels = self._create_from_subject_typelist(sub, Label.valid_types)
@@ -115,9 +116,9 @@ class RDFProvider(MemoryProvider):
         for stmt in self.graph:
             print(stmt)
         if (subject, DCTERMS.identifier, None) in self.graph:
-            return self.graph.value(subject=subject, predicate=DCTERMS.identifier, any=False)
+            return self.to_text(self.graph.value(subject=subject, predicate=DCTERMS.identifier, any=False))
         elif (subject, DC.identifier, None) in self.graph:
-            return self.graph.value(subject=subject, predicate=DC.identifier, any=False)
+            return self.to_text(self.graph.value(subject=subject, predicate=DC.identifier, any=False))
         else:
             return uri
 
@@ -130,8 +131,7 @@ class RDFProvider(MemoryProvider):
             elif Note.is_valid_type(type):
                 o = self._create_note(o, type)
             else:
-                #o = str(o)
-                o = self._get_id_for_subject(o, str(o))
+                o = self._get_id_for_subject(o, self.to_text(o))
             list.append(o)
         return list
 
@@ -140,20 +140,26 @@ class RDFProvider(MemoryProvider):
             raise ValueError(
                 'Type of Label is not valid.'
             )
-        return Label(str(literal.encode('utf-8')), type, self._get_language_from_literal(literal))
+        return Label(self.to_text(literal), type, self._get_language_from_literal(literal))
 
     def _create_note(self, literal, type):
         if not Note.is_valid_type(type):
             raise ValueError(
                 'Type of Note is not valid.'
             )
-        return Note(str(literal.encode('utf-8')), type, self._get_language_from_literal(literal))
+        return Note(self.to_text(literal), type, self._get_language_from_literal(literal))
 
     def _get_language_from_literal(self, data):
         if not isinstance(data, Literal):
             return None
         if data.language is None:
             return None
-        return data.language.encode("utf-8")
+        return self.to_text(data.language)
 
-
+    def to_text(self, data):
+        """
+        data of binary type or literal type that needs to be converted to text.
+        :param data
+        :return: text representation of the data
+        """
+        return text_(data.encode('utf-8'), 'utf-8')

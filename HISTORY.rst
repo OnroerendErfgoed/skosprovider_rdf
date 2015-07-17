@@ -1,3 +1,10 @@
+0.4.1 (17-07-2015)
+------------------
+
+- RDF dump: Add the top concepts and the conceptscheme identifier in the full RDF dump
+  (equal to the RDF conceptscheme dump).
+- RDF provider: literal and binary type to text when parsing the graph to a list.
+
 0.4.0 (03-03-2015)
 ------------------
 

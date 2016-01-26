@@ -75,6 +75,7 @@ def _rdf_dumper(provider, id_list=None):
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
+    _add_sources(graph, provider.concept_scheme, conceptscheme)
     # Add triples using store's add method.
     if not id_list:
         id_list = [x['id'] for x in provider.get_all()]
@@ -87,6 +88,7 @@ def _rdf_dumper(provider, id_list=None):
         graph.add((subject, SKOS.inScheme, conceptscheme))
         _add_labels(graph, c, subject)
         _add_notes(graph, c, subject)
+        _add_sources(graph, c, subject)
         if isinstance(c, Concept):
             graph.add((subject, RDF.type, SKOS.Concept))
             for b in c.broader:
@@ -176,6 +178,20 @@ def _add_notes(graph, c, subject):
         lang = extract_language(n.language)
         graph.add((subject, predicate, Literal(n.note, lang=lang)))
 
+def _add_sources(graph, c, subject):
+    '''
+    Add sources to the RDF graph.
+
+    :param rdflib.graph.Graph graph: An RDF Graph.
+    :param c: A :class:`skosprovider.skos.ConceptScheme`, 
+        :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection`
+    :param subject: The RDF subject to add the sources to.
+    '''
+    for s in c.sources:
+        source = BNode()
+        graph.add((source, RDF.type, DCTERMS.BibliographicResource))
+        graph.add((source, DCTERMS.bibliographicCitation, s.citation))
+        graph.add((subject, DCTERMS.source, source))
 
 def extract_language(lang):
     if lang is None:

@@ -195,7 +195,7 @@ class RDFProviderTests(unittest.TestCase):
         self.assertEquals(3, len(all))
 
     def test_expand_concept(self):
-        ids = self.products_provider.expand_concept(self.u_product)
+        ids = self.products_provider.expand(self.u_product)
         self.assertIn(self.u_perfume, ids)
 
     def test_expand_collection(self):
@@ -230,5 +230,12 @@ class RDFProviderTests(unittest.TestCase):
         label_fr = [label for label in obj_1['labels'] if label['language'] == 'fr'][0]
         self.assertEqual(type(label_fr['label']), text_type)
         self.assertDictEqual(label_fr, {'label': u'la châtaigne', 'language': 'fr', 'type': 'altLabel'})
-        self.assertDictEqual(obj_1['notes'][0],
-                             {'language': 'en', 'note': 'A different type of tree.', 'type': 'definition'})
+        self.assertDictEqual(
+            obj_1['notes'][0],
+            {
+                'language': 'en',
+                'note': 'A different type of tree.',
+                'type': 'definition',
+                'markup': None
+            }
+        )

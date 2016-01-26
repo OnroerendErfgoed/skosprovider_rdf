@@ -239,3 +239,10 @@ class RDFProviderTests(unittest.TestCase):
                 'markup': None
             }
         )
+        larch = [item for item in dump if item['uri'] == 'http://id.trees.org/1'][0]
+        self.assertDictEqual(
+            larch['sources'][0],
+            {
+                'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.'
+            }
+        )

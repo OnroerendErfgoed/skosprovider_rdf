@@ -5,15 +5,14 @@ This module contains utility functions for dealing with skos providers.
 from __future__ import unicode_literals
 import logging
 import warnings
-import rdflib
 import sys
 
 log = logging.getLogger(__name__)
 
-from rdflib import Graph, Literal
-from rdflib.term import URIRef
+from rdflib import Graph, Literal, Namespace
+from rdflib.term import URIRef, BNode
 from rdflib.namespace import RDF, SKOS, DCTERMS
-SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
+SKOS_THES = Namespace('http://purl.org/iso25964/skos-thes#')
 from skosprovider.skos import (
     Concept,
     Collection
@@ -154,6 +153,7 @@ def rdf_conceptscheme_dumper(provider):
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
+    _add_sources(graph, provider.concept_scheme, conceptscheme)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
     for c in provider.get_top_concepts():
         graph.add((conceptscheme, SKOS.hasTopConcept, URIRef(c['uri'])))
@@ -190,7 +190,7 @@ def _add_sources(graph, c, subject):
     for s in c.sources:
         source = BNode()
         graph.add((source, RDF.type, DCTERMS.BibliographicResource))
-        graph.add((source, DCTERMS.bibliographicCitation, s.citation))
+        graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation)))
         graph.add((subject, DCTERMS.source, source))
 
 def extract_language(lang):

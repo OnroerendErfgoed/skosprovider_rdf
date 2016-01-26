@@ -52,7 +52,10 @@ class RDFProviderUtilsTests(unittest.TestCase):
             'narrower': [],
             'broader': [],
             'related': [],
-            'member_of': ['3']
+            'member_of': ['3'],
+            'sources': [
+                {'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.'}
+            ]
         }
         self.chestnut_dump = {
             'id': '2',

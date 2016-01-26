@@ -22,7 +22,8 @@ from skosprovider.skos import (
     Collection,
     ConceptScheme,
     Label,
-    Note
+    Note,
+    Source
 )
 
 from rdflib.namespace import RDF, SKOS, DC, DCTERMS
@@ -52,6 +53,7 @@ class RDFProvider(MemoryProvider):
             cs = ConceptScheme(uri=uri)
             cs.labels = self._create_from_subject_typelist(sub, Label.valid_types)
             cs.notes = self._create_from_subject_typelist(sub, Note.valid_types)
+            cs.source = self._create_sources(sub)
             cslist.append(cs)
         if len(cslist) == 0:
             return ConceptScheme(
@@ -76,6 +78,7 @@ class RDFProvider(MemoryProvider):
             con.related = self._create_from_subject_predicate(sub, SKOS.related)
             con.notes = self._create_from_subject_typelist(sub, Note.valid_types)
             con.labels = self._create_from_subject_typelist(sub, Label.valid_types)
+            con.sources = self._create_sources(sub)
             con.subordinate_arrays = self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray)
             for k in con.matches.keys():
                 con.matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS + k +'Match'))
@@ -90,6 +93,7 @@ class RDFProvider(MemoryProvider):
             col.members = self._create_from_subject_predicate(sub, SKOS.member)
             col.labels = self._create_from_subject_typelist(sub, Label.valid_types)
             col.notes = self._create_from_subject_typelist(sub, (Note.valid_types))
+            con.sources = self._create_sources(sub)
             col.superordinates = self._create_from_subject_predicate(sub, SKOS_THES.superOrdinate)
             col.concept_scheme = self.concept_scheme
             col.member_of = []
@@ -148,6 +152,19 @@ class RDFProvider(MemoryProvider):
                 'Type of Note is not valid.'
             )
         return Note(self.to_text(literal), type, self._get_language_from_literal(literal))
+
+    def _create_sources(self, subject):
+        '''
+        Create the sources for this subject.
+
+        :param subject: Subject to get the sources for.
+        :returns: A :class:`list` of :class:`skosprovider.skos.Source` objects.
+        '''
+        list = []
+        for s, p, o in self.graph.triples((subject, DCTERMS.source, None)):
+            for si, pi, oi in self.graph.triples((o, DCTERMS.bibliographicCitation, None)):
+                list.append(Source(self.to_text(oi)))
+        return list
 
     def _get_language_from_literal(self, data):
         if not isinstance(data, Literal):

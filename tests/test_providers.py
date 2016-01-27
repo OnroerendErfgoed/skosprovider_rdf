@@ -4,9 +4,11 @@ import unittest
 import os
 import sys
 
-from rdflib import Graph
 from skosprovider.skos import Note, Collection
 from skosprovider.utils import dict_dumper
+
+from rdflib import Graph
+from skosprovider_rdf.providers import RDFProvider
 
 PY3 = sys.version_info[0] == 3
 
@@ -14,11 +16,6 @@ if PY3:  # pragma: no cover
     text_type = str
 else:  # pragma: no cover
     text_type = unicode
-
-
-
-#unittest.TestCase
-from skosprovider_rdf.providers import RDFProvider
 
 
 class RDFProviderTests(unittest.TestCase):
@@ -214,7 +211,6 @@ class RDFProviderTests(unittest.TestCase):
             {'id': 'TREES'},
             self.trees_graph
         )
-
         dump = dict_dumper(rdf_prov)
 
         self.assertEqual(len(dump), 3)
@@ -240,9 +236,6 @@ class RDFProviderTests(unittest.TestCase):
             }
         )
         larch = [item for item in dump if item['uri'] == 'http://id.trees.org/1'][0]
-        self.assertDictEqual(
-            larch['sources'][0],
-            {
+        assert {
                 'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.'
-            }
-        )
+            } in larch['sources']

@@ -72,31 +72,38 @@ class RDFProvider(MemoryProvider):
         clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
             uri = self.to_text(sub)
-            con = Concept(self._get_id_for_subject(sub, uri), uri=uri)
-            con.broader = self._create_from_subject_predicate(sub, SKOS.broader)
-            con.narrower = self._create_from_subject_predicate(sub, SKOS.narrower)
-            con.related = self._create_from_subject_predicate(sub, SKOS.related)
-            con.notes = self._create_from_subject_typelist(sub, Note.valid_types)
-            con.labels = self._create_from_subject_typelist(sub, Label.valid_types)
-            con.sources = self._create_sources(sub)
-            con.subordinate_arrays = self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray)
-            for k in con.matches.keys():
-                con.matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS + k +'Match'))
-            self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray)
-            con.concept_scheme = self.concept_scheme
-            con.member_of = []
+            matches = {}
+            for k in Concept.matchtypes:
+                matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS + k +'Match'))
+            con = Concept(
+                id = self._get_id_for_subject(sub, uri), 
+                uri=uri,
+                concept_scheme = self.concept_scheme,
+                labels = self._create_from_subject_typelist(sub, Label.valid_types),
+                notes = self._create_from_subject_typelist(sub, Note.valid_types),
+                sources = self._create_sources(sub),
+                broader = self._create_from_subject_predicate(sub, SKOS.broader),
+                narrower = self._create_from_subject_predicate(sub, SKOS.narrower),
+                related = self._create_from_subject_predicate(sub, SKOS.related),
+                member_of = [],
+                subordinate_arrays = self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray),
+                matches = matches
+            )
             clist.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
             uri = self.to_text(sub)
-            col = Collection(self._get_id_for_subject(sub, uri), uri=uri)
-            col.members = self._create_from_subject_predicate(sub, SKOS.member)
-            col.labels = self._create_from_subject_typelist(sub, Label.valid_types)
-            col.notes = self._create_from_subject_typelist(sub, (Note.valid_types))
-            con.sources = self._create_sources(sub)
-            col.superordinates = self._create_from_subject_predicate(sub, SKOS_THES.superOrdinate)
-            col.concept_scheme = self.concept_scheme
-            col.member_of = []
+            col = Collection(
+                id=self._get_id_for_subject(sub, uri), 
+                uri=uri,
+                concept_scheme = self.concept_scheme,
+                labels = self._create_from_subject_typelist(sub, Label.valid_types),
+                notes = self._create_from_subject_typelist(sub, (Note.valid_types)),
+                sources = self._create_sources(sub),
+                members = self._create_from_subject_predicate(sub, SKOS.member),
+                member_of = [],
+                superordinates = self._create_from_subject_predicate(sub, SKOS_THES.superOrdinate)
+            )
             clist.append(col)
         self._fill_member_of(clist)
         return clist
@@ -160,11 +167,11 @@ class RDFProvider(MemoryProvider):
         :param subject: Subject to get the sources for.
         :returns: A :class:`list` of :class:`skosprovider.skos.Source` objects.
         '''
-        list = []
+        ret = []
         for s, p, o in self.graph.triples((subject, DCTERMS.source, None)):
             for si, pi, oi in self.graph.triples((o, DCTERMS.bibliographicCitation, None)):
-                list.append(Source(self.to_text(oi)))
-        return list
+                ret.append(Source(self.to_text(oi)))
+        return ret
 
     def _get_language_from_literal(self, data):
         if not isinstance(data, Literal):

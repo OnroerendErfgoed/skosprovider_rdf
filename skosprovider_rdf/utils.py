@@ -75,6 +75,7 @@ def _rdf_dumper(provider, id_list=None):
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     _add_sources(graph, provider.concept_scheme, conceptscheme)
+    _add_languages(graph, provider.concept_scheme, conceptscheme)
     # Add triples using store's add method.
     if not id_list:
         id_list = [x['id'] for x in provider.get_all()]
@@ -154,6 +155,7 @@ def rdf_conceptscheme_dumper(provider):
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     _add_sources(graph, provider.concept_scheme, conceptscheme)
+    _add_languages(graph, provider.concept_scheme, conceptscheme)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
     for c in provider.get_top_concepts():
         graph.add((conceptscheme, SKOS.hasTopConcept, URIRef(c['uri'])))
@@ -192,6 +194,18 @@ def _add_sources(graph, c, subject):
         graph.add((source, RDF.type, DCTERMS.BibliographicResource))
         graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation)))
         graph.add((subject, DCTERMS.source, source))
+
+def _add_languages(graph, c, subject):
+    '''
+    Add languages to the RDF graph.
+
+    :param rdflib.graph.Graph graph: An RDF Graph.
+    :param c: A :class:`skosprovider.skos.ConceptScheme`.
+    :param subject: The RDF subject to add the sources to.
+    '''
+    for l in c.languages:
+        lang = extract_language(l)
+        graph.add((subject, DCTERMS.language, Literal(l)))
 
 def extract_language(lang):
     if lang is None:

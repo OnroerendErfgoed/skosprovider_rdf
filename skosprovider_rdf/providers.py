@@ -29,6 +29,8 @@ from skosprovider.skos import (
 from rdflib.namespace import RDF, SKOS, DC, DCTERMS
 SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
 
+from language_tags import tags
+
 
 class RDFProvider(MemoryProvider):
     '''
@@ -54,7 +56,8 @@ class RDFProvider(MemoryProvider):
                 uri=uri,
                 labels = self._create_from_subject_typelist(sub, Label.valid_types),
                 notes = self._create_from_subject_typelist(sub, Note.valid_types),
-                sources = self._create_sources(sub)
+                sources = self._create_sources(sub),
+                languages = self._create_languages(sub)
             )
             cslist.append(cs)
         if len(cslist) == 0:
@@ -175,12 +178,33 @@ class RDFProvider(MemoryProvider):
                 ret.append(Source(self.to_text(oi)))
         return ret
 
+    def _create_languages(self, subject):
+        '''
+        Create the languages for this subject.
+
+        :param subject: Subject to get the sources for.
+        :returns: A :class:`list` of IANA language tags.
+        '''
+        ret = set()
+        for s, p, o in self.graph.triples((subject, DCTERMS.language, None)):
+            ret.add(self.to_text(self._scrub_language(o)))
+        for s, p, o in self.graph.triples((subject, DC.language, None)):
+            ret.add(self.to_text(self._scrub_language(o)))
+        return ret
+
+    def _scrub_language(self, language):
+        if tags.check(language):
+            return language
+        else:
+            log.warn('Encountered an invalid language %s. Falling back to "und".' % language)
+            return 'und'
+
     def _get_language_from_literal(self, data):
         if not isinstance(data, Literal):
             return None
         if data.language is None:
             return None
-        return self.to_text(data.language)
+        return self.to_text(self._scrub_language(data.language))
 
     def to_text(self, data):
         """

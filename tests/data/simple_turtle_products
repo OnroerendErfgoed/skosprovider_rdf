@@ -1,11 +1,16 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
 @prefix ex: <http://www.products.com/>.
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
 
 ex:Scheme rdf:type owl:Class;
   a skos:ConceptScheme;
-  skos:prefLabel "Products"@en.
+  skos:prefLabel "Products"@en;
+  dct:language "en";
+  dct:language "nl";
+  dc:language "BE-nl-Latn".
 
 ex:Stuff rdf:type owl:Class;
   a skos:Collection;

@@ -66,8 +66,11 @@ class RDFProviderTests(unittest.TestCase):
         self.assertEquals('PRODUCTS', self.products_provider.get_vocabulary_id())
 
     def test_conceptscheme(self):
-        assert self.u_products + 'Scheme' == self.products_provider.concept_scheme.uri
-        assert self.products_provider.concept_scheme.label('en') is not None
+        cs = self.products_provider.concept_scheme
+
+        assert cs.uri == self.u_products + 'Scheme'
+        assert cs.label('en') is not None
+        assert len(cs.languages) == 3
 
     def test_too_many_conceptscheme(self):
         self.toepassingen_graph = Graph()

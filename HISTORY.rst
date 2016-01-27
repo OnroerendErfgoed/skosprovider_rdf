@@ -2,6 +2,9 @@
 ------------------
 
 - Add official python 3.5 compatibility.
+- Add support for sources when dumping to RDF and reading from RDF. (#17)
+- Add support for languages to conceptschemes when dumping to and reading from
+  RDF. (#16)
 
 0.4.1 (17-07-2015)
 ------------------

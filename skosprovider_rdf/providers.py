@@ -50,10 +50,12 @@ class RDFProvider(MemoryProvider):
         cslist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.ConceptScheme)):
             uri = self.to_text(sub)
-            cs = ConceptScheme(uri=uri)
-            cs.labels = self._create_from_subject_typelist(sub, Label.valid_types)
-            cs.notes = self._create_from_subject_typelist(sub, Note.valid_types)
-            cs.source = self._create_sources(sub)
+            cs = ConceptScheme(
+                uri=uri,
+                labels = self._create_from_subject_typelist(sub, Label.valid_types),
+                notes = self._create_from_subject_typelist(sub, Note.valid_types),
+                sources = self._create_sources(sub)
+            )
             cslist.append(cs)
         if len(cslist) == 0:
             return ConceptScheme(

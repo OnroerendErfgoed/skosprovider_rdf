@@ -18,7 +18,8 @@ packages = [
 
 requires = [
     'skosprovider>=0.5.0',
-    'rdflib'
+    'rdflib',
+    'html5lib'
 ]
 
 setup(

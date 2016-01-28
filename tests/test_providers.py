@@ -229,16 +229,31 @@ class RDFProviderTests(unittest.TestCase):
         label_fr = [label for label in obj_1['labels'] if label['language'] == 'fr'][0]
         self.assertEqual(type(label_fr['label']), text_type)
         self.assertDictEqual(label_fr, {'label': u'la châtaigne', 'language': 'fr', 'type': 'altLabel'})
-        self.assertDictEqual(
-            obj_1['notes'][0],
-            {
+        assert {
                 'language': 'en',
-                'note': 'A different type of tree.',
+                'note': '<p>A different type of tree.</p>',
                 'type': 'definition',
-                'markup': None
-            }
-        )
+                'markup': 'HTML'
+            } in obj_1['notes']
+        assert {
+                'language': 'und',
+                'note': 'Een ander soort boom.',
+                'type': 'definition',
+                'markup': 'HTML'
+            } in obj_1['notes']
         larch = [item for item in dump if item['uri'] == 'http://id.trees.org/1'][0]
         assert {
                 'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.'
             } in larch['sources']
+        assert {
+                'language': 'en',
+                'note': 'A type of tree.',
+                'type': 'definition',
+                'markup': None
+            } in larch['notes']
+        assert {
+                'language': 'nl',
+                'note': '<p>Een soort boom.</p>',
+                'type': 'definition',
+                'markup': 'HTML'
+            } in larch['notes']

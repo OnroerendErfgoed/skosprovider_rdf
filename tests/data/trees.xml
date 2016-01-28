@@ -10,6 +10,7 @@
     <skos:prefLabel xml:lang="en">The Larch</skos:prefLabel>
     <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
     <skos:definition xml:lang="en">A type of tree.</skos:definition>
+    <skos:definition rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"><![CDATA[<p xml:lang="nl">Een soort boom.</p>]]></skos:definition>
     <skos:prefLabel xml:lang="nl">De Lariks</skos:prefLabel>
     <dcterms:source>
         <dcterms:BibliographicResource>
@@ -31,7 +32,8 @@
     <skos:inScheme rdf:resource="urn:x-skosprovider:tree"/>
     <skos:altLabel xml:lang="fr">la châtaigne</skos:altLabel>
     <skos:prefLabel xml:lang="en">The Chestnut</skos:prefLabel>
-    <skos:definition xml:lang="en">A different type of tree.</skos:definition>
+    <skos:definition rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"><![CDATA[<p xml:lang="en">A different type of tree.</p>]]></skos:definition>
+    <skos:definition rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"><![CDATA[Een ander soort boom.]]></skos:definition>
     <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
     <dcterms:identifier>2</dcterms:identifier>
   </rdf:Description>

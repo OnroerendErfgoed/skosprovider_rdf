@@ -277,3 +277,6 @@ def _df_writexml(self, writer, indent="", addindent="", newl=""):
         else:
             for node in self.childNodes:
                 node.writexml(writer, indent+addindent, addindent, newl)
+
+from xml.dom.minidom import DocumentFragment
+DocumentFragment.writexml = _df_writexml

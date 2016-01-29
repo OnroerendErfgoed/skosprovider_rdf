@@ -3,10 +3,22 @@ import unittest
 import os
 from rdflib import Graph
 from rdflib.namespace import RDF, SKOS
+from rdflib.term import URIRef, Literal
+
 from skosprovider.providers import DictionaryProvider
+from skosprovider.skos import (
+    ConceptScheme,
+    Label,
+    Note
+)
+
 from skosprovider_rdf.providers import RDFProvider
 from skosprovider_rdf import utils
-from rdflib.term import URIRef
+
+from skosprovider_rdf.utils import _add_lang_to_html
+
+import logging
+log = logging.getLogger(__name__)
 
 
 # unittest.TestCase
@@ -45,9 +57,16 @@ class RDFProviderUtilsTests(unittest.TestCase):
                 {'type': 'prefLabel', 'language': 'nl', 'label': 'De Lariks'}
             ],
             'notes': [
-                {'type': 'definition',
-                 'language': 'en',
-                 'note': 'A type of tree.'}
+                {
+                    'type': 'definition',
+                    'language': 'en',
+                    'note': 'A type of tree.'
+                }, {
+                    'type': 'definition',
+                    'language': 'nl',
+                    'note': '<p>Een soort boom.</p>',
+                    'markup': 'HTML'
+                }
             ],
             'narrower': [],
             'broader': [],
@@ -143,8 +162,28 @@ class RDFProviderUtilsTests(unittest.TestCase):
             'subordinate_arrays': []
         }
 
-        self.tree_provider = DictionaryProvider({'id': 'TREE'},
-                                                [self.larch_dump, self.chestnut_dump, self.species_dump])
+        self.tree_provider = DictionaryProvider(
+            {'id': 'TREE'},
+            [self.larch_dump, self.chestnut_dump, self.species_dump],
+            concept_scheme=ConceptScheme(
+                uri='http://id.trees.org',
+                labels=[
+                    Label(
+                        'Pythonic trees.',
+                        type='prefLabel',
+                        language='en'
+                    )
+                ],
+                notes=[
+                    Note(
+                        '<p>Trees as used by Monthy Python.</p>',
+                        type='definition',
+                        language='en',
+                        markup='HTML'
+                    )
+                ]
+            )
+        )
         self.tree_provider2 = DictionaryProvider({'id': 'TREE'},
                                                 [self.oak_dump, self.chestnut_dump, self.species_dump])
         self.world_provider = DictionaryProvider({'id': 'WORLD'}, [self.world_dump])
@@ -207,6 +246,10 @@ class RDFProviderUtilsTests(unittest.TestCase):
 
     def test_dump_one_id_to_rdf(self):
         graph_dump = utils.rdf_c_dumper(self.tree_provider, 1)
+        cs = URIRef('http://id.trees.org')
+        assert (cs, RDF.type, SKOS.ConceptScheme) in graph_dump
+        assert (cs, SKOS.definition, Literal('<p xml:lang="en">Trees as used by Monthy Python.</p>', datatype=RDF.HTML)) in graph_dump
+        assert (cs, SKOS.prefLabel, Literal('Pythonic trees.', lang='en')) in graph_dump
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
         if isinstance(xml, bytes):
             xml = xml.decode("UTF-8")
@@ -225,15 +268,45 @@ class RDFProviderUtilsTests(unittest.TestCase):
             {'id': 'Number1'}, graph_dump1)
         graph_dump2 = utils.rdf_c_dumper(provider, 1)
         graph_full_dump2 = utils.rdf_dumper(provider)
-        self.assertEquals(len(graph_dump1), len(graph_dump2))
-        self.assertGreater(graph_full_dump2, graph_dump2)
+        assert len(graph_dump1) ==  len(graph_dump2)
+        assert len(graph_full_dump2) > len(graph_dump2)
 
     def test_dump_conceptscheme_tree_to_rdf(self):
         graph_dump = utils.rdf_conceptscheme_dumper(self.tree_provider)
-        xml = graph_dump.serialize(format='xml', encoding="UTF-8")
-        if isinstance(xml, bytes):
-            xml = xml.decode("UTF-8")
-        self.assertEquals("<?xml", xml[:5])
+        cs = URIRef('http://id.trees.org')
+        assert (cs, RDF.type, SKOS.ConceptScheme) in graph_dump
+        assert (cs, SKOS.definition, Literal('<p xml:lang="en">Trees as used by Monthy Python.</p>', datatype=RDF.HTML)) in graph_dump
+        assert (cs, SKOS.prefLabel, Literal('Pythonic trees.', lang='en')) in graph_dump
 
     def test_include_me(self):
         return
+
+
+class TestHtml:
+
+    def test_lang_und(self):
+        assert '' == _add_lang_to_html('', 'und')
+        assert '<p></p>' == _add_lang_to_html('<p></p>', 'und')
+
+    def test_lang_no_html(self):
+        assert '<div xml:lang="en"></div>' == _add_lang_to_html('', 'en')
+
+    def test_no_single_child(self):
+        html = '<p>Paragraph 1</p><p>Paragraph2</p>'
+        assert '<div xml:lang="en"><p>Paragraph 1</p><p>Paragraph2</p></div>' == _add_lang_to_html(html, 'en')
+
+    def test_text_node(self):
+        html = 'Something'
+        assert '<div xml:lang="en">Something</div>' == _add_lang_to_html(html, 'en')
+
+    def test_single_child_no_attributes(self):
+        html = '<p>Paragraph 1</p>'
+        assert '<p xml:lang="en">Paragraph 1</p>' == _add_lang_to_html(html, 'en')
+
+    def test_single_child_already_has_langs(self):
+        html = '<p xml:lang="en">Paragraph 1</p>'
+        assert '<p xml:lang="en">Paragraph 1</p>' == _add_lang_to_html(html, 'en')
+
+    def test_single_child_other_attributes(self):
+        html = '<p class="something">Paragraph 1</p>'
+        assert '<p class="something" xml:lang="en">Paragraph 1</p>' == _add_lang_to_html(html, 'en')

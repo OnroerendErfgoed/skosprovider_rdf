@@ -9,9 +9,10 @@ This module contains an RDFProvider, an implementation of the
 import logging
 import rdflib
 from rdflib.term import Literal, URIRef
-from skosprovider_rdf.utils import text_
+from skosprovider_rdf.utils import text_, _df_writexml
 
 log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 from skosprovider.providers import MemoryProvider
 from skosprovider.uri import (
@@ -30,6 +31,9 @@ from rdflib.namespace import RDF, SKOS, DC, DCTERMS
 SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
 
 from language_tags import tags
+
+from xml.dom.minidom import DocumentFragment
+DocumentFragment.writexml = _df_writexml
 
 
 class RDFProvider(MemoryProvider):
@@ -50,7 +54,7 @@ class RDFProvider(MemoryProvider):
 
     def _cs_from_graph(self, metadata):
         cslist = []
-        for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.ConceptScheme)):
+        for sub in self.graph.subjects(RDF.type, SKOS.ConceptScheme):
             uri = self.to_text(sub)
             cs = ConceptScheme(
                 uri=uri,
@@ -163,7 +167,16 @@ class RDFProvider(MemoryProvider):
             raise ValueError(
                 'Type of Note is not valid.'
             )
-        return Note(self.to_text(literal), type, self._get_language_from_literal(literal))
+        if literal.datatype is None:
+            return Note(self.to_text(literal), type, self._get_language_from_literal(literal), None)
+        elif literal.datatype == RDF.HTML:
+            df = literal.value.cloneNode(True)
+            if df.firstChild and df.firstChild.attributes and 'xml:lang' in df.firstChild.attributes.keys():
+                lang = self._scrub_language(df.firstChild.attributes.get('xml:lang').value)
+                del df.firstChild.attributes['xml:lang']
+            else:
+                lang = 'und'
+            return Note(self.to_text(df.toxml()), type, lang, 'HTML')
 
     def _create_sources(self, subject):
         '''

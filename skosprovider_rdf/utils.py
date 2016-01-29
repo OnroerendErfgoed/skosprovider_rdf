@@ -18,6 +18,9 @@ from skosprovider.skos import (
     Collection
 )
 
+from xml.dom.minidom import Node, Element
+import html5lib
+
 PY3 = sys.version_info[0] == 3
 
 if PY3:  # pragma: no cover
@@ -71,6 +74,7 @@ def _rdf_dumper(provider, id_list=None):
     graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme = URIRef(provider.concept_scheme.uri)
+    graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
@@ -151,12 +155,12 @@ def rdf_conceptscheme_dumper(provider):
     graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme = URIRef(provider.concept_scheme.uri)
+    graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     _add_sources(graph, provider.concept_scheme, conceptscheme)
     _add_languages(graph, provider.concept_scheme, conceptscheme)
-    graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
     for c in provider.get_top_concepts():
         graph.add((conceptscheme, SKOS.hasTopConcept, URIRef(c['uri'])))
 
@@ -178,7 +182,43 @@ def _add_notes(graph, c, subject):
     for n in c.notes:
         predicate = URIRef(SKOS + n.type)
         lang = extract_language(n.language)
-        graph.add((subject, predicate, Literal(n.note, lang=lang)))
+        if n.markup is None:
+            graph.add((subject, predicate, Literal(n.note, lang=lang)))
+        else:
+            html = _add_lang_to_html(n.note, lang)
+            graph.add((subject, predicate, Literal(html, datatype=RDF.HTML)))
+
+def _add_lang_to_html(htmltext, lang):
+    '''
+    Take a piece of HTML and add an xml:lang attribute to it.
+    '''
+    if lang == 'und':
+        return htmltext
+    parser = html5lib.HTMLParser(
+        tree=html5lib.treebuilders.getTreeBuilder("dom")
+    )
+    html = parser.parseFragment(htmltext)
+    html.normalize()
+    if len(html.childNodes) == 0:
+        return '<div xml:lang="%s"></div>' % lang
+    elif len(html.childNodes) == 1:
+        node = html.firstChild
+        if node.nodeType == Node.TEXT_NODE:
+            div = Element('div')
+            div.ownerDocument = html
+            div.setAttribute('xml:lang', lang)
+            div.childNodes = [node]
+            html.childNodes = [div]
+        else:
+            node.setAttribute('xml:lang', lang)
+    else:
+        #add a single encompassing div
+        div = Element('div')
+        div.ownerDocument = html
+        div.setAttribute('xml:lang', lang)
+        div.childNodes = html.childNodes
+        html.childNodes = [div]
+    return html.toxml()
 
 def _add_sources(graph, c, subject):
     '''
@@ -221,3 +261,19 @@ def text_(s, encoding='latin-1', errors='strict'):
     if isinstance(s, binary_type):
         return s.decode(encoding, errors)
     return s
+
+def _df_writexml(self, writer, indent="", addindent="", newl=""):
+    '''
+    Monkeypatch method for unexisting `writexml` in
+    :class:`xml.dom.minidom.DocumentFragment`.
+    '''
+    # indent = current indentation
+    # addindent = indentation to add to higher levels
+    # newl = newline string
+    if self.childNodes:
+        if (len(self.childNodes) == 1 and
+            self.childNodes[0].nodeType == Node.TEXT_NODE):
+            self.childNodes[0].writexml(writer, '', '', '')
+        else:
+            for node in self.childNodes:
+                node.writexml(writer, indent+addindent, addindent, newl)

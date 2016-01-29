@@ -54,7 +54,7 @@ class RDFProvider(MemoryProvider):
 
     def _cs_from_graph(self, metadata):
         cslist = []
-        for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.ConceptScheme)):
+        for sub in self.graph.subjects(RDF.type, SKOS.ConceptScheme):
             uri = self.to_text(sub)
             cs = ConceptScheme(
                 uri=uri,

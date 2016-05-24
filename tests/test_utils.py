@@ -2,7 +2,7 @@
 import unittest
 import os
 from rdflib import Graph
-from rdflib.namespace import RDF, SKOS
+from rdflib.namespace import RDF, SKOS, DCTERMS
 from rdflib.term import URIRef, Literal
 
 from skosprovider.providers import DictionaryProvider
@@ -104,7 +104,13 @@ class RDFProviderUtilsTests(unittest.TestCase):
             'broader': [],
             'related': [],
             'member_of': ['3'],
-            'subordinate_arrays': []
+            'subordinate_arrays': [],
+            'sources': [
+                {
+                    'citation': '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
+                    'markup': 'HTML'
+                }
+            ]
         }
         self.oak_dump = {
             'id': '4',
@@ -252,7 +258,7 @@ class RDFProviderUtilsTests(unittest.TestCase):
             xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
 
-    def test_dump_one_id_to_rdf(self):
+    def test_dump_larch_to_rdf(self):
         graph_dump = utils.rdf_c_dumper(self.tree_provider, 1)
         cs = URIRef('http://id.trees.org')
         assert (cs, RDF.type, SKOS.ConceptScheme) in graph_dump
@@ -262,6 +268,15 @@ class RDFProviderUtilsTests(unittest.TestCase):
         if isinstance(xml, bytes):
             xml = xml.decode("UTF-8")
         self.assertEquals("<?xml", xml[:5])
+
+    def test_dump_chestnut_to_rdf(self):
+        graph_dump = utils.rdf_c_dumper(self.tree_provider, 2)
+        citations = graph_dump.objects(predicate=DCTERMS.bibliographicCitation)
+        for c in citations:
+            assert Literal(
+                '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.', 
+                datatype=RDF.HTML
+            ) == c
 
     def test_dump_tree_to_rdf_2(self):
         graph_dump = utils.rdf_dumper(self.tree_provider2)

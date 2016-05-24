@@ -232,7 +232,10 @@ def _add_sources(graph, c, subject):
     for s in c.sources:
         source = BNode()
         graph.add((source, RDF.type, DCTERMS.BibliographicResource))
-        graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation)))
+        if s.markup is None:
+            graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation)))
+        else:
+            graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation, datatype=RDF.HTML)))
         graph.add((subject, DCTERMS.source, source))
 
 def _add_languages(graph, c, subject):

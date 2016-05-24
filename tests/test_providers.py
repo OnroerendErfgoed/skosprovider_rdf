@@ -82,6 +82,12 @@ class RDFProviderTests(unittest.TestCase):
                 {'id': 'TOEPASSINGEN'}, self.toepassingen_graph
             )
 
+    def test_parse_without_conceptscheme_generates_default_uri(self):
+        trees_provider = RDFProvider(
+            {'id': 'TREES'}, self.trees_graph
+        )
+        assert 'urn:x-skosprovider:trees' == trees_provider.concept_scheme.uri
+
     def test_get_concept_by_id(self):
         from skosprovider.skos import Concept
         con = self.products_provider.get_by_id(self.u_jewellery)

@@ -162,13 +162,9 @@ class RDFProvider(MemoryProvider):
             )
         return Label(self.to_text(literal), type, self._get_language_from_literal(literal))
 
-    def _create_note(self, literal, type):
-        if not Note.is_valid_type(type):
-            raise ValueError(
-                'Type of Note is not valid.'
-            )
+    def _read_markupped_literal(self, literal):
         if literal.datatype is None:
-            return Note(self.to_text(literal), type, self._get_language_from_literal(literal), None)
+            return (literal, self._get_language_from_literal(literal), None)
         elif literal.datatype == RDF.HTML:
             df = literal.value.cloneNode(True)
             if df.firstChild and df.firstChild.attributes and 'xml:lang' in df.firstChild.attributes.keys():
@@ -176,7 +172,19 @@ class RDFProvider(MemoryProvider):
                 del df.firstChild.attributes['xml:lang']
             else:
                 lang = 'und'
-            return Note(self.to_text(df.toxml()), type, lang, 'HTML')
+            return(df.toxml(), lang, 'HTML')
+        else:
+            raise ValueError(
+                'Unable to process literal of type %s.' % literal.datatype
+            )
+
+    def _create_note(self, literal, type):
+        if not Note.is_valid_type(type):
+            raise ValueError(
+                'Type of Note is not valid.'
+            )
+        l = self._read_markupped_literal(literal)
+        return Note(self.to_text(l[0]), type, l[1], l[2])
 
     def _create_sources(self, subject):
         '''
@@ -188,7 +196,12 @@ class RDFProvider(MemoryProvider):
         ret = []
         for s, p, o in self.graph.triples((subject, DCTERMS.source, None)):
             for si, pi, oi in self.graph.triples((o, DCTERMS.bibliographicCitation, None)):
-                ret.append(Source(self.to_text(oi)))
+                ret.append(
+                    Source(
+                        self.to_text(oi),
+                        'HTML' if oi.datatype == RDF.HTML else None
+                )
+                )
         return ret
 
     def _create_languages(self, subject):

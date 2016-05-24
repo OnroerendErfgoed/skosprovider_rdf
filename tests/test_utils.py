@@ -15,7 +15,10 @@ from skosprovider.skos import (
 from skosprovider_rdf.providers import RDFProvider
 from skosprovider_rdf import utils
 
-from skosprovider_rdf.utils import _add_lang_to_html
+from skosprovider_rdf.utils import (
+    _add_lang_to_html,
+    extract_language
+)
 
 import logging
 log = logging.getLogger(__name__)
@@ -172,6 +175,11 @@ class RDFProviderUtilsTests(unittest.TestCase):
                         'Pythonic trees.',
                         type='prefLabel',
                         language='en'
+                    ), 
+                    Label(
+                        'Pythonische bomen.',
+                        type='prefLabel',
+                        language=None
                     )
                 ],
                 notes=[
@@ -278,8 +286,8 @@ class RDFProviderUtilsTests(unittest.TestCase):
         assert (cs, SKOS.definition, Literal('<p xml:lang="en">Trees as used by Monthy Python.</p>', datatype=RDF.HTML)) in graph_dump
         assert (cs, SKOS.prefLabel, Literal('Pythonic trees.', lang='en')) in graph_dump
 
-    def test_include_me(self):
-        return
+    def test_extract_language_None(self):
+        assert 'und' == extract_language(None)
 
 
 class TestHtml:

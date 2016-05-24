@@ -217,16 +217,16 @@ class RDFProviderTests(unittest.TestCase):
         dump = dict_dumper(rdf_prov)
 
         self.assertEqual(len(dump), 3)
-        obj_1 = [item for item in dump if item['uri'] == 'http://id.trees.org/2'][0]
-        self.assertEqual(obj_1['broader'], [])
-        self.assertEqual(obj_1['id'], '2')
-        self.assertEqual(obj_1['member_of'], ['3'])
-        self.assertEqual(obj_1['narrower'], [])
-        label_en = [label for label in obj_1['labels'] if label['language'] == 'en'][0]
+        chestnut = [item for item in dump if item['uri'] == 'http://id.trees.org/2'][0]
+        self.assertEqual(chestnut['broader'], [])
+        self.assertEqual(chestnut['id'], '2')
+        self.assertEqual(chestnut['member_of'], ['3'])
+        self.assertEqual(chestnut['narrower'], [])
+        label_en = [label for label in chestnut['labels'] if label['language'] == 'en'][0]
         self.assertDictEqual(label_en, {'label': 'The Chestnut', 'language': 'en', 'type': 'prefLabel'})
-        label_nl = [label for label in obj_1['labels'] if label['language'] == 'nl'][0]
+        label_nl = [label for label in chestnut['labels'] if label['language'] == 'nl'][0]
         self.assertDictEqual(label_nl, {'label': 'De Paardekastanje', 'language': 'nl', 'type': 'altLabel'})
-        label_fr = [label for label in obj_1['labels'] if label['language'] == 'fr'][0]
+        label_fr = [label for label in chestnut['labels'] if label['language'] == 'fr'][0]
         self.assertEqual(type(label_fr['label']), text_type)
         self.assertDictEqual(label_fr, {'label': u'la châtaigne', 'language': 'fr', 'type': 'altLabel'})
         assert {
@@ -234,16 +234,21 @@ class RDFProviderTests(unittest.TestCase):
                 'note': '<p>A different type of tree.</p>',
                 'type': 'definition',
                 'markup': 'HTML'
-            } in obj_1['notes']
+            } in chestnut['notes']
         assert {
                 'language': 'und',
                 'note': 'Een ander soort boom.',
                 'type': 'definition',
                 'markup': 'HTML'
-            } in obj_1['notes']
+            } in chestnut['notes']
+        assert {
+                'markup': 'HTML',
+                'citation': '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.'
+        } in chestnut['sources']
         larch = [item for item in dump if item['uri'] == 'http://id.trees.org/1'][0]
         assert {
-                'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.'
+                'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.',
+                'markup': None
             } in larch['sources']
         assert {
                 'language': 'en',

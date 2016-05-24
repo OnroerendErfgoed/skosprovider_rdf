@@ -248,6 +248,9 @@ def _add_languages(graph, c, subject):
         graph.add((subject, DCTERMS.language, Literal(l)))
 
 def extract_language(lang):
+    '''
+    Turn a language in our domain model into a IANA tag.
+    '''
     if lang is None:
         lang = 'und'  # return undefined code when no language
     else:

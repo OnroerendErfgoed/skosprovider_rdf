@@ -5,7 +5,7 @@
 - Add support for sources when dumping to RDF and reading from RDF. (#17)
 - Add support for languages to conceptschemes when dumping to and reading from
   RDF. (#16)
-- Add support for HTML in SKOS notes. (#15)
+- Add support for HTML in SKOS notes and sources. (#15, #20)
 
 0.4.1 (17-07-2015)
 ------------------

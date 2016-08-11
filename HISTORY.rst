@@ -1,6 +1,7 @@
-0.5.0 (??-??-2015)
+0.5.0 (11-08-2016)
 ------------------
 
+- Compatibile with `SkosProvider 0.6.0 <http://skosprovider.readthedocs.io/en/0.6.0/>`_.
 - Add official python 3.5 compatibility.
 - Add support for sources when dumping to RDF and reading from RDF. (#17)
 - Add support for languages to conceptschemes when dumping to and reading from

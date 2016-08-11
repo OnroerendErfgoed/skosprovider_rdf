@@ -7,9 +7,9 @@ python:
  - "3.5"
 install:
  - pip install -U setuptools
- - python setup.py develop
- - pip install -U pytest pytest-cov coveralls
  - pip install -r requirements.txt
+ - pip install -U pytest pytest-cov coveralls
+ - python setup.py develop
 script:
   py.test --cov skosprovider_rdf --cov-report term-missing tests
 after_success:

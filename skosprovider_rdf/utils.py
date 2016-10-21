@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 from rdflib import Graph, Literal, Namespace
 from rdflib.term import URIRef, BNode
-from rdflib.namespace import RDF, SKOS, DCTERMS
+from rdflib.namespace import RDF, SKOS, DCTERMS, VOID
 SKOS_THES = Namespace('http://purl.org/iso25964/skos-thes#')
 from skosprovider.skos import (
     Concept,
@@ -74,6 +74,7 @@ def _rdf_dumper(provider, id_list=None):
     graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme = URIRef(provider.concept_scheme.uri)
+    _add_in_dataset(graph, conceptscheme, provider)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
@@ -88,6 +89,7 @@ def _rdf_dumper(provider, id_list=None):
     for id in id_list:
         c = provider.get_by_id(id)
         subject = URIRef(c.uri)
+        _add_in_dataset(graph, subject, provider)
         graph.add((subject, DCTERMS.identifier, Literal(c.id)))
         graph.add((subject, SKOS.inScheme, conceptscheme))
         _add_labels(graph, c, subject)
@@ -169,6 +171,12 @@ def rdf_conceptscheme_dumper(provider):
 
 def _warning(id):
     return 'id %s could not be resolved' % id
+
+
+def _add_in_dataset(graph, subject, provider):
+    duri = provider.get_metadata().get('dataset', {}).get('uri', None)
+    if duri:
+        graph.add((subject, VOID.inDataset, URIRef(duri)))
 
 
 def _add_labels(graph, c, subject):

@@ -172,7 +172,12 @@ class RDFProviderUtilsTests(unittest.TestCase):
         }
 
         self.tree_provider = DictionaryProvider(
-            {'id': 'TREE'},
+            {
+                'id': 'TREE',
+                'dataset': {
+                    'uri': 'https://id.trees.org/dataset'
+                }
+            },
             [self.larch_dump, self.chestnut_dump, self.species_dump],
             concept_scheme=ConceptScheme(
                 uri='http://id.trees.org',
@@ -288,7 +293,14 @@ class RDFProviderUtilsTests(unittest.TestCase):
     def test_dump_one_id_to_rdf_and_reload(self):
         graph_dump1 = utils.rdf_c_dumper(self.tree_provider, 1)
         provider = RDFProvider(
-            {'id': 'Number1'}, graph_dump1)
+            {
+                'id': 'Number1',
+                'dataset': {
+                    'uri': 'http://id.trees.org/dataset'
+                }
+            },
+            graph_dump1
+        )
         graph_dump2 = utils.rdf_c_dumper(provider, 1)
         graph_full_dump2 = utils.rdf_dumper(provider)
         assert len(graph_dump1) ==  len(graph_dump2)

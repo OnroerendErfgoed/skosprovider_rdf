@@ -157,6 +157,7 @@ def rdf_conceptscheme_dumper(provider):
     graph.namespace_manager.bind("dcterms", DCTERMS)
     graph.namespace_manager.bind("skos-thes", SKOS_THES)
     conceptscheme = URIRef(provider.concept_scheme.uri)
+    _add_in_dataset(graph, conceptscheme, provider)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
     graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)

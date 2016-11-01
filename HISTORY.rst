@@ -1,3 +1,9 @@
+0.6.0 (??-??-2016)
+------------------
+
+- Compatibile with `SkosProvider 0.6.1 <http://skosprovider.readthedocs.io/en/0.6.1/>`_.
+- Add information about the void.Dataset when dumping to RDF.
+
 0.5.0 (11-08-2016)
 ------------------
 

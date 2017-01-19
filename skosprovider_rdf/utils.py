@@ -184,7 +184,7 @@ def _add_in_dataset(graph, subject, provider):
     :param rdflib.graph.Graph graph: The graph to add statements to.
     :param rdflib.term.URIRef subject: The subject to add an inDataset statement to.
     :param skosprovider.providers.VocabularyProvider provider:
-    '''.
+    '''
 
     duri = provider.get_metadata().get('dataset', {}).get('uri', None)
     if duri:

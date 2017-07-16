@@ -1,4 +1,4 @@
-0.6.0 (??-??-2016)
+0.6.0 (16-07-2017)
 ------------------
 
 - Compatibile with `SkosProvider 0.6.1 <http://skosprovider.readthedocs.io/en/0.6.1/>`_.

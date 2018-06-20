@@ -4,6 +4,8 @@ import unittest
 import os
 import sys
 
+import pytest
+
 from skosprovider.skos import Note, Collection
 from skosprovider.utils import dict_dumper
 
@@ -77,10 +79,12 @@ class RDFProviderTests(unittest.TestCase):
         filepath = os.path.dirname(os.path.realpath(__file__))
         abspath = os.path.abspath(filepath + "/data/schemes.xml")
         self.toepassingen_graph.parse(abspath, format="application/rdf+xml")
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError) as exc:
             self.toepassingen_provider = RDFProvider(
                 {'id': 'TOEPASSINGEN'}, self.toepassingen_graph
             )
+        assert 'https://id.erfgoed.net/toepassingen' in str(exc.value)
+        assert 'https://id.erfgoed.net/applicaties' in str(exc.value)
 
     def test_parse_without_conceptscheme_generates_default_uri(self):
         trees_provider = RDFProvider(

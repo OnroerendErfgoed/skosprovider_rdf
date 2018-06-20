@@ -74,7 +74,8 @@ class RDFProvider(MemoryProvider):
             return cslist[0]
         else:
             raise RuntimeError(
-                'This RDF file contains more than one ConceptScheme.'
+                'This RDF file contains more than one ConceptScheme. The \
+                following schemes were found: %s' % (", ".join([str(cs.uri) for cs in cslist]))
             )
 
     def _from_graph(self):

@@ -92,6 +92,32 @@ class RDFProviderTests(unittest.TestCase):
         )
         assert 'urn:x-skosprovider:trees' == trees_provider.concept_scheme.uri
 
+    def test_pick_one_conceptscheme(self):
+        self.wb_graph = Graph()
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        self.wb_graph.parse(abspath, format="turtle")
+        self.wb_provider = RDFProvider(
+            {'id': 'WAARDETYPE'},
+            self.wb_graph,
+            concept_scheme_uri = 'https://id.erfgoed.net/thesauri/waardetypes'
+        )
+        assert 'https://id.erfgoed.net/thesauri/waardetypes' == self.wb_provider.concept_scheme.uri
+
+    def test_pick_wrong_conceptscheme(self):
+        self.wb_graph = Graph()
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        self.wb_graph.parse(abspath, format="turtle")
+        with pytest.raises(RuntimeError) as exc:
+            self.wb_provider = RDFProvider(
+                {'id': 'WAARDETYPE'},
+                self.wb_graph,
+                concept_scheme_uri = 'https://id.erfgoed.net/thesauri/waartypes'
+            )
+        assert 'https://id.erfgoed.net/thesauri/waardetypes' in str(exc.value)
+        assert 'https://id.erfgoed.net/thesauri/besluittypes' in str(exc.value)
+
     def test_get_concept_by_id(self):
         from skosprovider.skos import Concept
         con = self.products_provider.get_by_id(self.u_jewellery)

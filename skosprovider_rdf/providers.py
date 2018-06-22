@@ -96,7 +96,7 @@ class RDFProvider(MemoryProvider):
                 if len(filteredcslist) == 0:
                     raise RuntimeError(
                         'This RDF file contains more than one ConceptScheme. \
-                        You specified an unexsiting one. The following schemes \
+                        You specified an unexisting one. The following schemes \
                         were found: %s' % (", ".join([str(cs.uri) for cs in cslist]))
                     )
                 else:
@@ -105,6 +105,8 @@ class RDFProvider(MemoryProvider):
     def _from_graph(self):
         clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
+            if self.check_in_scheme and self._get_in_scheme(sub) != self.concept_scheme.uri:
+                    continue
             uri = self.to_text(sub)
             matches = {}
             for k in Concept.matchtypes:
@@ -126,6 +128,8 @@ class RDFProvider(MemoryProvider):
             clist.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
+            if self.check_in_scheme and self._get_in_scheme(sub) != self.concept_scheme.uri:
+                    continue
             uri = self.to_text(sub)
             col = Collection(
                 id=self._get_id_for_subject(sub, uri), 
@@ -141,6 +145,20 @@ class RDFProvider(MemoryProvider):
             clist.append(col)
         self._fill_member_of(clist)
         return clist
+
+    def _get_in_scheme(self, subject):
+        '''
+        Determine if a subject is part of a scheme.
+
+        :param subject: Subject to get the sources for.
+        :returns: A URI for the scheme a subject is part of or None if
+            it's not part of a scheme.
+        '''
+        scheme = None
+        scheme = self.graph.value(subject, SKOS.inScheme)
+        if not scheme:
+            scheme = self.graph.value(subject, SKOS.topConceptOf)
+        return self.to_text(scheme) if scheme else None
 
     def _fill_member_of(self, clist):
         collections = list(set([c for c in clist if isinstance(c, Collection)]))

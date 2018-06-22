@@ -378,7 +378,7 @@ Voorbeelden: Een kanaal door een stad; Iets wat visueel en ruimtelijk erg domina
     dcterms:source [ a dcterms:BibliographicResource ;
             dcterms:bibliographicCitation "Vlaamse overheid Ruimtelijke Ordening, Woonbeleid en Onroerend Erfgoed 17 JULI 2015. — Ministerieel besluit tot vaststelling van de inventarismethodologie voor de inventaris van bouwkundig erfgoed, bl. 48925." ] ;
     void:inDataset <https://id.erfgoed.net/datasets/thesauri/waardetypes> ;
-    skos:inScheme <https://id.erfgoed.net/thesauri/waardetypes> ;
+    skos:topConceptOf <https://id.erfgoed.net/thesauri/waardetypes> ;
     skos:note """De continuïteit van de sociale waarde is belangrijk. 
 Voorbeelden: Iets wat nog steeds fungeert als een ontmoetingsplek: gemeenschapscentra, dorpspleinen waar bevolking nog regelmatig samenkomt; herdenkingsmonument waarbij nog regelmatig wordt samengekomen (Menenpoort, Ieper, maar kan ook op lokaal vlak); bedevaartsoorden die nog worden bezocht..."""@nl-BE ;
     skos:prefLabel "sociale waarde"@nl-BE ;
@@ -389,7 +389,7 @@ Voorbeelden: Iets wat nog steeds fungeert als een ontmoetingsplek: gemeenschapsc
     dcterms:source [ a dcterms:BibliographicResource ;
             dcterms:bibliographicCitation "Vlaamse overheid Ruimtelijke Ordening, Woonbeleid en Onroerend Erfgoed 17 JULI 2015. — Ministerieel besluit tot vaststelling van de inventarismethodologie voor de inventaris van bouwkundig erfgoed, bl. 48925." ] ;
     void:inDataset <https://id.erfgoed.net/datasets/thesauri/waardetypes> ;
-    skos:inScheme <https://id.erfgoed.net/thesauri/waardetypes> ;
+    skos:topConceptOf <https://id.erfgoed.net/thesauri/waardetypes> ;
     skos:note """De nadruk bij de stedenbouwkundige waarde ligt meer op het verleden, een historisch kader. Bv. woning Dhanis als element in de ontwikkeling van de leien in de 19de eeuw. De waarde kan betrekking hebben op zowel een organisch gegroeide (bv. marktplein) als een planmatige (bv. sociale woonwijk) aanleg. Vaak speelt de ensemblewaarde een rol; de relatie tussen meerdere elementen.
 Er wordt voorgesteld de RS-waarde te gebruiken voor een iets beperktere omgeving en de S-waarde voor een grotere omgeving waaronder verschillende RS-elementen kunnen worden ondergebracht. 
 Voorbeelden: kerk, station samen met planmatig aangelegd stratenpatroon; Een kasteel dat focuspunt is van een ruimer assenpatroon in de omgevende bossen; Schikking gebouwen rond marktplein; Patroon sociale woonwijk…"""@nl-BE ;
@@ -401,7 +401,7 @@ Voorbeelden: kerk, station samen met planmatig aangelegd stratenpatroon; Een kas
     dcterms:source [ a dcterms:BibliographicResource ;
             dcterms:bibliographicCitation "Vlaamse overheid Ruimtelijke Ordening, Woonbeleid en Onroerend Erfgoed 17 JULI 2015. — Ministerieel besluit tot vaststelling van de inventarismethodologie voor de inventaris van bouwkundig erfgoed, bl. 48925." ] ;
     void:inDataset <https://id.erfgoed.net/datasets/thesauri/waardetypes> ;
-    skos:inScheme <https://id.erfgoed.net/thesauri/waardetypes> ;
+    skos:topConceptOf <https://id.erfgoed.net/thesauri/waardetypes> ;
     skos:prefLabel "volkskundige waarde"@nl-BE ;
     skos:scopeNote "Een onroerend goed heeft volkskundige waarde als het getuigt van gebruiken en gewoonten, voorstellingen en tradities van een specifieke bevolkingsgroep of gemeenschap in het verleden."@nl-BE .
 
@@ -412,7 +412,7 @@ Voorbeelden: kerk, station samen met planmatig aangelegd stratenpatroon; Een kas
     void:inDataset <https://id.erfgoed.net/datasets/thesauri/waardetypes> ;
     skos:historyNote """Versie 2015: Onder wetenschappelijke waarde verstaat men verzamelingen instrumenten, machines of toestellen in situ bv. gebouwen en inrichtingen die de ontwikkeling van een bepaald productieproces illustreren; gebouwen of
 bouwwerken die de ontwikkeling van bepaalde technieken, het gebruik van nieuwe materialen, etc., illustreren (bv. vroeg gebruik van gewapend beton, specifieke vorm van overspanning bij een brug). (bron: document Claartje &amp; handleiding inventariseren)"""@nl-BE ;
-    skos:inScheme <https://id.erfgoed.net/thesauri/waardetypes> ;
+    skos:topConceptOf <https://id.erfgoed.net/thesauri/waardetypes> ;
     skos:note """De wetenschappelijke waarde moet bewust, fundamenteel en zeker zijn.
 De formulering “Potentie voor kennisontwikkeling en winst” is ingegeven vanuit archeologie, maar kan ook voor bouwkundig erfgoed relevant zijn. Bv een kerkgebouw opgebouwd uit verschillende soorten natuursteen. Hierin schuilt de potentie van kennis die  uit de studie van deze materialen kan gehaald worden.  
 De formulering “Iets dat een bijzondere bijdrage geleverd heeft of een typevoorbeeld is” is ingegeven vanuit landschappen. Vb. dendrologisch waardevolle bomen.

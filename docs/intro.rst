@@ -33,6 +33,18 @@ itself does not read the :term:`SKOS` file, but expects to be passed a
 .. literalinclude:: /../examples/load_skos.py
     :language: python
 
+Out of the box :mod:`skosprovider_rdf` assumes your :term:`RDF` file contains 
+exactly one conceptscheme. If no conceptscheme is found in the file and you did
+not pass one to the provider through the `concept_scheme` parameter, a new
+conceptscheme is automatically created. If more than one conceptscheme is
+present in the file, you can again specify the conceptscheme through the
+`concept_scheme` parameter (passing a :class:`skosprovider.skos.ConceptScheme`)
+or you can pass the uri of one of the conceptschemes present in the
+`concept_scheme_uri` parameter.
+
+.. literalinclude:: /../examples/load_specific_scheme.py
+    :language: python
+
 It also provides a utility function to dump any implementation 
 of :class:`skosprovider.providers.VocabularyProvider` to a 
 :class:`rdflib.graph.Graph`. Again, since the provider only deals with the 

@@ -40,7 +40,9 @@ conceptscheme is automatically created. If more than one conceptscheme is
 present in the file, you can again specify the conceptscheme through the
 `concept_scheme` parameter (passing a :class:`skosprovider.skos.ConceptScheme`)
 or you can pass the uri of one of the conceptschemes present in the
-`concept_scheme_uri` parameter.
+`concept_scheme_uri` parameter. When you specify a conceptscheme like this, only
+the concepts linked to this scheme through `skok:inScheme` statements will be
+loaded.
 
 .. literalinclude:: /../examples/load_specific_scheme.py
     :language: python

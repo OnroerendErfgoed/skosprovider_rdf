@@ -12,7 +12,6 @@ from rdflib.term import Literal, URIRef
 from skosprovider_rdf.utils import text_, _df_writexml
 
 log = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 from skosprovider.providers import MemoryProvider
 from skosprovider.uri import (

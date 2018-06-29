@@ -88,57 +88,7 @@ def _rdf_dumper(provider, id_list=None):
         for c in provider.get_top_concepts():
             graph.add((conceptscheme, SKOS.hasTopConcept, URIRef(c['uri'])))
     for id in id_list:
-        c = provider.get_by_id(id)
-        subject = URIRef(c.uri)
-        _add_in_dataset(graph, subject, provider)
-        graph.add((subject, DCTERMS.identifier, Literal(c.id)))
-        graph.add((subject, SKOS.inScheme, conceptscheme))
-        _add_labels(graph, c, subject)
-        _add_notes(graph, c, subject)
-        _add_sources(graph, c, subject)
-        if isinstance(c, Concept):
-            graph.add((subject, RDF.type, SKOS.Concept))
-            for b in c.broader:
-                broader = provider.get_by_id(b)
-                if broader:
-                    graph.add((subject, SKOS.broader, URIRef(broader.uri)))
-                else:
-                    warnings.warn(_warning(b), UserWarning)
-            for n in c.narrower:
-                narrower = provider.get_by_id(n)
-                if narrower:
-                    graph.add((subject, SKOS.narrower, URIRef(narrower.uri)))
-                else:
-                    warnings.warn(_warning(n), UserWarning)
-            for r in c.related:
-                related = provider.get_by_id(r)
-                if related:
-                    graph.add((subject, SKOS.related, URIRef(related.uri)))
-                else:
-                    warnings.warn(_warning(r), UserWarning)
-            for s in c.subordinate_arrays:
-                subordinate_array = provider.get_by_id(s)
-                if subordinate_array:
-                    graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
-                else:
-                    warnings.warn(_warning(s), UserWarning)
-            for k in c.matches.keys():
-                for uri in c.matches[k]:
-                    graph.add((subject, URIRef(SKOS + k +'Match'), URIRef(uri)))
-        elif isinstance(c, Collection):
-            graph.add((subject, RDF.type, SKOS.Collection))
-            for m in c.members:
-                member = provider.get_by_id(m)
-                if member:
-                    graph.add((subject, SKOS.member, URIRef(member.uri)))
-                else:
-                    warnings.warn(_warning(m), UserWarning)
-            for s in c.superordinates:
-                superordinate = provider.get_by_id(s)
-                if superordinate:
-                    graph.add((subject, SKOS_THES.superOrdinate, URIRef(superordinate.uri)))
-                else:
-                    warnings.warn(_warning(s), UserWarning)
+        _add_c(graph, provider, id)
 
     return graph
 
@@ -189,6 +139,69 @@ def _add_in_dataset(graph, subject, provider):
     duri = provider.get_metadata().get('dataset', {}).get('uri', None)
     if duri:
         graph.add((subject, VOID.inDataset, URIRef(duri)))
+
+
+def _add_c(graph, provider, id):
+    '''
+    Adds a concept or collection to the graph.
+
+    :param rdflib.graph.Graph graph: The graph to add statements to.
+    :param skosprovider.providers.VocabularyProvider provider: Provider
+    :param c: The id of a concept or collection.
+    '''
+
+    c = provider.get_by_id(id)
+    subject = URIRef(c.uri)
+    _add_in_dataset(graph, subject, provider)
+    graph.add((subject, DCTERMS.identifier, Literal(c.id)))
+    conceptscheme = URIRef(provider.concept_scheme.uri)
+    graph.add((subject, SKOS.inScheme, conceptscheme))
+    _add_labels(graph, c, subject)
+    _add_notes(graph, c, subject)
+    _add_sources(graph, c, subject)
+    if isinstance(c, Concept):
+        graph.add((subject, RDF.type, SKOS.Concept))
+        for b in c.broader:
+            broader = provider.get_by_id(b)
+            if broader:
+                graph.add((subject, SKOS.broader, URIRef(broader.uri)))
+            else:
+                warnings.warn(_warning(b), UserWarning)
+        for n in c.narrower:
+            narrower = provider.get_by_id(n)
+            if narrower:
+                graph.add((subject, SKOS.narrower, URIRef(narrower.uri)))
+            else:
+                warnings.warn(_warning(n), UserWarning)
+        for r in c.related:
+            related = provider.get_by_id(r)
+            if related:
+                graph.add((subject, SKOS.related, URIRef(related.uri)))
+            else:
+                warnings.warn(_warning(r), UserWarning)
+        for s in c.subordinate_arrays:
+            subordinate_array = provider.get_by_id(s)
+            if subordinate_array:
+                graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
+            else:
+                warnings.warn(_warning(s), UserWarning)
+        for k in c.matches.keys():
+            for uri in c.matches[k]:
+                graph.add((subject, URIRef(SKOS + k +'Match'), URIRef(uri)))
+    elif isinstance(c, Collection):
+        graph.add((subject, RDF.type, SKOS.Collection))
+        for m in c.members:
+            member = provider.get_by_id(m)
+            if member:
+                graph.add((subject, SKOS.member, URIRef(member.uri)))
+            else:
+                warnings.warn(_warning(m), UserWarning)
+        for s in c.superordinates:
+            superordinate = provider.get_by_id(s)
+            if superordinate:
+                graph.add((subject, SKOS_THES.superOrdinate, URIRef(superordinate.uri)))
+            else:
+                warnings.warn(_warning(s), UserWarning)
 
 
 def _add_labels(graph, c, subject):

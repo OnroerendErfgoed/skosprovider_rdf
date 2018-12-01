@@ -4,4 +4,4 @@
 # Testing
 pytest==4.0.1
 pytest-cov==2.6.0
-coveralls==1.5.0
+coveralls==1.5.1

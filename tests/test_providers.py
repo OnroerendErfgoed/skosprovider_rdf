@@ -4,7 +4,9 @@ import unittest
 import os
 import sys
 
-from skosprovider.skos import Note, Collection
+import pytest
+
+from skosprovider.skos import Note, Collection, ConceptScheme
 from skosprovider.utils import dict_dumper
 
 from rdflib import Graph
@@ -77,16 +79,60 @@ class RDFProviderTests(unittest.TestCase):
         filepath = os.path.dirname(os.path.realpath(__file__))
         abspath = os.path.abspath(filepath + "/data/schemes.xml")
         self.toepassingen_graph.parse(abspath, format="application/rdf+xml")
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError) as exc:
             self.toepassingen_provider = RDFProvider(
                 {'id': 'TOEPASSINGEN'}, self.toepassingen_graph
             )
+        assert 'https://id.erfgoed.net/toepassingen' in str(exc.value)
+        assert 'https://id.erfgoed.net/applicaties' in str(exc.value)
 
     def test_parse_without_conceptscheme_generates_default_uri(self):
         trees_provider = RDFProvider(
             {'id': 'TREES'}, self.trees_graph
         )
         assert 'urn:x-skosprovider:trees' == trees_provider.concept_scheme.uri
+
+    def test_pick_one_conceptscheme(self):
+        self.wb_graph = Graph()
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        self.wb_graph.parse(abspath, format="turtle")
+        self.wb_provider = RDFProvider(
+            {'id': 'WAARDETYPES'},
+            self.wb_graph,
+            concept_scheme_uri = 'https://id.erfgoed.net/thesauri/waardetypes'
+        )
+        assert 'https://id.erfgoed.net/thesauri/waardetypes' == self.wb_provider.concept_scheme.uri
+        assert len(self.wb_provider.get_all()) == 21
+
+    def test_set_a_conceptscheme_manually(self):
+        self.wb_graph = Graph()
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        self.wb_graph.parse(abspath, format="turtle")
+        self.wb_provider = RDFProvider(
+            {'id': 'BESLUITTYPES'},
+            self.wb_graph,
+            concept_scheme = ConceptScheme(
+                'https://id.erfgoed.net/thesauri/besluittypes',
+            )
+        )
+        assert 'https://id.erfgoed.net/thesauri/besluittypes' == self.wb_provider.concept_scheme.uri
+        assert len(self.wb_provider.get_all()) == 24
+
+    def test_pick_wrong_conceptscheme(self):
+        self.wb_graph = Graph()
+        filepath = os.path.dirname(os.path.realpath(__file__))
+        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        self.wb_graph.parse(abspath, format="turtle")
+        with pytest.raises(RuntimeError) as exc:
+            self.wb_provider = RDFProvider(
+                {'id': 'WAARTYPES'},
+                self.wb_graph,
+                concept_scheme_uri = 'https://id.erfgoed.net/thesauri/waartypes'
+            )
+        assert 'https://id.erfgoed.net/thesauri/waardetypes' in str(exc.value)
+        assert 'https://id.erfgoed.net/thesauri/besluittypes' in str(exc.value)
 
     def test_get_concept_by_id(self):
         from skosprovider.skos import Concept

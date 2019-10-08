@@ -2,6 +2,7 @@
 ------------------
 
 - Compatibile with `SkosProvider 0.7.1 <http://skosprovider.readthedocs.io/en/0.7.0/>`_.
+- Make it possible to read an RDF file containing more than one conceptscheme. (#35)
 - Drop support for Python 3.3 and 3.4. This is the last version that will
   support Python 2. (#63)
 

@@ -175,8 +175,6 @@ class RDFProvider(MemoryProvider):
         return list
 
     def _get_id_for_subject(self, subject, uri):
-        for stmt in self.graph:
-            print(stmt)
         if (subject, DCTERMS.identifier, None) in self.graph:
             return self.to_text(self.graph.value(subject=subject, predicate=DCTERMS.identifier, any=False))
         elif (subject, DC.identifier, None) in self.graph:

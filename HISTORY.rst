@@ -1,3 +1,8 @@
+0.7.0 (??-??-2018)
+------------------
+
+- Make it possible to read an RDF file containing more than one conceptscheme. (#35)
+
 0.6.0 (16-07-2017)
 ------------------
 

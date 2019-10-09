@@ -17,6 +17,7 @@
             <dcterms:bibliographicCitation>Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.</dcterms:bibliographicCitation>
         </dcterms:BibliographicResource>
     </dcterms:source>
+    <skos:exactMatch>https://id.erfgoed.net/thesauri/soorten/666</skos:exactMatch>
   </rdf:Description>
   <rdf:Description rdf:about="http://id.trees.org/3">
     <dcterms:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</dcterms:identifier>
@@ -41,5 +42,6 @@
             <dcterms:bibliographicCitation rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"><![CDATA[<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.]]></dcterms:bibliographicCitation>
         </dcterms:BibliographicResource>
     </dcterms:source>
+    <skos:closeMatch>https://id.erfgoed.net/thesauri/soorten/85</skos:closeMatch>
   </rdf:Description>
 </rdf:RDF>

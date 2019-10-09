@@ -314,3 +314,30 @@ class RDFProviderTests(unittest.TestCase):
                 'type': 'definition',
                 'markup': 'HTML'
             } in larch['notes']
+
+    def test_find_matches(self):
+        rdf_prov = RDFProvider(
+            {'id': 'TREES'},
+            self.trees_graph
+        )
+        kastanjes = rdf_prov.find({
+            'matches': {'uri': 'https://id.erfgoed.net/thesauri/soorten/85'}
+        })
+        assert len(kastanjes) == 1
+
+        no_related_larches = rdf_prov.find({
+            'matches': {
+                'uri': 'https://id.erfgoed.net/thesauri/soorten/666',
+                'type': 'related'
+            }
+        })
+        assert len(no_related_larches) == 0
+
+
+        close_larches = rdf_prov.find({
+            'matches': {
+                'uri': 'https://id.erfgoed.net/thesauri/soorten/666',
+                'type': 'close'
+            }
+        })
+        assert len(close_larches) == 1

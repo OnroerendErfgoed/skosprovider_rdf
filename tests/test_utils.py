@@ -267,6 +267,12 @@ class TestRDFDumperTrees:
                 datatype=RDF.HTML
             ) == c
 
+    def test_dump_oak_to_rdf(self, tree_provider):
+        graph_dump = utils.rdf_c_dumper(tree_provider, 4)
+        oak = URIRef('http://id.trees.org/4')
+        eik = URIRef('https://id.erfgoed.net/thesauri/soorten/297')
+        assert (oak, SKOS.exactMatch, eik) in graph_dump
+
     def test_dump_one_id_to_rdf_and_reload(self, tree_provider):
         graph_dump1 = utils.rdf_c_dumper(tree_provider, 1)
         provider = RDFProvider(

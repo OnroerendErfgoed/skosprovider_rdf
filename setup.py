@@ -27,6 +27,7 @@ setup(
     version='0.7.0',
     description='skosprovider_rdf',
     long_description=README + '\n\n' + HISTORY,
+    long_description_content_type='x-rst',
     package_data={'': ['LICENSE']},
     package_dir={'skosprovider_rdf': 'skosprovider_rdf'},
     include_package_data=True,

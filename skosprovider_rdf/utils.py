@@ -4,7 +4,6 @@ This module contains utility functions for dealing with skos providers.
 '''
 from __future__ import unicode_literals
 import logging
-import warnings
 import sys
 
 log = logging.getLogger(__name__)
@@ -122,13 +121,9 @@ def rdf_conceptscheme_dumper(provider):
     return graph
 
 
-def _warning(id):
-    return 'id %s could not be resolved' % id
-
-
 def _add_in_dataset(graph, subject, provider):
     '''
-    Checks if the provider says something about a dataset and if so adds 
+    Checks if the provider says something about a dataset and if so adds
     void.inDataset statements.
 
     :param rdflib.graph.Graph graph: The graph to add statements to.
@@ -165,26 +160,18 @@ def _add_c(graph, provider, id):
             broader = provider.get_by_id(b)
             if broader:
                 graph.add((subject, SKOS.broader, URIRef(broader.uri)))
-            else:
-                warnings.warn(_warning(b), UserWarning)
         for n in c.narrower:
             narrower = provider.get_by_id(n)
             if narrower:
                 graph.add((subject, SKOS.narrower, URIRef(narrower.uri)))
-            else:
-                warnings.warn(_warning(n), UserWarning)
         for r in c.related:
             related = provider.get_by_id(r)
             if related:
                 graph.add((subject, SKOS.related, URIRef(related.uri)))
-            else:
-                warnings.warn(_warning(r), UserWarning)
         for s in c.subordinate_arrays:
             subordinate_array = provider.get_by_id(s)
             if subordinate_array:
                 graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
-            else:
-                warnings.warn(_warning(s), UserWarning)
         for k in c.matches.keys():
             for uri in c.matches[k]:
                 graph.add((subject, URIRef(SKOS + k +'Match'), URIRef(uri)))
@@ -194,14 +181,10 @@ def _add_c(graph, provider, id):
             member = provider.get_by_id(m)
             if member:
                 graph.add((subject, SKOS.member, URIRef(member.uri)))
-            else:
-                warnings.warn(_warning(m), UserWarning)
         for s in c.superordinates:
             superordinate = provider.get_by_id(s)
             if superordinate:
                 graph.add((subject, SKOS_THES.superOrdinate, URIRef(superordinate.uri)))
-            else:
-                warnings.warn(_warning(s), UserWarning)
 
 
 def _add_labels(graph, c, subject):
@@ -258,7 +241,7 @@ def _add_sources(graph, c, subject):
     Add sources to the RDF graph.
 
     :param rdflib.graph.Graph graph: An RDF Graph.
-    :param c: A :class:`skosprovider.skos.ConceptScheme`, 
+    :param c: A :class:`skosprovider.skos.ConceptScheme`,
         :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection`
     :param subject: The RDF subject to add the sources to.
     '''

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 '''
-This module contains an RDFProvider, an implementation of the 
-:class:`skosprovider.providers.VocabularyProvider` interface that uses a 
+This module contains an RDFProvider, an implementation of the
+:class:`skosprovider.providers.VocabularyProvider` interface that uses a
 :class:`rdflib.graph.Graph` as input.
 '''
 
@@ -38,7 +38,7 @@ DocumentFragment.writexml = _df_writexml
 class RDFProvider(MemoryProvider):
 
     '''
-    Should the provider only take concepts into account explicitly linked 
+    Should the provider only take concepts into account explicitly linked
     to the conceptscheme?
     '''
     check_in_scheme = False
@@ -111,7 +111,7 @@ class RDFProvider(MemoryProvider):
             for k in Concept.matchtypes:
                 matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS + k +'Match'))
             con = Concept(
-                id = self._get_id_for_subject(sub, uri), 
+                id = self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
                 labels = self._create_from_subject_typelist(sub, Label.valid_types),
@@ -131,7 +131,7 @@ class RDFProvider(MemoryProvider):
                     continue
             uri = self.to_text(sub)
             col = Collection(
-                id=self._get_id_for_subject(sub, uri), 
+                id=self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
                 labels = self._create_from_subject_typelist(sub, Label.valid_types),
@@ -203,9 +203,7 @@ class RDFProvider(MemoryProvider):
         return Label(self.to_text(literal), type, self._get_language_from_literal(literal))
 
     def _read_markupped_literal(self, literal):
-        if literal.datatype is None:
-            return (literal, self._get_language_from_literal(literal), None)
-        elif literal.datatype == RDF.HTML:
+        if literal.datatype == RDF.HTML:
             df = literal.value.cloneNode(True)
             if df.firstChild and df.firstChild.attributes and 'xml:lang' in df.firstChild.attributes.keys():
                 lang = self._scrub_language(df.firstChild.attributes.get('xml:lang').value)
@@ -214,9 +212,7 @@ class RDFProvider(MemoryProvider):
                 lang = 'und'
             return(df.toxml(), lang, 'HTML')
         else:
-            raise ValueError(
-                'Unable to process literal of type %s.' % literal.datatype
-            )
+            return (literal, self._get_language_from_literal(literal), None)
 
     def _create_note(self, literal, type):
         if not Note.is_valid_type(type):
@@ -266,9 +262,7 @@ class RDFProvider(MemoryProvider):
             return 'und'
 
     def _get_language_from_literal(self, data):
-        if not isinstance(data, Literal):
-            return None
-        if data.language is None:
+        if not hasattr(data, 'language') or data.language is None:
             return None
         return self.to_text(self._scrub_language(data.language))
 

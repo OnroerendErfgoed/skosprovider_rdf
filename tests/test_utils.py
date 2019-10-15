@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
+from . import TEST_DIR
 import os
 from rdflib import Graph
 from rdflib.namespace import RDF, SKOS, DCTERMS
@@ -24,43 +25,9 @@ import logging
 log = logging.getLogger(__name__)
 
 
-@pytest.fixture
-def materials_provider():
-    import json
 
-    materials_data = json.load(
-        open(os.path.join(os.path.dirname(__file__), 'data', 'materiaal.txt')),
-    )['materiaal']
-    from skosprovider.providers import DictionaryProvider
-    from skosprovider.uri import UriPatternGenerator
-    from skosprovider.skos import ConceptScheme, Label, Note
 
-    materials = DictionaryProvider(
-        {'id': 'Materials'},
-        materials_data,
-        uri_generator=UriPatternGenerator('https://id.erfgoed.net/thesauri/materialen/%s'),
-        conceptscheme=ConceptScheme(
-            uri='https://id.erfgoed.net/thesauri/materialen',
-            labels=[Label(type='prefLabel', language='nl', label='Materialen')],
-            notes=[Note(type='scopeNote', language='nl', note='Materialen zijn grondstoffen of halfafgewerkte producten die vaak een rol spelen bij onroerend erfgoed.')]
-        )
-    )
-    return materials
-
-@pytest.fixture
-def products_provider():
-    graph = Graph()
-    filepath = os.path.dirname(os.path.realpath(__file__))
-    abspath = os.path.abspath(filepath + "/data/simple_turtle_products")
-    graph.parse(abspath, format="turtle")
-
-    # Set up rdf_provider
-    products = RDFProvider(
-        {'id': 'PRODUCTS', 'conceptscheme_id': 1}, graph
-    )
-    return products
-
-@pytest.fixture
+@pytest.fixture(scope='module')
 def tree_provider():
     larch = {
         'id': '1',

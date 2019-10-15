@@ -4,6 +4,7 @@ import os
 import sys
 
 import pytest
+from . import TEST_DIR
 
 from skosprovider.skos import Note, Collection, ConceptScheme
 from skosprovider.utils import dict_dumper
@@ -17,29 +18,6 @@ if PY3:  # pragma: no cover
     text_type = str
 else:  # pragma: no cover
     text_type = unicode
-
-@pytest.fixture
-def products_provider():
-    products_graph = Graph()
-    filepath = os.path.dirname(os.path.realpath(__file__))
-    abspath = os.path.abspath(filepath + "/data/simple_turtle_products")
-    products_graph.parse(abspath, format="turtle")
-
-    products_provider = RDFProvider(
-        {'id': 'PRODUCTS'}, products_graph
-    )
-    return products_provider
-
-@pytest.fixture
-def trees_provider():
-    trees_graph = Graph()
-    filepath = os.path.dirname(os.path.realpath(__file__))
-    abspath = os.path.abspath(filepath + "/data/trees.xml")
-    trees_graph.parse(abspath, format="application/rdf+xml")
-    trees_provider = RDFProvider(
-        {'id': 'TREES'}, trees_graph
-    )
-    return trees_provider
 
 
 class TestRDFProviderProducts(object):
@@ -193,8 +171,7 @@ class TestMultipleConceptschemes(object):
 
     def test_pick_one_conceptscheme(self):
         wb_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        abspath = os.path.abspath(TEST_DIR + "/data/waarde_en_besluit_types.ttl")
         wb_graph.parse(abspath, format="turtle")
         wb_provider = RDFProvider(
             {'id': 'WAARDETYPES'},
@@ -206,8 +183,7 @@ class TestMultipleConceptschemes(object):
 
     def test_set_a_conceptscheme_manually(self):
         wb_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        abspath = os.path.abspath(TEST_DIR + "/data/waarde_en_besluit_types.ttl")
         wb_graph.parse(abspath, format="turtle")
         wb_provider = RDFProvider(
             {'id': 'WAARDETYPES'},
@@ -221,8 +197,7 @@ class TestMultipleConceptschemes(object):
 
     def test_pick_wrong_conceptscheme(self):
         wb_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
+        abspath = os.path.abspath(TEST_DIR + "/data/waarde_en_besluit_types.ttl")
         wb_graph.parse(abspath, format="turtle")
         with pytest.raises(RuntimeError) as exc:
             wb_provider = RDFProvider(
@@ -235,8 +210,7 @@ class TestMultipleConceptschemes(object):
 
     def test_too_many_conceptscheme(self):
         toepassingen_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/schemes.xml")
+        abspath = os.path.abspath(TEST_DIR + "/data/schemes.xml")
         toepassingen_graph.parse(abspath, format="application/rdf+xml")
         with pytest.raises(RuntimeError) as exc:
             toepassingen_provider = RDFProvider(

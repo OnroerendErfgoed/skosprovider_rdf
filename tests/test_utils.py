@@ -204,7 +204,7 @@ def tree_provider():
 
     return tree_provider
 
-class TestRDFDumperMaterials:
+class TestRDFDumperMaterials(object):
 
     def test_dump_dictionary_to_rdf(self, materials_provider):
         graph_dump = utils.rdf_dumper(materials_provider)
@@ -218,7 +218,7 @@ class TestRDFDumperMaterials:
         assert dcterms_id_skos_definition in xml
 
 
-class TestRDFDumperProducts:
+class TestRDFDumperProducts(object):
 
     def test_dump_rdf_to_rdf(self, products_provider):
         graph_dump = utils.rdf_dumper(products_provider)
@@ -238,7 +238,7 @@ class TestRDFDumperProducts:
         assert isinstance(graph_dump, Graph)
 
 
-class TestRDFDumperTrees:
+class TestRDFDumperTrees(object):
 
     def test_dump_tree_to_rdf(self, tree_provider):
         graph_dump = utils.rdf_dumper(tree_provider)
@@ -297,7 +297,7 @@ class TestRDFDumperTrees:
         assert (cs, SKOS.prefLabel, Literal('Pythonic trees.', lang='en')) in graph_dump
 
 
-class TestVarious:
+class TestVarious(object):
 
     def test_extract_language_None(self):
         assert 'und' == extract_language(None)
@@ -306,7 +306,7 @@ class TestVarious:
         assert 'nl-BE' == extract_language('nl-BE')
 
 
-class TestHtml:
+class TestHtml(object):
 
     def test_lang_und(self):
         assert '' == _add_lang_to_html('', 'und')

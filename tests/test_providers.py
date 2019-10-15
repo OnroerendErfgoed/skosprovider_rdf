@@ -42,7 +42,7 @@ def trees_provider():
     return trees_provider
 
 
-class TestRDFProviderProducts:
+class TestRDFProviderProducts(object):
 
     def test_get_vocabulary_id(self, products_provider):
         assert 'PRODUCTS' == products_provider.get_vocabulary_id()
@@ -189,7 +189,7 @@ class TestRDFProviderProducts:
         assert products_provider._get_language_from_literal("test") is None
 
 
-class TestMultipleConceptschemes:
+class TestMultipleConceptschemes(object):
 
     def test_pick_one_conceptscheme(self):
         wb_graph = Graph()
@@ -246,7 +246,7 @@ class TestMultipleConceptschemes:
         assert 'https://id.erfgoed.net/applicaties' in str(exc.value)
 
 
-class TestTreeProvider:
+class TestTreeProvider(object):
 
     def test_parse_without_conceptscheme_generates_default_uri(self, trees_provider):
         assert 'urn:x-skosprovider:trees' == trees_provider.concept_scheme.uri

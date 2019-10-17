@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import os
 import sys
 
 import pytest
+from . import TEST_DIR
 
 from skosprovider.skos import Note, Collection, ConceptScheme
 from skosprovider.utils import dict_dumper
@@ -20,267 +20,241 @@ else:  # pragma: no cover
     text_type = unicode
 
 
-class RDFProviderTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        return
+class TestRDFProviderProducts(object):
 
-    def setUp(self):
-        # Set up testdata
-        self._create_test_data()
+    def test_get_vocabulary_id(self, products_provider):
+        assert 'PRODUCTS' == products_provider.get_vocabulary_id()
 
-        # Set up providers
-        self.products_provider = RDFProvider(
-            {'id': 'PRODUCTS'}, self.products_graph)
-        self.toepassingen_provider = RDFProvider(
-            {'id': 'TOEPASSINGEN'}, self.toepassingen_graph)
+    def test_conceptscheme(self, products_provider):
+        cs = products_provider.concept_scheme
 
-    def tearDown(self):
-        return
-
-    def _create_test_data(self):
-        self.products_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/simple_turtle_products")
-        self.products_graph.parse(abspath, format="turtle")
-
-        self.u_products = "http://www.products.com/"
-        self.u_jewellery = "http://www.products.com/Jewellery"
-        self.u_perfume = "http://www.products.com/Perfume"
-        self.u_product = "http://www.products.com/Product"
-        self.u_stuff = "http://www.products.com/Stuff"
-        self.u_unexistingProduct = "http://www.products.com/UnexistingProduct"
-
-        self.toepassingen_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/toepassingen.xml")
-        self.toepassingen_graph.parse(abspath, format="application/rdf+xml")
-
-        self.trees_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/trees.xml")
-        self.trees_graph.parse(abspath, format="application/rdf+xml")
-
-    def test_include(self):
-        return
-
-    def test_get_vocabulary_id(self):
-        self.assertEquals('PRODUCTS', self.products_provider.get_vocabulary_id())
-
-    def test_conceptscheme(self):
-        cs = self.products_provider.concept_scheme
-
-        assert cs.uri == self.u_products + 'Scheme'
+        assert cs.uri == 'http://www.products.com/Scheme'
         assert cs.label('en') is not None
         assert len(cs.languages) == 3
 
-    def test_too_many_conceptscheme(self):
-        self.toepassingen_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/schemes.xml")
-        self.toepassingen_graph.parse(abspath, format="application/rdf+xml")
-        with pytest.raises(RuntimeError) as exc:
-            self.toepassingen_provider = RDFProvider(
-                {'id': 'TOEPASSINGEN'}, self.toepassingen_graph
-            )
-        assert 'https://id.erfgoed.net/toepassingen' in str(exc.value)
-        assert 'https://id.erfgoed.net/applicaties' in str(exc.value)
+    def test_get_concept_by_id(self, products_provider):
+        u_jewellery = "http://www.products.com/Jewellery"
+        u_perfume = "http://www.products.com/Perfume"
+        from skosprovider.skos import Concept
 
-    def test_parse_without_conceptscheme_generates_default_uri(self):
-        trees_provider = RDFProvider(
-            {'id': 'TREES'}, self.trees_graph
-        )
-        assert 'urn:x-skosprovider:trees' == trees_provider.concept_scheme.uri
+        con = products_provider.get_by_id(u_jewellery)
+        assert isinstance(con, Concept)
+        assert u_jewellery == con.id
+        assert u_jewellery == con.uri
+        assert u_perfume in con.related
+
+    def test_get_unexisting_by_id(self, products_provider):
+        con = products_provider.get_by_id(404)
+        assert not con
+
+    def test_createLabel(self, products_provider):
+        with pytest.raises(ValueError):
+            products_provider._create_label("literal","nonexistinglabeltype")
+
+    def test_createNote(self, products_provider):
+        with pytest.raises(ValueError):
+            products_provider._create_note("literal","nonexistingnotetype")
+
+    def test_get_concept_by_uri_equals_id(self, products_provider):
+        u_product = "http://www.products.com/Product"
+        cona = products_provider.get_by_id(u_product)
+        conb = products_provider.get_by_uri(u_product)
+        assert cona == conb
+
+    def test_get_unexisting_by_uri(self, products_provider):
+        con = products_provider.get_by_uri('http://www.products.com/Thingy')
+        assert not con
+
+    def test_concept_has_correct_note(self, products_provider):
+        u_jewellery = "http://www.products.com/Jewellery"
+        con = products_provider.get_by_id(u_jewellery)
+        assert len(con.notes) == 2
+        assert isinstance(con.notes[0], Note)
+
+    def test_get_collection_by_id(self, products_provider):
+        u_stuff = "http://www.products.com/Stuff"
+        u_product = "http://www.products.com/Product"
+        col = products_provider.get_by_id(u_stuff)
+        assert isinstance(col, Collection)
+        assert u_stuff == col.id
+        assert u_product in col.members
+        for m in col.members:
+            m = products_provider.get_by_id(m)
+            assert col.id in m.member_of
+
+    def test_get_collection_by_uri_equals_id(self, products_provider):
+        u_stuff = "http://www.products.com/Stuff"
+        cola = products_provider.get_by_id(u_stuff)
+        colb = products_provider.get_by_uri(u_stuff)
+        assert cola.id == colb.id
+        assert cola.uri == colb.uri
+
+    def test_get_all(self, products_provider):
+        all = products_provider.get_all()
+        assert len(all) == 4
+
+    def test_get_top_concepts(self, products_provider):
+        all = products_provider.get_top_concepts()
+        assert len(all) == 1
+
+    def test_get_top_display(self, products_provider):
+        all = products_provider.get_top_display()
+        assert len(all) == 1
+
+    def test_get_children_display_unexisting(self, products_provider):
+        assert not products_provider.get_children_display(700)
+
+    def test_get_children_display_collection(self, products_provider):
+        u_stuff = "http://www.products.com/Stuff"
+        children = products_provider.get_children_display(u_stuff)
+        assert len(children) == 3
+
+    def test_get_children_display_concept(self, products_provider):
+        u_product = "http://www.products.com/Product"
+        children = products_provider.get_children_display(u_product)
+        assert len(children) == 2
+
+    def test_find_all(self, products_provider):
+        all = products_provider.find({})
+        assert len(all) == 4
+
+    def test_find_type_all(self, products_provider):
+        all = products_provider.find({'type': 'all'})
+        assert len(all) == 4
+
+    def test_find_type_concept(self, products_provider):
+        all = products_provider.find({'type': 'concept'})
+        assert len(all) == 3
+
+    def test_find_type_collection(self, products_provider):
+        all = products_provider.find({'type': 'collection'})
+        assert len(all) == 1
+
+    def test_find_label_perfume(self, products_provider):
+        all = products_provider.find({'label': 'Perfume'})
+        assert len(all) == 1
+
+    def test_find_label_perfume_type_concept(self, products_provider):
+        all = products_provider.find({'label': 'Perfume', 'type': 'concept'})
+        assert len(all) == 1
+
+    def test_find_collection_unexisting(self, products_provider):
+        with pytest.raises(ValueError):
+            products_provider.find({'collection': {'id': 404}})
+
+    def test_find_collection_stuff_no_depth(self, products_provider):
+        u_stuff = "http://www.products.com/Stuff"
+        all = products_provider.find({'collection': {'id': u_stuff}})
+        assert len(all) == 3
+
+    def test_expand_concept(self, products_provider):
+        u_product = "http://www.products.com/Product"
+        u_perfume = "http://www.products.com/Perfume"
+        ids = products_provider.expand(u_product)
+        assert u_perfume in ids
+
+    def test_expand_collection(self, products_provider):
+        u_stuff = "http://www.products.com/Stuff"
+        u_perfume = "http://www.products.com/Perfume"
+        ids = products_provider.expand(u_stuff)
+        assert u_perfume in ids
+
+    def test_expand_unexisting(self, products_provider):
+        ids = products_provider.expand(404)
+        assert not ids
+
+    def test_no_literal(self, products_provider):
+        assert products_provider._get_language_from_literal("test") is None
+
+
+class TestMultipleConceptschemes(object):
 
     def test_pick_one_conceptscheme(self):
-        self.wb_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
-        self.wb_graph.parse(abspath, format="turtle")
-        self.wb_provider = RDFProvider(
+        wb_graph = Graph()
+        abspath = os.path.abspath(TEST_DIR + "/data/waarde_en_besluit_types.ttl")
+        wb_graph.parse(abspath, format="turtle")
+        wb_provider = RDFProvider(
             {'id': 'WAARDETYPES'},
-            self.wb_graph,
+            wb_graph,
             concept_scheme_uri = 'https://id.erfgoed.net/thesauri/waardetypes'
         )
-        assert 'https://id.erfgoed.net/thesauri/waardetypes' == self.wb_provider.concept_scheme.uri
-        assert len(self.wb_provider.get_all()) == 21
+        assert 'https://id.erfgoed.net/thesauri/waardetypes' == wb_provider.concept_scheme.uri
+        assert len(wb_provider.get_all()) == 21
 
     def test_set_a_conceptscheme_manually(self):
-        self.wb_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
-        self.wb_graph.parse(abspath, format="turtle")
-        self.wb_provider = RDFProvider(
-            {'id': 'BESLUITTYPES'},
-            self.wb_graph,
+        wb_graph = Graph()
+        abspath = os.path.abspath(TEST_DIR + "/data/waarde_en_besluit_types.ttl")
+        wb_graph.parse(abspath, format="turtle")
+        wb_provider = RDFProvider(
+            {'id': 'WAARDETYPES'},
+            wb_graph,
             concept_scheme = ConceptScheme(
-                'https://id.erfgoed.net/thesauri/besluittypes',
+                'https://id.erfgoed.net/thesauri/besluittypes'
             )
         )
-        assert 'https://id.erfgoed.net/thesauri/besluittypes' == self.wb_provider.concept_scheme.uri
-        assert len(self.wb_provider.get_all()) == 24
+        assert 'https://id.erfgoed.net/thesauri/besluittypes' == wb_provider.concept_scheme.uri
+        assert len(wb_provider.get_all()) == 24
 
     def test_pick_wrong_conceptscheme(self):
-        self.wb_graph = Graph()
-        filepath = os.path.dirname(os.path.realpath(__file__))
-        abspath = os.path.abspath(filepath + "/data/waarde_en_besluit_types.ttl")
-        self.wb_graph.parse(abspath, format="turtle")
+        wb_graph = Graph()
+        abspath = os.path.abspath(TEST_DIR + "/data/waarde_en_besluit_types.ttl")
+        wb_graph.parse(abspath, format="turtle")
         with pytest.raises(RuntimeError) as exc:
-            self.wb_provider = RDFProvider(
+            wb_provider = RDFProvider(
                 {'id': 'WAARTYPES'},
-                self.wb_graph,
+                wb_graph,
                 concept_scheme_uri = 'https://id.erfgoed.net/thesauri/waartypes'
             )
         assert 'https://id.erfgoed.net/thesauri/waardetypes' in str(exc.value)
         assert 'https://id.erfgoed.net/thesauri/besluittypes' in str(exc.value)
 
-    def test_get_concept_by_id(self):
-        from skosprovider.skos import Concept
-        con = self.products_provider.get_by_id(self.u_jewellery)
-        self.assertIsInstance(con, Concept)
-        self.assertEqual(self.u_jewellery, con.id)
-        self.assertEqual([self.u_perfume], con.related)
+    def test_too_many_conceptscheme(self):
+        toepassingen_graph = Graph()
+        abspath = os.path.abspath(TEST_DIR + "/data/schemes.xml")
+        toepassingen_graph.parse(abspath, format="application/rdf+xml")
+        with pytest.raises(RuntimeError) as exc:
+            toepassingen_provider = RDFProvider(
+                {'id': 'TOEPASSINGEN'}, toepassingen_graph
+            )
+        assert 'https://id.erfgoed.net/toepassingen' in str(exc.value)
+        assert 'https://id.erfgoed.net/applicaties' in str(exc.value)
 
-        con = self.toepassingen_provider.get_by_id('1')
-        self.assertEqual('https://id.erfgoed.net/toepassingen/1', con.uri)
-        self.assertEqual('1', str(con.id))
 
-    def test_get_unexisting_by_id(self):
-        con = self.products_provider.get_by_id(404)
-        self.assertFalse(con)
+class TestTreeProvider(object):
 
-    def test_createLabel(self):
-        with self.assertRaises(ValueError):
-            self.products_provider._create_label("literal","nonexistinglabeltype")
+    def test_parse_without_conceptscheme_generates_default_uri(self, trees_provider):
+        assert 'urn:x-skosprovider:trees' == trees_provider.concept_scheme.uri
 
-    def test_createNote(self):
-        with self.assertRaises(ValueError):
-            self.products_provider._create_note("literal","nonexistingnotetype")
+    def test_parse_identifier(self, trees_provider):
+        larch = trees_provider.get_by_id('1')
+        assert larch.id == '1'
 
-    def test_get_concept_by_uri(self):
-        cona = self.products_provider.get_by_id(self.u_product)
-        conb = self.products_provider.get_by_uri(self.u_product)
-        self.assertEqual(cona.id, conb.id)
-        self.assertEqual(cona.uri, conb.uri)
+        chestnut = trees_provider.get_by_id('2')
+        assert chestnut.id == '2'
 
-    def test_get_unexisting_by_uri(self):
-        con = self.products_provider.get_by_uri(self.u_unexistingProduct)
-        self.assertFalse(con)
+        species = trees_provider.get_by_id(3)
+        assert species.id == '3'
 
-    def test_concept_has_correct_note(self):
-        con = self.products_provider.get_by_id(self.u_jewellery)
-        self.assertEqual(2, len(con.notes))
-        self.assertIsInstance(con.notes[0], Note)
+        assert not trees_provider.get_by_id('http://id.trees.org/1')
+        assert not trees_provider.get_by_id('http://id.trees.org/2')
+        assert not trees_provider.get_by_id('http://id.trees.org/3')
 
-    def test_get_collection_by_id(self):
-        col = self.products_provider.get_by_id(self.u_stuff)
-        self.assertIsInstance(col, Collection)
-        self.assertEquals(self.u_stuff, col.id)
-        self.assertTrue(self.u_product in col.members)
-        for m in col.members:
-            m = self.products_provider.get_by_id(m)
-            self.assertIn(col.id, m.member_of)
+    def test_rdf_provider_list(self, trees_provider):
+        dump = dict_dumper(trees_provider)
 
-    def test_get_collection_by_uri(self):
-        cola = self.products_provider.get_by_id(self.u_stuff)
-        colb = self.products_provider.get_by_uri(self.u_stuff)
-        self.assertEqual(cola.id, colb.id)
-        self.assertEqual(cola.uri, colb.uri)
-
-    def test_get_all(self):
-        all = self.products_provider.get_all()
-        self.assertEquals(4, len(all))
-
-    def test_get_top_concepts(self):
-        all = self.products_provider.get_top_concepts()
-        self.assertEquals(1, len(all))
-
-    def test_get_top_display(self):
-        all = self.products_provider.get_top_display()
-        self.assertEquals(1, len(all))
-
-    def test_get_children_display_unexisting(self):
-        children = self.products_provider.get_children_display(700)
-        self.assertFalse(children)
-
-    def test_get_children_display_collection(self):
-        children = self.products_provider.get_children_display(self.u_stuff)
-        self.assertEquals(3, len(children))
-
-    def test_get_children_display_concept(self):
-        children = self.products_provider.get_children_display(self.u_product)
-        self.assertEquals(2, len(children))
-
-    def test_find_all(self):
-        all = self.products_provider.find({})
-        self.assertEquals(4, len(all))
-
-    def test_find_type_all(self):
-        all = self.products_provider.find({'type': 'all'})
-        self.assertEquals(4, len(all))
-
-    def test_find_type_concept(self):
-        all = self.products_provider.find({'type': 'concept'})
-        self.assertEquals(3, len(all))
-
-    def test_find_type_collection(self):
-        all = self.products_provider.find({'type': 'collection'})
-        self.assertEquals(1, len(all))
-
-    def test_find_label_perfume(self):
-        all = self.products_provider.find({'label': 'Perfume'})
-        self.assertEquals(1, len(all))
-
-    def test_find_label_perfume_type_concept(self):
-        all = self.products_provider.find({'label': 'Perfume', 'type': 'concept'})
-        self.assertEquals(1, len(all))
-
-    def test_find_collection_unexisting(self):
-        self.assertRaises(
-            ValueError,
-            self.products_provider.find,
-            {'collection': {'id': 404}}
-        )
-
-    def test_find_collection_stuff_no_depth(self):
-        all = self.products_provider.find({'collection': {'id': self.u_stuff}})
-        self.assertEquals(3, len(all))
-
-    def test_expand_concept(self):
-        ids = self.products_provider.expand(self.u_product)
-        self.assertIn(self.u_perfume, ids)
-
-    def test_expand_collection(self):
-        ids = self.products_provider.expand(self.u_stuff)
-        self.assertIn(self.u_perfume, ids)
-
-    def test_expand_unexisting(self):
-        ids = self.products_provider.expand(404)
-        self.assertFalse(ids)
-
-    def test_no_literal(self):
-        self.assertIsNone(self.products_provider._get_language_from_literal("test"))
-
-    def test_rdf_provider_list(self):
-        rdf_prov = RDFProvider(
-            {'id': 'TREES'},
-            self.trees_graph
-        )
-        dump = dict_dumper(rdf_prov)
-
-        self.assertEqual(len(dump), 3)
+        assert len(dump) == 3
         chestnut = [item for item in dump if item['uri'] == 'http://id.trees.org/2'][0]
-        self.assertEqual(chestnut['broader'], [])
-        self.assertEqual(chestnut['id'], '2')
-        self.assertEqual(chestnut['member_of'], ['3'])
-        self.assertEqual(chestnut['narrower'], [])
+        assert chestnut['broader'] == []
+        assert chestnut['id'] ==  '2'
+        assert chestnut['member_of'] == ['3']
+        assert chestnut['narrower'] == []
         label_en = [label for label in chestnut['labels'] if label['language'] == 'en'][0]
-        self.assertDictEqual(label_en, {'label': 'The Chestnut', 'language': 'en', 'type': 'prefLabel'})
+        assert label_en ==  {'label': 'The Chestnut', 'language': 'en', 'type': 'prefLabel'}
         label_nl = [label for label in chestnut['labels'] if label['language'] == 'nl'][0]
-        self.assertDictEqual(label_nl, {'label': 'De Paardekastanje', 'language': 'nl', 'type': 'altLabel'})
+        assert label_nl == {'label': 'De Paardekastanje', 'language': 'nl', 'type': 'altLabel'}
         label_fr = [label for label in chestnut['labels'] if label['language'] == 'fr'][0]
-        self.assertEqual(type(label_fr['label']), text_type)
-        self.assertDictEqual(label_fr, {'label': u'la châtaigne', 'language': 'fr', 'type': 'altLabel'})
+        assert type(label_fr['label']) == text_type
+        assert label_fr == {'label': u'la châtaigne', 'language': 'fr', 'type': 'altLabel'}
         assert {
                 'language': 'en',
                 'note': '<p>A different type of tree.</p>',
@@ -315,17 +289,14 @@ class RDFProviderTests(unittest.TestCase):
                 'markup': 'HTML'
             } in larch['notes']
 
-    def test_find_matches(self):
-        rdf_prov = RDFProvider(
-            {'id': 'TREES'},
-            self.trees_graph
-        )
-        kastanjes = rdf_prov.find({
+    def test_find_matches_kastanjes(self, trees_provider):
+        kastanjes = trees_provider.find({
             'matches': {'uri': 'https://id.erfgoed.net/thesauri/soorten/85'}
         })
         assert len(kastanjes) == 1
 
-        no_related_larches = rdf_prov.find({
+    def test_find_matches_no_related_larches(self, trees_provider):
+        no_related_larches = trees_provider.find({
             'matches': {
                 'uri': 'https://id.erfgoed.net/thesauri/soorten/666',
                 'type': 'related'
@@ -333,8 +304,8 @@ class RDFProviderTests(unittest.TestCase):
         })
         assert len(no_related_larches) == 0
 
-
-        close_larches = rdf_prov.find({
+    def test_find_matches_close_larches(self, trees_provider):
+        close_larches = trees_provider.find({
             'matches': {
                 'uri': 'https://id.erfgoed.net/thesauri/soorten/666',
                 'type': 'close'

@@ -9,7 +9,7 @@ This module contains an RDFProvider, an implementation of the
 import logging
 import rdflib
 from rdflib.term import Literal, URIRef
-from skosprovider_rdf.utils import text_, _df_writexml
+from skosprovider_rdf.utils import text_
 
 log = logging.getLogger(__name__)
 
@@ -30,9 +30,6 @@ from rdflib.namespace import RDF, SKOS, DC, DCTERMS
 SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
 
 from language_tags import tags
-
-from xml.dom.minidom import DocumentFragment
-DocumentFragment.writexml = _df_writexml
 
 
 class RDFProvider(MemoryProvider):

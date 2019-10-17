@@ -283,22 +283,3 @@ def text_(s, encoding='latin-1', errors='strict'):
     if isinstance(s, binary_type):
         return s.decode(encoding, errors)
     return s
-
-def _df_writexml(self, writer, indent="", addindent="", newl=""):
-    '''
-    Monkeypatch method for unexisting `writexml` in
-    :class:`xml.dom.minidom.DocumentFragment`.
-    '''
-    # indent = current indentation
-    # addindent = indentation to add to higher levels
-    # newl = newline string
-    if self.childNodes:
-        if (len(self.childNodes) == 1 and
-            self.childNodes[0].nodeType == Node.TEXT_NODE):
-            self.childNodes[0].writexml(writer, '', '', '')
-        else:
-            for node in self.childNodes:
-                node.writexml(writer, indent+addindent, addindent, newl)
-
-from xml.dom.minidom import DocumentFragment
-DocumentFragment.writexml = _df_writexml

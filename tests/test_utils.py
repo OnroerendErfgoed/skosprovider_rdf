@@ -45,7 +45,7 @@ def tree_provider():
             }, {
                 'type': 'definition',
                 'language': 'nl',
-                'note': '<p>Een soort boom.</p>',
+                'note': '<p>Een soort <srong>b</strong>oom.</p>',
                 'markup': 'HTML'
             }
         ],
@@ -227,12 +227,12 @@ class TestRDFDumperTrees(object):
 
     def test_dump_chestnut_to_rdf(self, tree_provider):
         graph_dump = utils.rdf_c_dumper(tree_provider, 2)
-        citations = graph_dump.objects(predicate=DCTERMS.bibliographicCitation)
-        for c in citations:
-            assert Literal(
-                '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
-                datatype=RDF.HTML
-            ) == c
+        citations = list(graph_dump.objects(predicate=DCTERMS.bibliographicCitation))
+
+        assert citations[0] == Literal(
+            '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
+            datatype=RDF.HTML
+        )
 
     def test_dump_oak_to_rdf(self, tree_provider):
         graph_dump = utils.rdf_c_dumper(tree_provider, 4)

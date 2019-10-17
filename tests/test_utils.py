@@ -16,11 +16,6 @@ from skosprovider.skos import (
 from skosprovider_rdf.providers import RDFProvider
 from skosprovider_rdf import utils
 
-from skosprovider_rdf.utils import (
-    _add_lang_to_html,
-    extract_language
-)
-
 import logging
 log = logging.getLogger(__name__)
 
@@ -262,42 +257,3 @@ class TestRDFDumperTrees(object):
         assert (cs, RDF.type, SKOS.ConceptScheme) in graph_dump
         assert (cs, SKOS.definition, Literal('<p xml:lang="en">Trees as used by Monthy Python.</p>', datatype=RDF.HTML)) in graph_dump
         assert (cs, SKOS.prefLabel, Literal('Pythonic trees.', lang='en')) in graph_dump
-
-
-class TestVarious(object):
-
-    def test_extract_language_None(self):
-        assert 'und' == extract_language(None)
-
-    def test_extract_language_nlBE(self):
-        assert 'nl-BE' == extract_language('nl-BE')
-
-
-class TestHtml(object):
-
-    def test_lang_und(self):
-        assert '' == _add_lang_to_html('', 'und')
-        assert '<p></p>' == _add_lang_to_html('<p></p>', 'und')
-
-    def test_lang_no_html(self):
-        assert '<div xml:lang="en"></div>' == _add_lang_to_html('', 'en')
-
-    def test_no_single_child(self):
-        html = '<p>Paragraph 1</p><p>Paragraph2</p>'
-        assert '<div xml:lang="en"><p>Paragraph 1</p><p>Paragraph2</p></div>' == _add_lang_to_html(html, 'en')
-
-    def test_text_node(self):
-        html = 'Something'
-        assert '<div xml:lang="en">Something</div>' == _add_lang_to_html(html, 'en')
-
-    def test_single_child_no_attributes(self):
-        html = '<p>Paragraph 1</p>'
-        assert '<p xml:lang="en">Paragraph 1</p>' == _add_lang_to_html(html, 'en')
-
-    def test_single_child_already_has_langs(self):
-        html = '<p xml:lang="en">Paragraph 1</p>'
-        assert '<p xml:lang="en">Paragraph 1</p>' == _add_lang_to_html(html, 'en')
-
-    def test_single_child_other_attributes(self):
-        html = '<p class="something">Paragraph 1</p>'
-        assert '<p class="something" xml:lang="en">Paragraph 1</p>' == _add_lang_to_html(html, 'en')

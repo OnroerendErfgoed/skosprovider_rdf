@@ -16,6 +16,10 @@ from skosprovider.skos import (
     Concept,
     Collection
 )
+from skosprovider.utils import (
+    extract_language,
+    add_lang_to_html
+)
 
 from xml.dom.minidom import Node, Element
 import html5lib
@@ -201,40 +205,8 @@ def _add_notes(graph, c, subject):
         if n.markup is None:
             graph.add((subject, predicate, Literal(n.note, lang=lang)))
         else:
-            html = _add_lang_to_html(n.note, lang)
+            html = add_lang_to_html(n.note, lang)
             graph.add((subject, predicate, Literal(html, datatype=RDF.HTML)))
-
-def _add_lang_to_html(htmltext, lang):
-    '''
-    Take a piece of HTML and add an xml:lang attribute to it.
-    '''
-    if lang == 'und':
-        return htmltext
-    parser = html5lib.HTMLParser(
-        tree=html5lib.treebuilders.getTreeBuilder("dom")
-    )
-    html = parser.parseFragment(htmltext)
-    html.normalize()
-    if len(html.childNodes) == 0:
-        return '<div xml:lang="%s"></div>' % lang
-    elif len(html.childNodes) == 1:
-        node = html.firstChild
-        if node.nodeType == Node.TEXT_NODE:
-            div = Element('div')
-            div.ownerDocument = html
-            div.setAttribute('xml:lang', lang)
-            div.childNodes = [node]
-            html.childNodes = [div]
-        else:
-            node.setAttribute('xml:lang', lang)
-    else:
-        #add a single encompassing div
-        div = Element('div')
-        div.ownerDocument = html
-        div.setAttribute('xml:lang', lang)
-        div.childNodes = html.childNodes
-        html.childNodes = [div]
-    return html.toxml()
 
 def _add_sources(graph, c, subject):
     '''
@@ -265,16 +237,6 @@ def _add_languages(graph, c, subject):
     for l in c.languages:
         lang = extract_language(l)
         graph.add((subject, DCTERMS.language, Literal(l)))
-
-def extract_language(lang):
-    '''
-    Turn a language in our domain model into a IANA tag.
-    '''
-    if lang is None:
-        lang = 'und'  # return undefined code when no language
-    else:
-        lang = text_(lang, encoding="UTF-8")
-    return lang
 
 
 def text_(s, encoding='latin-1', errors='strict'):

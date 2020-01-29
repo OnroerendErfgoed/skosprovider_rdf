@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-This script demonstrates dumping a 
+This script demonstrates dumping a
 :class:`skosprovider.providers.SimpleCsvProvider` as a RDF Graph. In this
 case, `n3` serialisation is used, other serialisations are available through
 :mod:`rdflib`.
@@ -49,4 +49,4 @@ csvprovider = SimpleCsvProvider(
 
 graph = rdf_dumper(csvprovider)
 
-print graph.serialize(format='n3')
+print(graph.serialize(format='n3'))

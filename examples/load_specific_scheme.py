@@ -20,23 +20,23 @@ provider = RDFProvider(
     concept_scheme_uri = 'https://id.erfgoed.net/thesauri/waardetypes'
 )
 
-print "provider.get_all()"
-print "------------------"
-print provider.get_all()
-print ""
+print("provider.get_all()")
+print("------------------")
+print(provider.get_all())
+print("")
 
-print "provider.find({'label': 'esthetische waarde'})"
-print "-----------------------------------"
-print provider.find({'label': 'esthetische waarde'})
-print ""
+print("provider.find({'label': 'esthetische waarde'})")
+print("-----------------------------------")
+print(provider.find({'label': 'esthetische waarde'}))
+print("")
 
 
-print "provider.get_by_id(46)"
-print "--------------------------------------------------------"
-print provider.get_by_id('46')
-print ""
+print("provider.get_by_id(46)")
+print("--------------------------------------------------------")
+print(provider.get_by_id('46'))
+print("")
 
-print "provider.get_by_uri('https://id.erfgoed.net/thesauri/waardetypes/46')"
-print "---------------------------------------------------------"
-print provider.get_by_uri('https://id.erfgoed.net/thesauri/waardetypes/46')
-print ""
+print("provider.get_by_uri('https://id.erfgoed.net/thesauri/waardetypes/46')")
+print("---------------------------------------------------------")
+print(provider.get_by_uri('https://id.erfgoed.net/thesauri/waardetypes/46'))
+print("")

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
 '''
-This module contains an RDFProvider, an implementation of the 
-:class:`skosprovider.providers.VocabularyProvider` interface that uses a 
+This module contains an RDFProvider, an implementation of the
+:class:`skosprovider.providers.VocabularyProvider` interface that uses a
 :class:`rdflib.graph.Graph` as input.
 '''
 
 import logging
 import rdflib
 from rdflib.term import Literal, URIRef
-from skosprovider_rdf.utils import text_, _df_writexml
+from skosprovider_rdf.utils import text_
 
 log = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 from skosprovider.providers import MemoryProvider
 from skosprovider.uri import (
@@ -32,11 +31,15 @@ SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
 
 from language_tags import tags
 
-from xml.dom.minidom import DocumentFragment
-DocumentFragment.writexml = _df_writexml
-
 
 class RDFProvider(MemoryProvider):
+
+    '''
+    Should the provider only take concepts into account explicitly linked
+    to the conceptscheme?
+    '''
+    check_in_scheme = False
+
     '''
     A simple vocabulary provider that use an :class:`rdflib.graph.Graph`
     as input. The provider expects a RDF graph with elements that represent
@@ -47,12 +50,15 @@ class RDFProvider(MemoryProvider):
 
     def __init__(self, metadata, graph, **kwargs):
         self.graph = graph
+        self.check_in_scheme = False
         if not 'concept_scheme' in kwargs:
-            kwargs['concept_scheme'] = self._cs_from_graph(metadata)
+            kwargs['concept_scheme'] = self._cs_from_graph(metadata, **kwargs)
+        else:
+            self.check_in_scheme = True
         super(RDFProvider, self).__init__(metadata, [], **kwargs)
         self.list = self._from_graph()
 
-    def _cs_from_graph(self, metadata):
+    def _cs_from_graph(self, metadata, **kwargs):
         cslist = []
         for sub in self.graph.subjects(RDF.type, SKOS.ConceptScheme):
             uri = self.to_text(sub)
@@ -73,19 +79,36 @@ class RDFProvider(MemoryProvider):
         elif len(cslist) == 1:
             return cslist[0]
         else:
-            raise RuntimeError(
-                'This RDF file contains more than one ConceptScheme.'
-            )
+            if not 'concept_scheme_uri' in kwargs:
+                raise RuntimeError(
+                    'This RDF file contains more than one ConceptScheme. \
+                    Please specify one. The following schemes were found: \
+                    %s' % (", ".join([str(cs.uri) for cs in cslist]))
+                )
+            else:
+                self.check_in_scheme = True
+                csuri = kwargs['concept_scheme_uri']
+                filteredcslist = [cs for cs in cslist if cs.uri == csuri]
+                if len(filteredcslist) == 0:
+                    raise RuntimeError(
+                        'This RDF file contains more than one ConceptScheme. \
+                        You specified an unexisting one. The following schemes \
+                        were found: %s' % (", ".join([str(cs.uri) for cs in cslist]))
+                    )
+                else:
+                    return filteredcslist[0]
 
     def _from_graph(self):
         clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
+            if self.check_in_scheme and self._get_in_scheme(sub) != self.concept_scheme.uri:
+                    continue
             uri = self.to_text(sub)
             matches = {}
             for k in Concept.matchtypes:
                 matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS + k +'Match'))
             con = Concept(
-                id = self._get_id_for_subject(sub, uri), 
+                id = self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
                 labels = self._create_from_subject_typelist(sub, Label.valid_types),
@@ -101,9 +124,11 @@ class RDFProvider(MemoryProvider):
             clist.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
+            if self.check_in_scheme and self._get_in_scheme(sub) != self.concept_scheme.uri:
+                    continue
             uri = self.to_text(sub)
             col = Collection(
-                id=self._get_id_for_subject(sub, uri), 
+                id=self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
                 labels = self._create_from_subject_typelist(sub, Label.valid_types),
@@ -116,6 +141,20 @@ class RDFProvider(MemoryProvider):
             clist.append(col)
         self._fill_member_of(clist)
         return clist
+
+    def _get_in_scheme(self, subject):
+        '''
+        Determine if a subject is part of a scheme.
+
+        :param subject: Subject to get the sources for.
+        :returns: A URI for the scheme a subject is part of or None if
+            it's not part of a scheme.
+        '''
+        scheme = None
+        scheme = self.graph.value(subject, SKOS.inScheme)
+        if not scheme:
+            scheme = self.graph.value(subject, SKOS.topConceptOf)
+        return self.to_text(scheme) if scheme else None
 
     def _fill_member_of(self, clist):
         collections = list(set([c for c in clist if isinstance(c, Collection)]))
@@ -161,9 +200,7 @@ class RDFProvider(MemoryProvider):
         return Label(self.to_text(literal), type, self._get_language_from_literal(literal))
 
     def _read_markupped_literal(self, literal):
-        if literal.datatype is None:
-            return (literal, self._get_language_from_literal(literal), None)
-        elif literal.datatype == RDF.HTML:
+        if literal.datatype == RDF.HTML:
             df = literal.value.cloneNode(True)
             if df.firstChild and df.firstChild.attributes and 'xml:lang' in df.firstChild.attributes.keys():
                 lang = self._scrub_language(df.firstChild.attributes.get('xml:lang').value)
@@ -172,9 +209,7 @@ class RDFProvider(MemoryProvider):
                 lang = 'und'
             return(df.toxml(), lang, 'HTML')
         else:
-            raise ValueError(
-                'Unable to process literal of type %s.' % literal.datatype
-            )
+            return (literal, self._get_language_from_literal(literal), None)
 
     def _create_note(self, literal, type):
         if not Note.is_valid_type(type):
@@ -224,9 +259,7 @@ class RDFProvider(MemoryProvider):
             return 'und'
 
     def _get_language_from_literal(self, data):
-        if not isinstance(data, Literal):
-            return None
-        if data.language is None:
+        if not hasattr(data, 'language') or data.language is None:
             return None
         return self.to_text(self._scrub_language(data.language))
 

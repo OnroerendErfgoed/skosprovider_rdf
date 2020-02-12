@@ -816,7 +816,7 @@
                 "labels": [],
                 "uri": "urn:x-skosprovider:materials"
             },
-            "member_of": [],
+            "member_of": [43],
             "notes": [
                 {
                     "note": "Het kwartsiet van Tienen is een metamorf gesteente waarbij de oorspronkelijke sedimentaire kwartskorrels door secundaire aangroei met elkaar zijn vergroeid. Dit verklaart de geringe porositeit en sterke cohesie van dit gesteente.",
@@ -839,14 +839,11 @@
             "narrower": [],
             "uri": "https://id.erfgoed.net/thesauri/materialen/44",
             "related": [],
-            "broader": [
-                43
-            ],
+            "broader": [],
             "type": "concept",
             "id": 44
         },
         {
-            "subordinate_arrays": [],
             "concept_scheme": {
                 "notes": [],
                 "labels": [],
@@ -858,19 +855,18 @@
                 {
                     "type": "prefLabel",
                     "language": "nl-BE",
-                    "label": "kwartsitisch lithisch materiaal"
+                    "label": "kwartsitisch lithisch materiaal volgens herkomst"
                 }
             ],
-            "narrower": [
+            "members": [
                 44,
                 45
             ],
             "uri": "https://id.erfgoed.net/thesauri/materialen/43",
-            "related": [],
-            "broader": [
+            "superordinates": [
                 42
             ],
-            "type": "concept",
+            "type": "collection",
             "id": 43
         },
         {
@@ -910,7 +906,7 @@
             "id": 30
         },
         {
-            "subordinate_arrays": [],
+            "subordinate_arrays": [43],
             "concept_scheme": {
                 "notes": [],
                 "labels": [],
@@ -926,7 +922,6 @@
                 }
             ],
             "narrower": [
-                43,
                 46
             ],
             "uri": "https://id.erfgoed.net/thesauri/materialen/42",
@@ -1559,7 +1554,7 @@
                 "labels": [],
                 "uri": "urn:x-skosprovider:materials"
             },
-            "member_of": [],
+            "member_of": [43],
             "notes": [
                 {
                     "note": "Wommersomkwartsiet vertoont een textuur van hoekige kwartskorrels in een fijnkorrelig kwartscement ingebed. Deze gesteentesoort komt schijnbaar alleen voor in Wommersom, nabij Tienen. Het vertoont enige gelijkenis met silex en werd alsdusdanig ook gebruikt om prehistorische werktuigen te maken.",
@@ -1582,9 +1577,7 @@
             "narrower": [],
             "uri": "https://id.erfgoed.net/thesauri/materialen/45",
             "related": [],
-            "broader": [
-                43
-            ],
+            "broader": [],
             "type": "concept",
             "id": 45
         },

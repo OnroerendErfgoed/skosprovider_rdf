@@ -24,7 +24,7 @@ requires = [
 
 setup(
     name='skosprovider_rdf',
-    version='0.7.0',
+    version='0.8.0',
     description='skosprovider_rdf',
     long_description=README + '\n\n' + HISTORY,
     long_description_content_type='text/x-rst',

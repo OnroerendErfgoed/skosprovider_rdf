@@ -178,7 +178,7 @@ def _add_c(graph, provider, id):
                 graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
         for k in c.matches.keys():
             for uri in c.matches[k]:
-                graph.add((subject, URIRef(SKOS + k +'Match'), URIRef(uri)))
+                graph.add((subject, URIRef(SKOS[k +'Match']), URIRef(uri)))
     elif isinstance(c, Collection):
         graph.add((subject, RDF.type, SKOS.Collection))
         for m in c.members:
@@ -193,14 +193,14 @@ def _add_c(graph, provider, id):
 
 def _add_labels(graph, c, subject):
     for l in c.labels:
-        predicate = URIRef(SKOS + l.type)
+        predicate = URIRef(SKOS[l.type])
         lang = extract_language(l.language)
         graph.add((subject, predicate, Literal(l.label, lang=lang)))
 
 
 def _add_notes(graph, c, subject):
     for n in c.notes:
-        predicate = URIRef(SKOS + n.type)
+        predicate = URIRef(SKOS[n.type])
         lang = extract_language(n.language)
         if n.markup is None:
             graph.add((subject, predicate, Literal(n.note, lang=lang)))

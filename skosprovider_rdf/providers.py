@@ -60,13 +60,11 @@ class RDFProvider(MemoryProvider):
 
     def _cs_from_graph(self, metadata, **kwargs):
         cslist = []
-        valid_label_types = Label.valid_types[:]
-        valid_label_types.remove('sortLabel')
         for sub in self.graph.subjects(RDF.type, SKOS.ConceptScheme):
             uri = self.to_text(sub)
             cs = ConceptScheme(
                 uri=uri,
-                labels = self._create_from_subject_typelist(sub, valid_label_types),
+                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
                 notes = self._create_from_subject_typelist(sub, Note.valid_types),
                 sources = self._create_sources(sub),
                 languages = self._create_languages(sub)
@@ -102,8 +100,6 @@ class RDFProvider(MemoryProvider):
 
     def _from_graph(self):
         clist = []
-        valid_label_types = Label.valid_types[:]
-        valid_label_types.remove('sortLabel')
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
             if self.check_in_scheme and self._get_in_scheme(sub) != self.concept_scheme.uri:
                     continue
@@ -115,7 +111,7 @@ class RDFProvider(MemoryProvider):
                 id = self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
-                labels = self._create_from_subject_typelist(sub, valid_label_types),
+                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
                 notes = self._create_from_subject_typelist(sub, Note.valid_types),
                 sources = self._create_sources(sub),
                 broader = self._create_from_subject_predicate(sub, SKOS.broader),
@@ -135,7 +131,7 @@ class RDFProvider(MemoryProvider):
                 id=self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
-                labels = self._create_from_subject_typelist(sub, valid_label_types),
+                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
                 notes = self._create_from_subject_typelist(sub, (Note.valid_types)),
                 sources = self._create_sources(sub),
                 members = self._create_from_subject_predicate(sub, SKOS.member),
@@ -261,6 +257,12 @@ class RDFProvider(MemoryProvider):
         else:
             log.warning('Encountered an invalid language %s. Falling back to "und".' % language)
             return 'und'
+
+    def _scrub_label_types(self):
+        valid_label_types = Label.valid_types[:]
+        if 'sortLabel' in valid_label_types:
+            valid_label_types.remove('sortLabel')
+        return valid_label_types
 
     def _get_language_from_literal(self, data):
         if not hasattr(data, 'language') or data.language is None:

@@ -64,7 +64,7 @@ class RDFProvider(MemoryProvider):
             uri = self.to_text(sub)
             cs = ConceptScheme(
                 uri=uri,
-                labels = self._create_from_subject_typelist(sub, Label.valid_types),
+                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
                 notes = self._create_from_subject_typelist(sub, Note.valid_types),
                 sources = self._create_sources(sub),
                 languages = self._create_languages(sub)
@@ -106,12 +106,12 @@ class RDFProvider(MemoryProvider):
             uri = self.to_text(sub)
             matches = {}
             for k in Concept.matchtypes:
-                matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS + k +'Match'))
+                matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS[k +'Match']))
             con = Concept(
                 id = self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
-                labels = self._create_from_subject_typelist(sub, Label.valid_types),
+                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
                 notes = self._create_from_subject_typelist(sub, Note.valid_types),
                 sources = self._create_sources(sub),
                 broader = self._create_from_subject_predicate(sub, SKOS.broader),
@@ -131,7 +131,7 @@ class RDFProvider(MemoryProvider):
                 id=self._get_id_for_subject(sub, uri),
                 uri=uri,
                 concept_scheme = self.concept_scheme,
-                labels = self._create_from_subject_typelist(sub, Label.valid_types),
+                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
                 notes = self._create_from_subject_typelist(sub, (Note.valid_types)),
                 sources = self._create_sources(sub),
                 members = self._create_from_subject_predicate(sub, SKOS.member),
@@ -255,8 +255,14 @@ class RDFProvider(MemoryProvider):
         if tags.check(language):
             return language
         else:
-            log.warn('Encountered an invalid language %s. Falling back to "und".' % language)
+            log.warning('Encountered an invalid language %s. Falling back to "und".' % language)
             return 'und'
+
+    def _scrub_label_types(self):
+        valid_label_types = Label.valid_types[:]
+        if 'sortLabel' in valid_label_types:
+            valid_label_types.remove('sortLabel')
+        return valid_label_types
 
     def _get_language_from_literal(self, data):
         if not hasattr(data, 'language') or data.language is None:

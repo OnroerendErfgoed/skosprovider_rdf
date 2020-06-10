@@ -1,3 +1,8 @@
+0.8.1 (??-??-2020)
+------------------
+
+- Prevent the _add_labels method from generating an error. (#80)
+
 0.8.0 (08-06-2020)
 ------------------
 

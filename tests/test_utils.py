@@ -66,7 +66,10 @@ def tree_provider():
              'label': 'De Paardekastanje'},
             {'type': 'altLabel',
              'language': 'fr',
-             'label': 'la châtaigne'}
+             'label': 'la châtaigne'},
+            {'type': 'sortLabel',
+             'language': 'nl',
+             'label': 'aaa'}
         ],
         'notes': [
             {
@@ -222,8 +225,21 @@ class TestRDFDumperTrees(object):
 
     def test_dump_chestnut_to_rdf(self, tree_provider):
         graph_dump = utils.rdf_c_dumper(tree_provider, 2)
-        citations = list(graph_dump.objects(predicate=DCTERMS.bibliographicCitation))
 
+        chestnut = URIRef('http://id.trees.org/2')
+        assert (chestnut, SKOS.hiddenLabel,
+                Literal('aaa', lang='nl')) in graph_dump
+        assert (chestnut, SKOS.altLabel,
+                Literal('De Paardekastanje', lang='nl')) in graph_dump
+        assert (chestnut, SKOS.prefLabel,
+                Literal('The Chestnut', lang='en')) in graph_dump
+        assert (chestnut, SKOS.altLabel,
+                Literal('la châtaigne', lang='fr')) in graph_dump
+
+        assert (chestnut, SKOS.definition, Literal('A different type of tree.',
+                lang='en')) in graph_dump
+
+        citations = list(graph_dump.objects(predicate=DCTERMS.bibliographicCitation))
         assert citations[0] == Literal(
             '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
             datatype=RDF.HTML

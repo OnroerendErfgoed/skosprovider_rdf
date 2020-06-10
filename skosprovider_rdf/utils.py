@@ -193,7 +193,8 @@ def _add_c(graph, provider, id):
 
 def _add_labels(graph, c, subject):
     for l in c.labels:
-        predicate = URIRef(SKOS[l.type])
+        labeltype = l.type if l.type in ['prefLabel', 'altLabel', 'hiddenLabel'] else 'hiddenLabel'
+        predicate = URIRef(SKOS[labeltype])
         lang = extract_language(l.language)
         graph.add((subject, predicate, Literal(l.label, lang=lang)))
 

@@ -176,6 +176,12 @@ def _add_c(graph, provider, id):
             subordinate_array = provider.get_by_id(s)
             if subordinate_array:
                 graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
+                if subordinate_array.infer_concept_relations:
+                    for m in subordinate_array.members:
+                        member = provider.get_by_id(m)
+                        if member:
+                            graph.add((subject, SKOS.narrower, URIRef(member.uri)))
+                            graph.add((URIRef(member.uri), SKOS.broader, subject))
         for k in c.matches.keys():
             for uri in c.matches[k]:
                 graph.add((subject, URIRef(SKOS[k +'Match']), URIRef(uri)))

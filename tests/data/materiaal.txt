@@ -283,7 +283,7 @@
                 "labels": [],
                 "uri": "urn:x-skosprovider:materials"
             },
-            "member_of": [],
+            "member_of": [13],
             "notes": [
                 {
                     "note": "Brons is een legering van koper en tin.",
@@ -301,9 +301,7 @@
             "narrower": [],
             "uri": "https://id.erfgoed.net/thesauri/materialen/14",
             "related": [],
-            "broader": [
-                13
-            ],
+            "broader": [],
             "type": "concept",
             "id": 14
         },
@@ -697,7 +695,7 @@
             "id": 11
         },
         {
-            "subordinate_arrays": [],
+            "subordinate_arrays": [13],
             "concept_scheme": {
                 "notes": [],
                 "labels": [],
@@ -723,9 +721,7 @@
                     "label": "koper"
                 }
             ],
-            "narrower": [
-                13
-            ],
+            "narrower": [],
             "uri": "https://id.erfgoed.net/thesauri/materialen/12",
             "related": [],
             "broader": [
@@ -735,7 +731,6 @@
             "id": 12
         },
         {
-            "subordinate_arrays": [],
             "concept_scheme": {
                 "notes": [],
                 "labels": [],
@@ -761,16 +756,16 @@
                     "label": "koperlegeringen"
                 }
             ],
-            "narrower": [
+            "members": [
                 14,
                 15
             ],
             "uri": "https://id.erfgoed.net/thesauri/materialen/13",
-            "related": [],
-            "broader": [
+            "superordinates": [
                 12
             ],
-            "type": "concept",
+            "infer_concept_relations": false,
+            "type": "collection",
             "id": 13
         },
         {
@@ -866,6 +861,7 @@
             "superordinates": [
                 42
             ],
+            "infer_concept_relations": true,
             "type": "collection",
             "id": 43
         },
@@ -1011,7 +1007,7 @@
                 "labels": [],
                 "uri": "urn:x-skosprovider:materials"
             },
-            "member_of": [],
+            "member_of": [13],
             "notes": [
                 {
                     "note": "Messing is een legering van koper en zink, meestal met koper als het voornaamste element en met zink als maximaal 40% van het gewicht.",
@@ -1034,9 +1030,7 @@
             "narrower": [],
             "uri": "https://id.erfgoed.net/thesauri/materialen/15",
             "related": [],
-            "broader": [
-                13
-            ],
+            "broader": [],
             "type": "concept",
             "id": 15
         },

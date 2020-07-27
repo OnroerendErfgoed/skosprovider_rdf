@@ -199,6 +199,20 @@ class TestRDFDumperMaterials(object):
         assert bont_skos_definition in xml
         assert dcterms_id_skos_definition in xml
 
+    def test_dump_collections_roundtrip(self, materials_provider, caplog):
+        caplog.set_level(logging.DEBUG)
+        graph_dump = utils.rdf_dumper(materials_provider)
+        provider = RDFProvider({
+                'id': 'ImportMateriaal'
+            },
+            graph_dump
+        )
+        kwarts_mat = provider.get_by_id(43)
+        assert kwarts_mat.type == 'collection'
+        assert kwarts_mat.infer_concept_relations is True
+        legeringen = provider.get_by_id(13)
+        assert legeringen.type == 'collection'
+        assert legeringen.infer_concept_relations is False
 
 class TestRDFDumperProducts(object):
 

@@ -140,6 +140,7 @@ class RDFProvider(MemoryProvider):
             )
             clist.append(col)
         self._fill_member_of(clist)
+        self._set_infer_concept_relations(clist)
         return clist
 
     def _get_in_scheme(self, subject):
@@ -163,6 +164,18 @@ class RDFProvider(MemoryProvider):
                 if c.id in col.members:
                     c.member_of.append(col.id)
         return
+
+    def _set_infer_concept_relations(self, clist):
+        collections = list(set([c for c in clist if isinstance(c, Collection)]))
+        for col in collections:
+            if not col.superordinates:
+                col.infer_concept_relations = False
+                continue
+            members = list(set([c for c in clist if c.id in col.members]))
+            broader = []
+            for m in members:
+                broader.extend(m.broader)
+            col.infer_concept_relations = len(set(broader).intersection(col.superordinates)) > 0
 
     def _create_from_subject_typelist(self,subject,typelist):
         list = []

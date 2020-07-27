@@ -1,6 +1,13 @@
 0.8.1 (??-??-2020)
 ------------------
 
+- Cleaner handling of `infer_concept_relations`. When exporting through
+  skosprovider_rdf this attribute will determine if broader/narrower relations
+  between concepts are generated when there's a collection between them, as is
+  the case when a concept has a guide term divding the underlying concepts.
+  When reading from an RDF file, the `infer_concept_relations` attribute will
+  be set to True if at least one concept in a collection under a concept has a
+  broader relation with said concept.
 - Prevent the _add_labels method from generating an error. (#80)
 
 0.8.0 (08-06-2020)

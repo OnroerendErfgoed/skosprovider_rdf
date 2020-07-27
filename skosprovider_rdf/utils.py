@@ -176,6 +176,20 @@ def _add_c(graph, provider, id):
             subordinate_array = provider.get_by_id(s)
             if subordinate_array:
                 graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
+                if subordinate_array.infer_concept_relations:
+                    def _add_coll_members_to_superordinate(so, members):
+                        '''
+                        Recursively create broader/narrower relations between
+                        collection members and the superordinate concept
+                        '''
+                        for m in members:
+                            member = provider.get_by_id(m)
+                            if member.type == 'concept':
+                                graph.add((so, SKOS.narrower, URIRef(member.uri)))
+                                graph.add((URIRef(member.uri), SKOS.broader, so))
+                            elif member.type == 'collection':
+                                _add_coll_members_to_superordinate(so, member.members)
+                    _add_coll_members_to_superordinate(subject, subordinate_array.members)
         for k in c.matches.keys():
             for uri in c.matches[k]:
                 graph.add((subject, URIRef(SKOS[k +'Match']), URIRef(uri)))
@@ -193,7 +207,8 @@ def _add_c(graph, provider, id):
 
 def _add_labels(graph, c, subject):
     for l in c.labels:
-        predicate = URIRef(SKOS[l.type])
+        labeltype = l.type if l.type in ['prefLabel', 'altLabel', 'hiddenLabel'] else 'hiddenLabel'
+        predicate = URIRef(SKOS[labeltype])
         lang = extract_language(l.language)
         graph.add((subject, predicate, Literal(l.label, lang=lang)))
 

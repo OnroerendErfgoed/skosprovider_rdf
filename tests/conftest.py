@@ -60,3 +60,15 @@ def materials_provider():
         )
     )
     return materials
+
+@pytest.fixture(scope='module')
+def materials_collections_provider():
+    products_graph = Graph()
+    abspath = os.path.abspath(TEST_DIR + "/data/mat_collections.ttl")
+    map_graph.parse(abspath, format="turtle")
+
+    # Set up rdf_provider
+    mat_provider = RDFProvider(
+        {'id': 'MATCOL'}, mat_graph
+    )
+    return mat_provider

@@ -2,16 +2,17 @@
 import pytest
 from . import TEST_DIR
 import os
-from rdflib import Graph
-from rdflib.namespace import RDF, SKOS, DCTERMS
+from rdflib import Graph, Namespace
 from rdflib.term import URIRef, Literal
+from rdflib.namespace import RDF, SKOS, DCTERMS
+SKOS_THES = Namespace('http://purl.org/iso25964/skos-thes#')
 
 from skosprovider.providers import DictionaryProvider
 from skosprovider.skos import (
-    ConceptScheme,
-    Label,
-    Note
-)
+        ConceptScheme,
+        Label,
+        Note
+        )
 
 from skosprovider_rdf.providers import RDFProvider
 from skosprovider_rdf import utils
@@ -20,149 +21,150 @@ import logging
 log = logging.getLogger(__name__)
 
 
-
-
 @pytest.fixture(scope='module')
 def tree_provider():
     larch = {
-        'id': '1',
-        'uri': 'http://id.trees.org/1',
-        'type': 'concept',
-        'labels': [
-            {'type': 'prefLabel', 'language': 'en', 'label': 'The Larch'},
-            {'type': 'prefLabel', 'language': 'nl', 'label': 'De Lariks'}
-        ],
-        'notes': [
-            {
-                'type': 'definition',
-                'language': 'en',
-                'note': 'A type of tree.'
-            }, {
-                'type': 'definition',
-                'language': 'nl',
-                'note': '<p>Een soort <srong>b</strong>oom.</p>',
-                'markup': 'HTML'
+            'id': '1',
+            'uri': 'http://id.trees.org/1',
+            'type': 'concept',
+            'labels': [
+                {'type': 'prefLabel', 'language': 'en', 'label': 'The Larch'},
+                {'type': 'prefLabel', 'language': 'nl', 'label': 'De Lariks'}
+                ],
+            'notes': [
+                {
+                    'type': 'definition',
+                    'language': 'en',
+                    'note': 'A type of tree.'
+                    }, {
+                        'type': 'definition',
+                        'language': 'nl',
+                        'note': '<p>Een soort <srong>b</strong>oom.</p>',
+                        'markup': 'HTML'
+                        }
+                    ],
+            'narrower': [],
+            'broader': [],
+            'related': [],
+            'member_of': ['3'],
+            'sources': [
+                {'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.'}
+                ]
             }
-        ],
-        'narrower': [],
-        'broader': [],
-        'related': [],
-        'member_of': ['3'],
-        'sources': [
-            {'citation': 'Monthy Python. Episode Three: How to recognise different types of trees from quite a long way away.'}
-        ]
-    }
 
     chestnut = {
-        'id': '2',
-        'uri': 'http://id.trees.org/2',
-        'type': 'concept',
-        'labels': [
-            {'type': 'prefLabel',
-             'language': 'en',
-             'label': 'The Chestnut'},
-            {'type': 'altLabel',
-             'language': 'nl',
-             'label': 'De Paardekastanje'},
-            {'type': 'altLabel',
-             'language': 'fr',
-             'label': 'la châtaigne'}
-        ],
-        'notes': [
-            {
-                'type': 'definition', 'language': 'en',
-                'note': 'A different type of tree.'
+            'id': '2',
+            'uri': 'http://id.trees.org/2',
+            'type': 'concept',
+            'labels': [
+                {'type': 'prefLabel',
+                    'language': 'en',
+                    'label': 'The Chestnut'},
+                {'type': 'altLabel',
+                    'language': 'nl',
+                    'label': 'De Paardekastanje'},
+                {'type': 'altLabel',
+                    'language': 'fr',
+                    'label': 'la châtaigne'},
+                {'type': 'sortLabel',
+                    'language': 'nl',
+                    'label': 'aaa'}
+                ],
+            'notes': [
+                {
+                    'type': 'definition', 'language': 'en',
+                    'note': 'A different type of tree.'
+                    }
+                ],
+            'narrower': [],
+            'broader': [],
+            'related': [],
+            'member_of': ['3'],
+            'subordinate_arrays': [],
+            'sources': [
+                {
+                    'citation': '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
+                    'markup': 'HTML'
+                    }
+                ]
             }
-        ],
-        'narrower': [],
-        'broader': [],
-        'related': [],
-        'member_of': ['3'],
-        'subordinate_arrays': [],
-        'sources': [
-            {
-                'citation': '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
-                'markup': 'HTML'
-            }
-        ]
-    }
 
     oak = {
-        'id': '4',
-        'uri': 'http://id.trees.org/4',
-        'type': 'concept',
-        'labels': [
-            {'type': 'prefLabel',
-             'language': 'en',
-             'label': 'The Oak'},
-            {'type': 'altLabel',
-             'language': 'nl',
-             'label': 'De Eik'},
-            {'type': 'altLabel',
-             'language': 'fr',
-             'label': 'le chêne'}
-        ],
-        'notes': [
-            {
-                'type': 'definition', 'language': 'en',
-                'note': 'An even differenter type of tree.'
+            'id': '4',
+            'uri': 'http://id.trees.org/4',
+            'type': 'concept',
+            'labels': [
+                {'type': 'prefLabel',
+                    'language': 'en',
+                    'label': 'The Oak'},
+                {'type': 'altLabel',
+                    'language': 'nl',
+                    'label': 'De Eik'},
+                {'type': 'altLabel',
+                    'language': 'fr',
+                    'label': 'le chêne'}
+                ],
+            'notes': [
+                {
+                    'type': 'definition', 'language': 'en',
+                    'note': 'An even differenter type of tree.'
+                    }
+                ],
+            'narrower': [],
+            'broader': [],
+            'related': [],
+            'member_of': [],
+            'subordinate_arrays': [],
+            'matches': {
+                'exact': ['https://id.erfgoed.net/thesauri/soorten/297']
+                }
             }
-        ],
-        'narrower': [],
-        'broader': [],
-        'related': [],
-        'member_of': [],
-        'subordinate_arrays': [],
-        'matches': {
-            'exact': ['https://id.erfgoed.net/thesauri/soorten/297']
-        }
-    }
 
     species = {
-        'id': 3,
-        'uri': 'http://id.trees.org/3',
-        'labels': [
-            {'type': 'prefLabel', 'language': 'en', 'label': 'Trees by species'},
-            {'type': 'prefLabel', 'language': 'nl', 'label': 'Bomen per soort'}
-        ],
-        'type': 'collection',
-        'members': ['1', '2', '4'],
-        'member_of': [],
-        'superordinates': []
-    }
+            'id': 3,
+            'uri': 'http://id.trees.org/3',
+            'labels': [
+                {'type': 'prefLabel', 'language': 'en', 'label': 'Trees by species'},
+                {'type': 'prefLabel', 'language': 'nl', 'label': 'Bomen per soort'}
+                ],
+            'type': 'collection',
+            'members': ['1', '2', '4'],
+            'member_of': [],
+            'superordinates': []
+            }
 
     tree_provider = DictionaryProvider(
-        {
-            'id': 'TREE',
-            'dataset': {
-                'uri': 'https://id.trees.org/dataset'
-            }
-        },
-        [larch, chestnut, oak, species],
-        concept_scheme=ConceptScheme(
-            uri='http://id.trees.org',
-            labels=[
-                Label(
-                    'Pythonic trees.',
-                    type='prefLabel',
-                    language='en'
-                ),
-                Label(
-                    'Pythonische bomen.',
-                    type='prefLabel',
-                    language=None
+            {
+                'id': 'TREE',
+                'dataset': {
+                    'uri': 'https://id.trees.org/dataset'
+                    }
+                },
+            [larch, chestnut, oak, species],
+            concept_scheme=ConceptScheme(
+                uri='http://id.trees.org',
+                labels=[
+                    Label(
+                        'Pythonic trees.',
+                        type='prefLabel',
+                        language='en'
+                        ),
+                    Label(
+                        'Pythonische bomen.',
+                        type='prefLabel',
+                        language=None
+                        )
+                    ],
+                notes=[
+                    Note(
+                        '<p>Trees as used by Monthy Python.</p>',
+                        type='definition',
+                        language='en',
+                        markup='HTML'
+                        )
+                    ]
                 )
-            ],
-            notes=[
-                Note(
-                    '<p>Trees as used by Monthy Python.</p>',
-                    type='definition',
-                    language='en',
-                    markup='HTML'
-                )
-            ]
-        )
-    )
+            )
 
     return tree_provider
 
@@ -170,6 +172,24 @@ class TestRDFDumperMaterials(object):
 
     def test_dump_dictionary_to_rdf(self, materials_provider):
         graph_dump = utils.rdf_dumper(materials_provider)
+        lith_mat = URIRef('https://id.erfgoed.net/thesauri/materialen/42')
+        tienkwarts = URIRef('https://id.erfgoed.net/thesauri/materialen/44')
+        womkwarts = URIRef('https://id.erfgoed.net/thesauri/materialen/45')
+        assert (lith_mat, SKOS.narrower, tienkwarts) in graph_dump
+        assert (lith_mat, SKOS.narrower, womkwarts) in graph_dump
+        assert (womkwarts, SKOS.broader, lith_mat) in graph_dump
+        assert (tienkwarts, SKOS.broader, lith_mat) in graph_dump
+        assert not materials_provider.get_by_id(13).infer_concept_relations
+        koper = URIRef('https://id.erfgoed.net/thesauri/materialen/12')
+        legeringen = URIRef('https://id.erfgoed.net/thesauri/materialen/13')
+        brons = URIRef('https://id.erfgoed.net/thesauri/materialen/14')
+        messing = URIRef('https://id.erfgoed.net/thesauri/materialen/15')
+        assert (koper, SKOS_THES.subordinateArray, legeringen) in graph_dump
+        assert (legeringen, SKOS_THES.superOrdinate, koper) in graph_dump
+        assert (legeringen, SKOS.member, brons) in graph_dump
+        assert (legeringen, SKOS.member, messing) in graph_dump
+        assert (koper, SKOS.narrower, brons) not in graph_dump
+        assert (koper, SKOS.narrower, messing) not in graph_dump
         xml = graph_dump.serialize(format='xml', encoding="UTF-8")
         if isinstance(xml, bytes):
             xml = xml.decode("UTF-8")
@@ -179,6 +199,24 @@ class TestRDFDumperMaterials(object):
         assert bont_skos_definition in xml
         assert dcterms_id_skos_definition in xml
 
+    def test_dump_collections_roundtrip(self, materials_provider, caplog):
+        caplog.set_level(logging.DEBUG)
+        graph_dump = utils.rdf_dumper(materials_provider)
+        provider = RDFProvider({
+                'id': 'ImportMateriaal'
+            },
+            graph_dump
+        )
+        kwarts_mat = provider.get_by_id(43)
+        assert kwarts_mat.type == 'collection'
+        assert kwarts_mat.infer_concept_relations is True
+        legeringen = provider.get_by_id(13)
+        assert legeringen.type == 'collection'
+        assert legeringen.infer_concept_relations is False
+        bet_nr_vs = provider.get_by_id(68)
+        assert bet_nr_vs.type == 'collection'
+        assert bet_nr_vs.infer_concept_relations is True
+        assert set(provider.expand(68)) == set(['39', '70'])
 
 class TestRDFDumperProducts(object):
 
@@ -222,12 +260,25 @@ class TestRDFDumperTrees(object):
 
     def test_dump_chestnut_to_rdf(self, tree_provider):
         graph_dump = utils.rdf_c_dumper(tree_provider, 2)
-        citations = list(graph_dump.objects(predicate=DCTERMS.bibliographicCitation))
 
+        chestnut = URIRef('http://id.trees.org/2')
+        assert (chestnut, SKOS.hiddenLabel,
+                Literal('aaa', lang='nl')) in graph_dump
+        assert (chestnut, SKOS.altLabel,
+                Literal('De Paardekastanje', lang='nl')) in graph_dump
+        assert (chestnut, SKOS.prefLabel,
+                Literal('The Chestnut', lang='en')) in graph_dump
+        assert (chestnut, SKOS.altLabel,
+                Literal('la châtaigne', lang='fr')) in graph_dump
+
+        assert (chestnut, SKOS.definition, Literal('A different type of tree.',
+            lang='en')) in graph_dump
+
+        citations = list(graph_dump.objects(predicate=DCTERMS.bibliographicCitation))
         assert citations[0] == Literal(
-            '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
-            datatype=RDF.HTML
-        )
+                '<strong>Monthy Python.</strong> Episode Three: How to recognise different types of trees from quite a long way away.',
+                datatype=RDF.HTML
+                )
 
     def test_dump_oak_to_rdf(self, tree_provider):
         graph_dump = utils.rdf_c_dumper(tree_provider, 4)
@@ -238,14 +289,14 @@ class TestRDFDumperTrees(object):
     def test_dump_one_id_to_rdf_and_reload(self, tree_provider):
         graph_dump1 = utils.rdf_c_dumper(tree_provider, 1)
         provider = RDFProvider(
-            {
-                'id': 'Number1',
-                'dataset': {
-                    'uri': 'http://id.trees.org/dataset'
-                }
-            },
-            graph_dump1
-        )
+                {
+                    'id': 'Number1',
+                    'dataset': {
+                        'uri': 'http://id.trees.org/dataset'
+                        }
+                    },
+                graph_dump1
+                )
         graph_dump2 = utils.rdf_c_dumper(provider, 1)
         graph_full_dump2 = utils.rdf_dumper(provider)
         assert len(graph_dump1) ==  len(graph_dump2)

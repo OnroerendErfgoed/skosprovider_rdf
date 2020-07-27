@@ -7,7 +7,7 @@ Installation
 ------------
 
 To be able to use this library you need to have a modern version of Python 
-installed. Currently we're supporting versions 2.7, 3.3 and 3.4 of Python.
+installed.
 
 This easiest way to install this library is through :command:`pip` or 
 :command:`easy install`:
@@ -41,7 +41,7 @@ present in the file, you can again specify the conceptscheme through the
 `concept_scheme` parameter (passing a :class:`skosprovider.skos.ConceptScheme`)
 or you can pass the uri of one of the conceptschemes present in the
 `concept_scheme_uri` parameter. When you specify a conceptscheme like this, only
-the concepts linked to this scheme through `skok:inScheme` statements will be
+the concepts linked to this scheme through `skos:inScheme` statements will be
 loaded.
 
 .. literalinclude:: /../examples/load_specific_scheme.py

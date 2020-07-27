@@ -171,10 +171,20 @@ class RDFProvider(MemoryProvider):
             if not col.superordinates:
                 col.infer_concept_relations = False
                 continue
-            members = list(set([c for c in clist if c.id in col.members]))
-            broader = []
-            for m in members:
-                broader.extend(m.broader)
+            def _collect_broader(collection, clist):
+                '''
+                Collect all broader concepts of members of a collection or
+                their (recursive) members.
+                '''
+                members = list(set([c for c in clist if c.id in collection.members]))
+                broader = []
+                for m in members:
+                    if m.type == 'concept':
+                        broader.extend(m.broader)
+                    elif m.type == 'collection':
+                        broader.extend(_collect_broader(m, clist))
+                return broader
+            broader = _collect_broader(col, clist)
             col.infer_concept_relations = len(set(broader).intersection(col.superordinates)) > 0
 
     def _create_from_subject_typelist(self,subject,typelist):

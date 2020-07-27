@@ -128,7 +128,7 @@
             "id": 33
         },
         {
-            "subordinate_arrays": [],
+            "subordinate_arrays": [68],
             "concept_scheme": {
                 "notes": [],
                 "labels": [],
@@ -156,9 +156,7 @@
                     "label": "beton"
                 }
             ],
-            "narrower": [
-                39
-            ],
+            "narrower": [],
             "uri": "https://id.erfgoed.net/thesauri/materialen/38",
             "related": [],
             "broader": [],
@@ -1642,6 +1640,77 @@
             "superordinates": [],
             "type": "collection",
             "id": 0
+        },
+        {
+            "concept_scheme": {
+                "notes": [],
+                "labels": [],
+                "uri": "urn:x-skosprovider:materials"
+            },
+            "member_of": [],
+            "labels": [
+                {
+                    "type": "prefLabel",
+                    "language": "nl-BE",
+                    "label": "beton naar versterking"
+                }
+            ],
+            "uri": "https://id.erfgoed.net/thesauri/materialen/68",
+            "members": [69],
+            "superordinates": [38],
+            "type": "collection",
+            "infer_concept_relations": "True",
+            "id": 68
+        },
+        {
+            "concept_scheme": {
+                "notes": [],
+                "labels": [],
+                "uri": "urn:x-skosprovider:materials"
+            },
+            "member_of": [68],
+            "labels": [
+                {
+                    "type": "prefLabel",
+                    "language": "nl-BE",
+                    "label": "beton naar bewapening"
+                }
+            ],
+            "uri": "https://id.erfgoed.net/thesauri/materialen/69",
+            "members": [39, 70],
+            "superordinates": [],
+            "type": "collection",
+            "infer_concept_relations": "True",
+            "id": 69
+        },
+        {
+            "subordinate_arrays": [],
+            "concept_scheme": {
+                "notes": [],
+                "labels": [],
+                "uri": "urn:x-skosprovider:materials"
+            },
+            "member_of": [69],
+            "notes": [
+                {
+                    "note": "Ongewapend beton is een gewapend beton dat onschadelijk gemaakt werd met een tijger.",
+                    "type": "definition",
+                    "language": "nl-BE"
+                }
+            ],
+            "labels": [
+                {
+                    "type": "prefLabel",
+                    "language": "nl-BE",
+                    "label": "ongewapend beton"
+                }
+            ],
+            "narrower": [],
+            "uri": "https://id.erfgoed.net/thesauri/materialen/70",
+            "related": [],
+            "broader": [],
+            "type": "concept",
+            "id": 70
         }
     ]
 }

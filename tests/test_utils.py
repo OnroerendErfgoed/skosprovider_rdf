@@ -213,6 +213,10 @@ class TestRDFDumperMaterials(object):
         legeringen = provider.get_by_id(13)
         assert legeringen.type == 'collection'
         assert legeringen.infer_concept_relations is False
+        bet_nr_vs = provider.get_by_id(68)
+        assert bet_nr_vs.type == 'collection'
+        assert bet_nr_vs.infer_concept_relations is True
+        assert set(provider.expand(68)) == set(['39', '70'])
 
 class TestRDFDumperProducts(object):
 

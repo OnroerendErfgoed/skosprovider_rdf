@@ -1,10 +1,12 @@
-# -*- coding: utf-8 -*-
 import pytest
-from . import TEST_DIR
-import os
-from rdflib import Graph, Namespace
-from rdflib.term import URIRef, Literal
-from rdflib.namespace import RDF, SKOS, DCTERMS
+from rdflib import Graph
+from rdflib import Namespace
+from rdflib.namespace import DCTERMS
+from rdflib.namespace import RDF
+from rdflib.namespace import SKOS
+from rdflib.term import Literal
+from rdflib.term import URIRef
+
 SKOS_THES = Namespace('http://purl.org/iso25964/skos-thes#')
 
 from skosprovider.providers import DictionaryProvider
@@ -168,7 +170,7 @@ def tree_provider():
 
     return tree_provider
 
-class TestRDFDumperMaterials(object):
+class TestRDFDumperMaterials:
 
     def test_dump_dictionary_to_rdf(self, materials_provider):
         graph_dump = utils.rdf_dumper(materials_provider)
@@ -216,9 +218,9 @@ class TestRDFDumperMaterials(object):
         bet_nr_vs = provider.get_by_id(68)
         assert bet_nr_vs.type == 'collection'
         assert bet_nr_vs.infer_concept_relations is True
-        assert set(provider.expand(68)) == set(['39', '70'])
+        assert set(provider.expand(68)) == {'39', '70'}
 
-class TestRDFDumperProducts(object):
+class TestRDFDumperProducts:
 
     def test_dump_rdf_to_rdf(self, products_provider):
         graph_dump = utils.rdf_dumper(products_provider)
@@ -238,7 +240,7 @@ class TestRDFDumperProducts(object):
         assert isinstance(graph_dump, Graph)
 
 
-class TestRDFDumperTrees(object):
+class TestRDFDumperTrees:
 
     def test_dump_tree_to_rdf(self, tree_provider):
         graph_dump = utils.rdf_dumper(tree_provider)

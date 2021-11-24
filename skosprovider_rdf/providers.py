@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 '''
 This module contains an RDFProvider, an implementation of the
 :class:`skosprovider.providers.VocabularyProvider` interface that uses a
@@ -7,29 +5,28 @@ This module contains an RDFProvider, an implementation of the
 '''
 
 import logging
+
 import rdflib
-from rdflib.term import Literal, URIRef
+from language_tags import tags
+from rdflib.namespace import DC
+from rdflib.namespace import DCTERMS
+from rdflib.namespace import RDF
+from rdflib.namespace import SKOS
+from rdflib.term import URIRef
+from skosprovider.providers import MemoryProvider
+from skosprovider.skos import Collection
+from skosprovider.skos import Concept
+from skosprovider.skos import ConceptScheme
+from skosprovider.skos import Label
+from skosprovider.skos import Note
+from skosprovider.skos import Source
+from skosprovider.uri import DefaultConceptSchemeUrnGenerator
+
 from skosprovider_rdf.utils import text_
 
 log = logging.getLogger(__name__)
 
-from skosprovider.providers import MemoryProvider
-from skosprovider.uri import (
-    DefaultConceptSchemeUrnGenerator
-)
-from skosprovider.skos import (
-    Concept,
-    Collection,
-    ConceptScheme,
-    Label,
-    Note,
-    Source
-)
-
-from rdflib.namespace import RDF, SKOS, DC, DCTERMS
 SKOS_THES = rdflib.Namespace('http://purl.org/iso25964/skos-thes#')
-
-from language_tags import tags
 
 
 class RDFProvider(MemoryProvider):
@@ -55,7 +52,7 @@ class RDFProvider(MemoryProvider):
             kwargs['concept_scheme'] = self._cs_from_graph(metadata, **kwargs)
         else:
             self.check_in_scheme = True
-        super(RDFProvider, self).__init__(metadata, [], **kwargs)
+        super().__init__(metadata, [], **kwargs)
         self.list = self._from_graph()
 
     def _cs_from_graph(self, metadata, **kwargs):
@@ -64,10 +61,12 @@ class RDFProvider(MemoryProvider):
             uri = self.to_text(sub)
             cs = ConceptScheme(
                 uri=uri,
-                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
-                notes = self._create_from_subject_typelist(sub, Note.valid_types),
-                sources = self._create_sources(sub),
-                languages = self._create_languages(sub)
+                labels=self._create_from_subject_typelist(
+                    sub, self._scrub_label_types()),
+                notes=self._create_from_subject_typelist(
+                    sub, Note.valid_types),
+                sources=self._create_sources(sub),
+                languages=self._create_languages(sub)
             )
             cslist.append(cs)
         if len(cslist) == 0:
@@ -102,41 +101,49 @@ class RDFProvider(MemoryProvider):
         clist = []
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Concept)):
             if self.check_in_scheme and self._get_in_scheme(sub) != self.concept_scheme.uri:
-                    continue
+                continue
             uri = self.to_text(sub)
             matches = {}
             for k in Concept.matchtypes:
-                matches[k] = self._create_from_subject_predicate(sub, URIRef(SKOS[k +'Match']))
+                matches[k] = self._create_from_subject_predicate(
+                    sub, URIRef(SKOS[k + 'Match']))
             con = Concept(
-                id = self._get_id_for_subject(sub, uri),
+                id=self._get_id_for_subject(sub, uri),
                 uri=uri,
-                concept_scheme = self.concept_scheme,
-                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
-                notes = self._create_from_subject_typelist(sub, Note.valid_types),
-                sources = self._create_sources(sub),
-                broader = self._create_from_subject_predicate(sub, SKOS.broader),
-                narrower = self._create_from_subject_predicate(sub, SKOS.narrower),
-                related = self._create_from_subject_predicate(sub, SKOS.related),
-                member_of = [],
-                subordinate_arrays = self._create_from_subject_predicate(sub, SKOS_THES.subordinateArray),
-                matches = matches
+                concept_scheme=self.concept_scheme,
+                labels=self._create_from_subject_typelist(
+                    sub, self._scrub_label_types()),
+                notes=self._create_from_subject_typelist(
+                    sub, Note.valid_types),
+                sources=self._create_sources(sub),
+                broader=self._create_from_subject_predicate(sub, SKOS.broader),
+                narrower=self._create_from_subject_predicate(
+                    sub, SKOS.narrower),
+                related=self._create_from_subject_predicate(sub, SKOS.related),
+                member_of=[],
+                subordinate_arrays=self._create_from_subject_predicate(
+                    sub, SKOS_THES.subordinateArray),
+                matches=matches
             )
             clist.append(con)
 
         for sub, pred, obj in self.graph.triples((None, RDF.type, SKOS.Collection)):
             if self.check_in_scheme and self._get_in_scheme(sub) != self.concept_scheme.uri:
-                    continue
+                continue
             uri = self.to_text(sub)
             col = Collection(
                 id=self._get_id_for_subject(sub, uri),
                 uri=uri,
-                concept_scheme = self.concept_scheme,
-                labels = self._create_from_subject_typelist(sub, self._scrub_label_types()),
-                notes = self._create_from_subject_typelist(sub, (Note.valid_types)),
-                sources = self._create_sources(sub),
-                members = self._create_from_subject_predicate(sub, SKOS.member),
-                member_of = [],
-                superordinates = self._create_from_subject_predicate(sub, SKOS_THES.superOrdinate)
+                concept_scheme=self.concept_scheme,
+                labels=self._create_from_subject_typelist(
+                    sub, self._scrub_label_types()),
+                notes=self._create_from_subject_typelist(
+                    sub, (Note.valid_types)),
+                sources=self._create_sources(sub),
+                members=self._create_from_subject_predicate(sub, SKOS.member),
+                member_of=[],
+                superordinates=self._create_from_subject_predicate(
+                    sub, SKOS_THES.superOrdinate)
             )
             clist.append(col)
         self._fill_member_of(clist)
@@ -158,7 +165,7 @@ class RDFProvider(MemoryProvider):
         return self.to_text(scheme) if scheme else None
 
     def _fill_member_of(self, clist):
-        collections = list(set([c for c in clist if isinstance(c, Collection)]))
+        collections = list({c for c in clist if isinstance(c, Collection)})
         for col in collections:
             for c in clist:
                 if c.id in col.members:
@@ -166,17 +173,19 @@ class RDFProvider(MemoryProvider):
         return
 
     def _set_infer_concept_relations(self, clist):
-        collections = list(set([c for c in clist if isinstance(c, Collection)]))
+        collections = list({c for c in clist if isinstance(c, Collection)})
         for col in collections:
             if not col.superordinates:
                 col.infer_concept_relations = False
                 continue
+
             def _collect_broader(collection, clist):
                 '''
                 Collect all broader concepts of members of a collection or
                 their (recursive) members.
                 '''
-                members = list(set([c for c in clist if c.id in collection.members]))
+                members = list(
+                    {c for c in clist if c.id in collection.members})
                 broader = []
                 for m in members:
                     if m.type == 'concept':
@@ -185,13 +194,14 @@ class RDFProvider(MemoryProvider):
                         broader.extend(_collect_broader(m, clist))
                 return broader
             broader = _collect_broader(col, clist)
-            col.infer_concept_relations = len(set(broader).intersection(col.superordinates)) > 0
+            col.infer_concept_relations = len(
+                set(broader).intersection(col.superordinates)) > 0
 
-    def _create_from_subject_typelist(self,subject,typelist):
+    def _create_from_subject_typelist(self, subject, typelist):
         list = []
         for p in typelist:
-            term=SKOS.term(p)
-            list.extend(self._create_from_subject_predicate(subject,term))
+            term = SKOS._NS.term(p)
+            list.extend(self._create_from_subject_predicate(subject, term))
         return list
 
     def _get_id_for_subject(self, subject, uri):
@@ -226,7 +236,8 @@ class RDFProvider(MemoryProvider):
         if literal.datatype == RDF.HTML:
             df = literal.value.cloneNode(True)
             if df.firstChild and df.firstChild.attributes and 'xml:lang' in df.firstChild.attributes.keys():
-                lang = self._scrub_language(df.firstChild.attributes.get('xml:lang').value)
+                lang = self._scrub_language(
+                    df.firstChild.attributes.get('xml:lang').value)
                 del df.firstChild.attributes['xml:lang']
             else:
                 lang = 'und'
@@ -256,7 +267,7 @@ class RDFProvider(MemoryProvider):
                     Source(
                         self.to_text(oi),
                         'HTML' if oi.datatype == RDF.HTML else None
-                )
+                    )
                 )
         return ret
 
@@ -278,7 +289,8 @@ class RDFProvider(MemoryProvider):
         if tags.check(language):
             return language
         else:
-            log.warning('Encountered an invalid language %s. Falling back to "und".' % language)
+            log.warning(
+                'Encountered an invalid language %s. Falling back to "und".' % language)
             return 'und'
 
     def _scrub_label_types(self):

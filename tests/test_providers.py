@@ -1,26 +1,17 @@
-# -*- coding: utf-8 -*-
-
 import os
-import sys
 
 import pytest
-from . import TEST_DIR
-
-from skosprovider.skos import Note, Collection, ConceptScheme
+from rdflib import Graph
+from skosprovider.skos import Collection
+from skosprovider.skos import ConceptScheme
+from skosprovider.skos import Note
 from skosprovider.utils import dict_dumper
 
-from rdflib import Graph
 from skosprovider_rdf.providers import RDFProvider
-
-PY3 = sys.version_info[0] == 3
-
-if PY3:  # pragma: no cover
-    text_type = str
-else:  # pragma: no cover
-    text_type = unicode
+from . import TEST_DIR
 
 
-class TestRDFProviderProducts(object):
+class TestRDFProviderProducts:
 
     def test_get_vocabulary_id(self, products_provider):
         assert 'PRODUCTS' == products_provider.get_vocabulary_id()
@@ -167,7 +158,7 @@ class TestRDFProviderProducts(object):
         assert products_provider._get_language_from_literal("test") is None
 
 
-class TestMultipleConceptschemes(object):
+class TestMultipleConceptschemes:
 
     def test_pick_one_conceptscheme(self):
         wb_graph = Graph()
@@ -220,7 +211,7 @@ class TestMultipleConceptschemes(object):
         assert 'https://id.erfgoed.net/applicaties' in str(exc.value)
 
 
-class TestTreeProvider(object):
+class TestTreeProvider:
 
     def test_parse_without_conceptscheme_generates_default_uri(self, trees_provider):
         assert 'urn:x-skosprovider:trees' == trees_provider.concept_scheme.uri
@@ -253,8 +244,8 @@ class TestTreeProvider(object):
         label_nl = [label for label in chestnut['labels'] if label['language'] == 'nl'][0]
         assert label_nl == {'label': 'De Paardekastanje', 'language': 'nl', 'type': 'altLabel'}
         label_fr = [label for label in chestnut['labels'] if label['language'] == 'fr'][0]
-        assert type(label_fr['label']) == text_type
-        assert label_fr == {'label': u'la châtaigne', 'language': 'fr', 'type': 'altLabel'}
+        assert type(label_fr['label']) == str
+        assert label_fr == {'label': 'la châtaigne', 'language': 'fr', 'type': 'altLabel'}
         assert {
                 'language': 'en',
                 'note': '<p>A different type of tree.</p>',

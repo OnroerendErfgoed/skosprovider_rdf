@@ -1,36 +1,24 @@
-# -*- coding: utf-8 -*-
 '''
 This module contains utility functions for dealing with skos providers.
 '''
-from __future__ import unicode_literals
 import logging
-import sys
 
-log = logging.getLogger(__name__)
+from rdflib import Graph
+from rdflib import Literal
+from rdflib import Namespace
+from rdflib.namespace import DCTERMS
+from rdflib.namespace import RDF
+from rdflib.namespace import SKOS
+from rdflib.namespace import VOID
+from rdflib.term import BNode
+from rdflib.term import URIRef
+from skosprovider.skos import Collection
+from skosprovider.skos import Concept
+from skosprovider.utils import add_lang_to_html
+from skosprovider.utils import extract_language
 
-from rdflib import Graph, Literal, Namespace
-from rdflib.term import URIRef, BNode
-from rdflib.namespace import RDF, SKOS, DCTERMS, VOID
 SKOS_THES = Namespace('http://purl.org/iso25964/skos-thes#')
-from skosprovider.skos import (
-    Concept,
-    Collection
-)
-from skosprovider.utils import (
-    extract_language,
-    add_lang_to_html
-)
-
-from xml.dom.minidom import Node, Element
-import html5lib
-
-PY3 = sys.version_info[0] == 3
-
-if PY3:  # pragma: no cover
-    binary_type = bytes
-else:  # pragma: no cover
-    binary_type = str
-
+log = logging.getLogger(__name__)
 
 def rdf_dumper(provider):
     '''
@@ -80,7 +68,8 @@ def _rdf_dumper(provider, id_list=None):
     conceptscheme = URIRef(provider.concept_scheme.uri)
     _add_in_dataset(graph, conceptscheme, provider)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
-    graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
+    graph.add((conceptscheme, DCTERMS.identifier,
+              Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     _add_sources(graph, provider.concept_scheme, conceptscheme)
@@ -114,7 +103,8 @@ def rdf_conceptscheme_dumper(provider):
     conceptscheme = URIRef(provider.concept_scheme.uri)
     _add_in_dataset(graph, conceptscheme, provider)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
-    graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
+    graph.add((conceptscheme, DCTERMS.identifier,
+              Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     _add_sources(graph, provider.concept_scheme, conceptscheme)
@@ -175,7 +165,8 @@ def _add_c(graph, provider, id):
         for s in c.subordinate_arrays:
             subordinate_array = provider.get_by_id(s)
             if subordinate_array:
-                graph.add((subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri)))
+                graph.add((subject, SKOS_THES.subordinateArray,
+                          URIRef(subordinate_array.uri)))
                 if subordinate_array.infer_concept_relations:
                     def _add_coll_members_to_superordinate(so, members):
                         '''
@@ -185,14 +176,18 @@ def _add_c(graph, provider, id):
                         for m in members:
                             member = provider.get_by_id(m)
                             if member.type == 'concept':
-                                graph.add((so, SKOS.narrower, URIRef(member.uri)))
-                                graph.add((URIRef(member.uri), SKOS.broader, so))
+                                graph.add(
+                                    (so, SKOS.narrower, URIRef(member.uri)))
+                                graph.add(
+                                    (URIRef(member.uri), SKOS.broader, so))
                             elif member.type == 'collection':
-                                _add_coll_members_to_superordinate(so, member.members)
-                    _add_coll_members_to_superordinate(subject, subordinate_array.members)
+                                _add_coll_members_to_superordinate(
+                                    so, member.members)
+                    _add_coll_members_to_superordinate(
+                        subject, subordinate_array.members)
         for k in c.matches.keys():
             for uri in c.matches[k]:
-                graph.add((subject, URIRef(SKOS[k +'Match']), URIRef(uri)))
+                graph.add((subject, URIRef(SKOS[k + 'Match']), URIRef(uri)))
     elif isinstance(c, Collection):
         graph.add((subject, RDF.type, SKOS.Collection))
         for m in c.members:
@@ -202,12 +197,14 @@ def _add_c(graph, provider, id):
         for s in c.superordinates:
             superordinate = provider.get_by_id(s)
             if superordinate:
-                graph.add((subject, SKOS_THES.superOrdinate, URIRef(superordinate.uri)))
+                graph.add((subject, SKOS_THES.superOrdinate,
+                          URIRef(superordinate.uri)))
 
 
 def _add_labels(graph, c, subject):
     for l in c.labels:
-        labeltype = l.type if l.type in ['prefLabel', 'altLabel', 'hiddenLabel'] else 'hiddenLabel'
+        labeltype = l.type if l.type in [
+            'prefLabel', 'altLabel', 'hiddenLabel'] else 'hiddenLabel'
         predicate = URIRef(SKOS[labeltype])
         lang = extract_language(l.language)
         graph.add((subject, predicate, Literal(l.label, lang=lang)))
@@ -223,6 +220,7 @@ def _add_notes(graph, c, subject):
             html = add_lang_to_html(n.note, lang)
             graph.add((subject, predicate, Literal(html, datatype=RDF.HTML)))
 
+
 def _add_sources(graph, c, subject):
     '''
     Add sources to the RDF graph.
@@ -236,10 +234,13 @@ def _add_sources(graph, c, subject):
         source = BNode()
         graph.add((source, RDF.type, DCTERMS.BibliographicResource))
         if s.markup is None:
-            graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation)))
+            graph.add(
+                (source, DCTERMS.bibliographicCitation, Literal(s.citation)))
         else:
-            graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation, datatype=RDF.HTML)))
+            graph.add((source, DCTERMS.bibliographicCitation,
+                      Literal(s.citation, datatype=RDF.HTML)))
         graph.add((subject, DCTERMS.source, source))
+
 
 def _add_languages(graph, c, subject):
     '''
@@ -255,8 +256,8 @@ def _add_languages(graph, c, subject):
 
 
 def text_(s, encoding='latin-1', errors='strict'):
-    """ If ``s`` is an instance of ``binary_type``, return
+    """ If ``s`` is an instance of ``bytes``, return
     ``s.decode(encoding, errors)``, otherwise return ``s``"""
-    if isinstance(s, binary_type):
+    if isinstance(s, bytes):
         return s.decode(encoding, errors)
     return s

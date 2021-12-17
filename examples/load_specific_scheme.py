@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''
 This examples fetches only one conceptscheme from a turtle file containing two.
 '''

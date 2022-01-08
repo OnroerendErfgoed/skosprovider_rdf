@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''
 This script demonstrates dumping a
 :class:`skosprovider.providers.SimpleCsvProvider` as a RDF Graph. In this
@@ -18,9 +17,7 @@ from skosprovider.skos import ConceptScheme, Label, Note, Source
 from skosprovider_rdf.utils import rdf_dumper
 
 ifile = open(
-    os.path.join(os.path.dirname(__file__), 'data', 'menu.csv'),
-    "r"
-)
+    os.path.join(os.path.dirname(__file__), 'data', 'menu.csv'))
 
 reader = csv.reader(ifile)
 

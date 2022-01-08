@@ -1,20 +1,11 @@
-# -*- coding: utf-8 -*-
-
 import os
-import sys
 
 import pytest
+from rdflib import Graph
+
+from skosprovider_rdf.providers import RDFProvider
 from . import TEST_DIR
 
-from rdflib import Graph
-from skosprovider_rdf.providers import RDFProvider
-
-PY3 = sys.version_info[0] == 3
-
-if PY3:  # pragma: no cover
-    text_type = str
-else:  # pragma: no cover
-    text_type = unicode
 
 @pytest.fixture(scope='module')
 def products_provider():
@@ -46,8 +37,10 @@ def materials_provider():
         open(os.path.join(TEST_DIR, 'data', 'materiaal.txt')),
     )['materiaal']
     from skosprovider.providers import DictionaryProvider
+    from skosprovider.skos import ConceptScheme
+    from skosprovider.skos import Label
+    from skosprovider.skos import Note
     from skosprovider.uri import UriPatternGenerator
-    from skosprovider.skos import ConceptScheme, Label, Note
 
     materials = DictionaryProvider(
         {'id': 'Materials'},

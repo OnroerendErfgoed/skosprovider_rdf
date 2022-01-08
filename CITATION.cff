@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+title: Skosprovider
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Koen
+    family-names: Van Daele
+    email: koen.vandaele@vlaanderen.be
+    affiliation: Flanders Heritage Agency
+    orcid: 'https://orcid.org/0000-0002-8153-2978'
+  - given-names: Karel
+    family-names: Dieusaert
+  - given-names: Bram
+    family-names: Goessens
+  - given-names: Tinne
+    family-names: Cahy
+  - given-names: Bart
+    family-names: Saelen
+    affiliation: Geo Solutions
+abstract: >-
+  Skosprovider_rdf implements the Skosprovider interface with a file-based RDF
+  backend through RDFlib.
+keywords:
+  - SKOS
+  - thesaurus
+  - vocabulary
+  - python
+  - RDF
+references:
+  - doi: 10.5281/zenodo.5767151
+    type: software
+    title: Skosprovider
+    authors:
+      - given-names: Koen
+        family-names: Van Daele
+        email: koen.vandaele@vlaanderen.be
+        affiliation: Flanders Heritage Agency
+        orcid: 'https://orcid.org/0000-0002-8153-2978'
+license: MIT
+version: 1.0.0 
+date-released: '2021-12-17'

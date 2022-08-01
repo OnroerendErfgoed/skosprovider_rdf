@@ -200,7 +200,7 @@ class RDFProvider(MemoryProvider):
     def _create_from_subject_typelist(self, subject, typelist):
         list = []
         for p in typelist:
-            term = SKOS.term(p)
+            term = SKOS.__getitem__(p)
             list.extend(self._create_from_subject_predicate(subject, term))
         return list
 

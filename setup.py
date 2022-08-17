@@ -24,7 +24,7 @@ requires = [
 
 setup(
     name='skosprovider_rdf',
-    version='1.0.0',
+    version='1.1.0',
     description='skosprovider_rdf',
     long_description=README + '\n\n' + HISTORY,
     long_description_content_type='text/x-rst',
@@ -39,10 +39,8 @@ setup(
         'Natural Language :: English',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     author='Flanders Heritage Agency',
     author_email='ict@onroerenderfgoed.be',

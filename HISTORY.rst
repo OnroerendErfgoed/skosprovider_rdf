@@ -1,3 +1,15 @@
+1.1.0 (17-98-2022)
+------------------
+
+- Drop python 3.6 and 3.7 support, add support for 3.8, 3.9 and 3.10
+- Update RDFLib to 6.2.0
+
+1.0.0 (17-12-2021)
+------------------
+
+- Drop python 2 support
+- Upgrade all requirements (#90)
+
 0.8.1 (27-07-2020)
 ------------------
 

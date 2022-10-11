@@ -185,6 +185,42 @@ def _add_c(graph, provider, id):
                                     so, member.members)
                     _add_coll_members_to_superordinate(
                         subject, subordinate_array.members)
+        for coll in c.member_of:
+            collection = provider.get_by_id(coll)
+            if collection:
+                graph.add(
+                    (URIRef(collection.uri), SKOS.member, subject)
+                )
+                graph.add(
+                    (URIRef(collection.uri), RDF.type, SKOS.Collection)
+                )
+                graph.add(
+                    (URIRef(collection.uri), SKOS.inScheme, conceptscheme)
+                )
+                graph.add(
+                    (URIRef(collection.uri), DCTERMS.identifier, Literal(collection.id))
+                )
+                def _add_coll_superordinates_as_broader(member, collection):
+                    '''
+                    Recursively create broader relations between
+                    a collection member and the superordinate concepts
+                    '''
+                    if collection.infer_concept_relations:
+                        for so in collection.superordinates:
+                            superordinate = provider.get_by_id(so)
+                            graph.add((
+                                URIRef(member.uri),
+                                SKOS.broader,
+                                URIRef(superordinate.uri)
+                            ))
+                        for pc in collection.member_of:
+                            parent_collection = provider.get_by_id(pc)
+                            _add_coll_superordinates_as_broader(
+                                member, parent_collection
+                            )
+                _add_coll_superordinates_as_broader(
+                    c, collection
+                )
         for k in c.matches.keys():
             for uri in c.matches[k]:
                 graph.add((subject, URIRef(SKOS[k + 'Match']), URIRef(uri)))

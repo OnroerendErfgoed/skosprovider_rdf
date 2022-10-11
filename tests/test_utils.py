@@ -220,6 +220,22 @@ class TestRDFDumperMaterials:
         assert bet_nr_vs.infer_concept_relations is True
         assert set(provider.expand(68)) == {'39', '70'}
 
+    def test_dump_concept_with_superordinates(self, materials_provider, caplog):
+        caplog.set_level(logging.DEBUG)
+        graph_dump = utils.rdf_c_dumper(materials_provider, 44)
+
+        assert isinstance(graph_dump, Graph)
+        assert (
+            URIRef('https://id.erfgoed.net/thesauri/materialen/43'),
+            SKOS.member,
+            URIRef('https://id.erfgoed.net/thesauri/materialen/44')
+        ) in graph_dump
+        assert (
+            URIRef('https://id.erfgoed.net/thesauri/materialen/44'),
+            SKOS.broader,
+            URIRef('https://id.erfgoed.net/thesauri/materialen/42')
+        ) in graph_dump
+
 class TestRDFDumperProducts:
 
     def test_dump_rdf_to_rdf(self, products_provider):
@@ -288,7 +304,8 @@ class TestRDFDumperTrees:
         eik = URIRef('https://id.erfgoed.net/thesauri/soorten/297')
         assert (oak, SKOS.exactMatch, eik) in graph_dump
 
-    def test_dump_one_id_to_rdf_and_reload(self, tree_provider):
+    def test_dump_one_id_to_rdf_and_reload(self, tree_provider, caplog):
+        caplog.set_level(logging.DEBUG)
         graph_dump1 = utils.rdf_c_dumper(tree_provider, 1)
         provider = RDFProvider(
                 {
@@ -301,6 +318,8 @@ class TestRDFDumperTrees:
                 )
         graph_dump2 = utils.rdf_c_dumper(provider, 1)
         graph_full_dump2 = utils.rdf_dumper(provider)
+        assert provider.get_by_id(1)
+        assert provider.get_by_id(3)
         assert len(graph_dump1) ==  len(graph_dump2)
         assert len(graph_full_dump2) > len(graph_dump2)
 

@@ -1,3 +1,8 @@
+1.2.0 (11-10-2022)
+------------------
+
+- Better RDF rendering for concepts part of a collection (#104)
+
 1.1.0 (17-08-2022)
 ------------------
 

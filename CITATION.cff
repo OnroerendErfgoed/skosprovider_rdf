@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: Skosprovider
+title: Skosprovider_rdf
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -39,5 +39,5 @@ references:
         affiliation: Flanders Heritage Agency
         orcid: 'https://orcid.org/0000-0002-8153-2978'
 license: MIT
-version: 1.0.0 
-date-released: '2021-12-17'
+version: 1.2.0 
+date-released: '2022-10-11'

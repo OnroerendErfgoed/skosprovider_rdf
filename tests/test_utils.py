@@ -2,6 +2,7 @@ import pytest
 from rdflib import Graph
 from rdflib import Namespace
 from rdflib.namespace import DCTERMS
+from rdflib.namespace import DC
 from rdflib.namespace import RDF
 from rdflib.namespace import SKOS
 from rdflib.term import Literal
@@ -255,6 +256,26 @@ class TestRDFDumperProducts:
         graph_dump = utils.rdf_dumper(products_provider)
         assert isinstance(graph_dump, Graph)
 
+    def test_dump_rdf_no_uri_as_local_identifier(self, products_provider, caplog):
+        caplog.set_level(logging.DEBUG)
+        graph_dump = utils.rdf_dumper(products_provider)
+
+        prod_uri = 'http://www.prodcuts.com/Product'
+        jewel_uri = 'http://www.products.com/Jewellery'
+        perfume_uri = 'http://www.products.com/Perfume'
+
+        prod = URIRef(prod_uri)
+        jewel = URIRef(jewel_uri)
+        perfume = URIRef(perfume_uri)
+
+        log.debug(graph_dump.serialize(format='turtle'))
+
+        assert (prod, DCTERMS.identifier, Literal(prod_uri)) not in graph_dump
+        assert (prod, DC.identifier, Literal(prod_uri)) not in graph_dump
+        assert (jewel, DCTERMS.identifier, Literal(jewel_uri)) not in graph_dump
+        assert (jewel, DC.identifier, Literal(jewel_uri)) not in graph_dump
+        assert (perfume, DCTERMS.identifier, Literal(perfume_uri)) not in graph_dump
+        assert (perfume, DC.identifier, Literal(perfume_uri)) not in graph_dump
 
 class TestRDFDumperTrees:
 

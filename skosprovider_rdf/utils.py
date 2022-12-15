@@ -142,7 +142,8 @@ def _add_c(graph, provider, id):
     c = provider.get_by_id(id)
     subject = URIRef(c.uri)
     _add_in_dataset(graph, subject, provider)
-    graph.add((subject, DCTERMS.identifier, Literal(c.id)))
+    if c.id != c.uri:
+        graph.add((subject, DCTERMS.identifier, Literal(c.id)))
     conceptscheme = URIRef(provider.concept_scheme.uri)
     graph.add((subject, SKOS.inScheme, conceptscheme))
     _add_labels(graph, c, subject)

@@ -8,7 +8,8 @@ serialisations through RDFLib.
         :target: https://pypi.python.org/pypi/skosprovider_rdf
 .. image:: https://readthedocs.org/projects/skosprovider_rdf/badge/?version=latest
         :target: https://readthedocs.org/projects/skosprovider_rdf/?badge=latest
-
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.7002514.svg
+        :target: https://doi.org/10.5281/zenodo.7002514
 .. image:: https://app.travis-ci.com/OnroerendErfgoed/skosprovider_rdf.svg?branch=develop
         :target: https://app.travis-ci.com/OnroerendErfgoed/skosprovider_rdf
 .. image:: https://img.shields.io/coveralls/OnroerendErfgoed/skosprovider_rdf.svg

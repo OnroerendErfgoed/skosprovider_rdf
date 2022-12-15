@@ -1,4 +1,4 @@
-1.3.0 (??-12-2022)
+1.3.0 (15-12-2022)
 ------------------
 
 - Don't export local id as dcterms.identifier when it's equal to the URI (#117)

@@ -2,6 +2,7 @@
 ------------------
 
 - Don't export local id as dcterms.identifier when it's equal to the URI (#117)
+- Add support for Python 3.10 and Python 3.11 (#120) 
 
 1.2.0 (11-10-2022)
 ------------------

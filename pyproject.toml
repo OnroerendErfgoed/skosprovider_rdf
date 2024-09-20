@@ -33,7 +33,7 @@ dependencies = [
 History = "https://github.com/OnroerendErfgoed/skosprovider_rdf/blob/master/HISTORY.rst"
 Tracker = "https://github.com/OnroerendErfgoed/skosprovider_rdf/issues"
 Source = "https://github.com/OnroerendErfgoed/skosprovider_rdf"
-Documentation = "https://skosprovider_rdf.readthedocs.io/en/latest/"
+Documentation = "https://skosprovider-rdf.readthedocs.io/en/latest/"
 
 [project.optional-dependencies]
 dev = [

@@ -56,7 +56,7 @@ six==1.16.0
     #   isodate
 skosprovider==1.2.0
     # via skosprovider-rdf (pyproject.toml)
-urllib3==2.2.3
+urllib3==2.6.0
     # via requests
 webencodings==0.5.1
     # via html5lib

@@ -1,3 +1,8 @@
+1.4.0 (12-12-2025)
+------------------
+- Move to Github Actions + change build to pyrpoj.toml (#121)
+- Upgrade skosprovider dependency
+
 1.3.0 (15-12-2022)
 ------------------
 

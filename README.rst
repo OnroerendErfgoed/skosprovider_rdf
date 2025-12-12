@@ -18,3 +18,4 @@ serialisations through RDFLib.
         :target: https://scrutinizer-ci.com/g/OnroerendErfgoed/skosprovider_rdf/?branch=master
 
 .. _skosprovider: https://github.com/OnroerendErfgoed/skosprovider
+

@@ -60,7 +60,7 @@ skosprovider==1.5.1
     # via skosprovider-rdf (pyproject.toml)
 tomli==2.3.0
     # via coverage
-urllib3==2.6.2
+urllib3==2.6.3
     # via requests
 webencodings==0.5.1
     # via html5lib

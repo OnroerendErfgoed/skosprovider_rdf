@@ -1,6 +1,7 @@
-'''
+"""
 This module contains utility functions for dealing with skos providers.
-'''
+"""
+
 import logging
 
 from rdflib import Graph
@@ -20,8 +21,9 @@ from skosprovider.utils import extract_language
 SKOS_THES = Namespace('http://purl.org/iso25964/skos-thes#')
 log = logging.getLogger(__name__)
 
+
 def rdf_dumper(provider):
-    '''
+    """
     Dump a provider to a format that can be passed to a
     :class:`skosprovider.providers.RDFProvider`.
 
@@ -29,12 +31,12 @@ def rdf_dumper(provider):
         that wil be turned into an :class:`rdflib.graph.Graph`.
 
     :rtype: :class:`rdflib.graph.Graph`
-    '''
+    """
     return _rdf_dumper(provider, None)
 
 
 def rdf_c_dumper(provider, c):
-    '''
+    """
     Dump one concept or collection from a provider to a format that can be passed to a
     :class:`skosprovider.providers.RDFProvider`.
 
@@ -44,12 +46,12 @@ def rdf_c_dumper(provider, c):
     :param String c: identifier
 
     :rtype: :class:`rdflib.graph.Graph`
-    '''
+    """
     return _rdf_dumper(provider, [c])
 
 
 def _rdf_dumper(provider, id_list=None):
-    '''
+    """
     Dump a provider to a format that can be passed to a
     :class:`skosprovider.providers.RDFProvider`.
 
@@ -59,17 +61,16 @@ def _rdf_dumper(provider, id_list=None):
     :param List id_list: List of id's of the data to dump.
 
     :rtype: :class:`rdflib.graph.Graph`
-    '''
+    """
     graph = Graph()
-    graph.namespace_manager.bind("skos", SKOS)
-    graph.namespace_manager.bind("dcterms", DCTERMS)
-    graph.namespace_manager.bind("skos-thes", SKOS_THES)
-    graph.namespace_manager.bind("void", VOID)
+    graph.namespace_manager.bind('skos', SKOS)
+    graph.namespace_manager.bind('dcterms', DCTERMS)
+    graph.namespace_manager.bind('skos-thes', SKOS_THES)
+    graph.namespace_manager.bind('void', VOID)
     conceptscheme = URIRef(provider.concept_scheme.uri)
     _add_in_dataset(graph, conceptscheme, provider)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
-    graph.add((conceptscheme, DCTERMS.identifier,
-              Literal(provider.metadata['id'])))
+    graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     _add_sources(graph, provider.concept_scheme, conceptscheme)
@@ -86,7 +87,7 @@ def _rdf_dumper(provider, id_list=None):
 
 
 def rdf_conceptscheme_dumper(provider):
-    '''
+    """
     Dump all information of the conceptscheme of a provider to a format that can be passed to a
     :class:`skosprovider.providers.RDFProvider`.
 
@@ -94,17 +95,16 @@ def rdf_conceptscheme_dumper(provider):
         that wil be turned into an :class:`rdflib.graph.Graph`.
 
     :rtype: :class:`rdflib.graph.Graph`
-    '''
+    """
     graph = Graph()
-    graph.namespace_manager.bind("skos", SKOS)
-    graph.namespace_manager.bind("dcterms", DCTERMS)
-    graph.namespace_manager.bind("skos-thes", SKOS_THES)
-    graph.namespace_manager.bind("void", VOID)
+    graph.namespace_manager.bind('skos', SKOS)
+    graph.namespace_manager.bind('dcterms', DCTERMS)
+    graph.namespace_manager.bind('skos-thes', SKOS_THES)
+    graph.namespace_manager.bind('void', VOID)
     conceptscheme = URIRef(provider.concept_scheme.uri)
     _add_in_dataset(graph, conceptscheme, provider)
     graph.add((conceptscheme, RDF.type, SKOS.ConceptScheme))
-    graph.add((conceptscheme, DCTERMS.identifier,
-              Literal(provider.metadata['id'])))
+    graph.add((conceptscheme, DCTERMS.identifier, Literal(provider.metadata['id'])))
     _add_labels(graph, provider.concept_scheme, conceptscheme)
     _add_notes(graph, provider.concept_scheme, conceptscheme)
     _add_sources(graph, provider.concept_scheme, conceptscheme)
@@ -116,14 +116,14 @@ def rdf_conceptscheme_dumper(provider):
 
 
 def _add_in_dataset(graph, subject, provider):
-    '''
+    """
     Checks if the provider says something about a dataset and if so adds
     void.inDataset statements.
 
     :param rdflib.graph.Graph graph: The graph to add statements to.
     :param rdflib.term.URIRef subject: The subject to add an inDataset statement to.
     :param skosprovider.providers.VocabularyProvider provider:
-    '''
+    """
 
     duri = provider.get_metadata().get('dataset', {}).get('uri', None)
     if duri:
@@ -131,13 +131,13 @@ def _add_in_dataset(graph, subject, provider):
 
 
 def _add_c(graph, provider, id):
-    '''
+    """
     Adds a concept or collection to the graph.
 
     :param rdflib.graph.Graph graph: The graph to add statements to.
     :param skosprovider.providers.VocabularyProvider provider: Provider
     :param c: The id of a concept or collection.
-    '''
+    """
 
     c = provider.get_by_id(id)
     subject = URIRef(c.uri)
@@ -166,62 +166,55 @@ def _add_c(graph, provider, id):
         for s in c.subordinate_arrays:
             subordinate_array = provider.get_by_id(s)
             if subordinate_array:
-                graph.add((subject, SKOS_THES.subordinateArray,
-                          URIRef(subordinate_array.uri)))
+                graph.add(
+                    (subject, SKOS_THES.subordinateArray, URIRef(subordinate_array.uri))
+                )
                 if subordinate_array.infer_concept_relations:
+
                     def _add_coll_members_to_superordinate(so, members):
-                        '''
+                        """
                         Recursively create broader/narrower relations between
                         collection members and the superordinate concept
-                        '''
+                        """
                         for m in members:
                             member = provider.get_by_id(m)
                             if member.type == 'concept':
-                                graph.add(
-                                    (so, SKOS.narrower, URIRef(member.uri)))
-                                graph.add(
-                                    (URIRef(member.uri), SKOS.broader, so))
+                                graph.add((so, SKOS.narrower, URIRef(member.uri)))
+                                graph.add((URIRef(member.uri), SKOS.broader, so))
                             elif member.type == 'collection':
-                                _add_coll_members_to_superordinate(
-                                    so, member.members)
-                    _add_coll_members_to_superordinate(
-                        subject, subordinate_array.members)
+                                _add_coll_members_to_superordinate(so, member.members)
+
+                    _add_coll_members_to_superordinate(subject, subordinate_array.members)
         for coll in c.member_of:
             collection = provider.get_by_id(coll)
             if collection:
-                graph.add(
-                    (URIRef(collection.uri), SKOS.member, subject)
-                )
-                graph.add(
-                    (URIRef(collection.uri), RDF.type, SKOS.Collection)
-                )
-                graph.add(
-                    (URIRef(collection.uri), SKOS.inScheme, conceptscheme)
-                )
+                graph.add((URIRef(collection.uri), SKOS.member, subject))
+                graph.add((URIRef(collection.uri), RDF.type, SKOS.Collection))
+                graph.add((URIRef(collection.uri), SKOS.inScheme, conceptscheme))
                 graph.add(
                     (URIRef(collection.uri), DCTERMS.identifier, Literal(collection.id))
                 )
+
                 def _add_coll_superordinates_as_broader(member, collection):
-                    '''
+                    """
                     Recursively create broader relations between
                     a collection member and the superordinate concepts
-                    '''
+                    """
                     if collection.infer_concept_relations:
                         for so in collection.superordinates:
                             superordinate = provider.get_by_id(so)
-                            graph.add((
-                                URIRef(member.uri),
-                                SKOS.broader,
-                                URIRef(superordinate.uri)
-                            ))
+                            graph.add(
+                                (
+                                    URIRef(member.uri),
+                                    SKOS.broader,
+                                    URIRef(superordinate.uri),
+                                )
+                            )
                         for pc in collection.member_of:
                             parent_collection = provider.get_by_id(pc)
-                            _add_coll_superordinates_as_broader(
-                                member, parent_collection
-                            )
-                _add_coll_superordinates_as_broader(
-                    c, collection
-                )
+                            _add_coll_superordinates_as_broader(member, parent_collection)
+
+                _add_coll_superordinates_as_broader(c, collection)
         for k in c.matches.keys():
             for uri in c.matches[k]:
                 graph.add((subject, URIRef(SKOS[k + 'Match']), URIRef(uri)))
@@ -234,17 +227,19 @@ def _add_c(graph, provider, id):
         for s in c.superordinates:
             superordinate = provider.get_by_id(s)
             if superordinate:
-                graph.add((subject, SKOS_THES.superOrdinate,
-                          URIRef(superordinate.uri)))
+                graph.add((subject, SKOS_THES.superOrdinate, URIRef(superordinate.uri)))
 
 
 def _add_labels(graph, c, subject):
-    for l in c.labels:
-        labeltype = l.type if l.type in [
-            'prefLabel', 'altLabel', 'hiddenLabel'] else 'hiddenLabel'
+    for label in c.labels:
+        labeltype = (
+            label.type
+            if label.type in ['prefLabel', 'altLabel', 'hiddenLabel']
+            else 'hiddenLabel'
+        )
         predicate = URIRef(SKOS[labeltype])
-        lang = extract_language(l.language)
-        graph.add((subject, predicate, Literal(l.label, lang=lang)))
+        lang = extract_language(label.language)
+        graph.add((subject, predicate, Literal(label.label, lang=lang)))
 
 
 def _add_notes(graph, c, subject):
@@ -259,41 +254,44 @@ def _add_notes(graph, c, subject):
 
 
 def _add_sources(graph, c, subject):
-    '''
+    """
     Add sources to the RDF graph.
 
     :param rdflib.graph.Graph graph: An RDF Graph.
     :param c: A :class:`skosprovider.skos.ConceptScheme`,
         :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection`
     :param subject: The RDF subject to add the sources to.
-    '''
+    """
     for s in c.sources:
         source = BNode()
         graph.add((source, RDF.type, DCTERMS.BibliographicResource))
         if s.markup is None:
-            graph.add(
-                (source, DCTERMS.bibliographicCitation, Literal(s.citation)))
+            graph.add((source, DCTERMS.bibliographicCitation, Literal(s.citation)))
         else:
-            graph.add((source, DCTERMS.bibliographicCitation,
-                      Literal(s.citation, datatype=RDF.HTML)))
+            graph.add(
+                (
+                    source,
+                    DCTERMS.bibliographicCitation,
+                    Literal(s.citation, datatype=RDF.HTML),
+                )
+            )
         graph.add((subject, DCTERMS.source, source))
 
 
 def _add_languages(graph, c, subject):
-    '''
+    """
     Add languages to the RDF graph.
 
     :param rdflib.graph.Graph graph: An RDF Graph.
     :param c: A :class:`skosprovider.skos.ConceptScheme`.
     :param subject: The RDF subject to add the sources to.
-    '''
-    for l in c.languages:
-        lang = extract_language(l)
-        graph.add((subject, DCTERMS.language, Literal(l)))
+    """
+    for language in c.languages:
+        graph.add((subject, DCTERMS.language, Literal(language)))
 
 
 def text_(s, encoding='latin-1', errors='strict'):
-    """ If ``s`` is an instance of ``bytes``, return
+    """If ``s`` is an instance of ``bytes``, return
     ``s.decode(encoding, errors)``, otherwise return ``s``"""
     if isinstance(s, bytes):
         return s.decode(encoding, errors)

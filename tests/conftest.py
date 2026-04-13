@@ -10,24 +10,22 @@ from . import TEST_DIR
 @pytest.fixture(scope='module')
 def products_provider():
     products_graph = Graph()
-    abspath = os.path.abspath(TEST_DIR + "/data/simple_turtle_products")
-    products_graph.parse(abspath, format="turtle")
+    abspath = os.path.abspath(TEST_DIR + '/data/simple_turtle_products')
+    products_graph.parse(abspath, format='turtle')
 
     # Set up rdf_provider
-    products_provider = RDFProvider(
-        {'id': 'PRODUCTS'}, products_graph
-    )
+    products_provider = RDFProvider({'id': 'PRODUCTS'}, products_graph)
     return products_provider
+
 
 @pytest.fixture(scope='module')
 def trees_provider():
     trees_graph = Graph()
-    abspath = os.path.abspath(TEST_DIR + "/data/trees.xml")
-    trees_graph.parse(abspath, format="application/rdf+xml")
-    trees_provider = RDFProvider(
-        {'id': 'TREES'}, trees_graph
-    )
+    abspath = os.path.abspath(TEST_DIR + '/data/trees.xml')
+    trees_graph.parse(abspath, format='application/rdf+xml')
+    trees_provider = RDFProvider({'id': 'TREES'}, trees_graph)
     return trees_provider
+
 
 @pytest.fixture(scope='module')
 def materials_provider():
@@ -45,23 +43,30 @@ def materials_provider():
     materials = DictionaryProvider(
         {'id': 'Materials'},
         materials_data,
-        uri_generator=UriPatternGenerator('https://id.erfgoed.net/thesauri/materialen/%s'),
+        uri_generator=UriPatternGenerator(
+            'https://id.erfgoed.net/thesauri/materialen/%s'
+        ),
         conceptscheme=ConceptScheme(
             uri='https://id.erfgoed.net/thesauri/materialen',
             labels=[Label(type='prefLabel', language='nl', label='Materialen')],
-            notes=[Note(type='scopeNote', language='nl', note='Materialen zijn grondstoffen of halfafgewerkte producten die vaak een rol spelen bij onroerend erfgoed.')]
-        )
+            notes=[
+                Note(
+                    type='scopeNote',
+                    language='nl',
+                    note='Materialen zijn grondstoffen of halfafgewerkte producten die vaak een rol spelen bij onroerend erfgoed.',
+                )
+            ],
+        ),
     )
     return materials
 
+
 @pytest.fixture(scope='module')
 def materials_collections_provider():
-    products_graph = Graph()
-    abspath = os.path.abspath(TEST_DIR + "/data/mat_collections.ttl")
-    map_graph.parse(abspath, format="turtle")
+    materials_graph = Graph()
+    abspath = os.path.abspath(TEST_DIR + '/data/mat_collections.ttl')
+    materials_graph.parse(abspath, format='turtle')
 
     # Set up rdf_provider
-    mat_provider = RDFProvider(
-        {'id': 'MATCOL'}, mat_graph
-    )
+    mat_provider = RDFProvider({'id': 'MATCOL'}, materials_graph)
     return mat_provider

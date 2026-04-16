@@ -31,9 +31,10 @@ def trees_provider():
 def materials_provider():
     import json
 
-    materials_data = json.load(
-        open(os.path.join(TEST_DIR, 'data', 'materiaal.txt')),
-    )['materiaal']
+    path = os.path.join(TEST_DIR, "data", "materiaal.txt")
+    with open(path, "r") as f:
+        materials_data = json.load(f)["materiaal"]
+
     from skosprovider.providers import DictionaryProvider
     from skosprovider.skos import ConceptScheme
     from skosprovider.skos import Label

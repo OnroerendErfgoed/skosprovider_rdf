@@ -40,6 +40,7 @@ dev = [
     "pytest>=8.3.3",
     "pytest-cov>=5.0.0",
     "coveralls>=4.0.1",
+    "pre-commit",
 ]
 
 ##
@@ -61,3 +62,14 @@ fragments = [
   { path = "README.rst" },
   { path = "HISTORY.rst" },
 ]
+
+[tool.ruff]
+line-length = 90
+
+[tool.ruff.lint.isort]
+force-single-line = true
+force-sort-within-sections = true
+known-first-party = ["skosprovider_rdf"]
+
+[tool.ruff.format]
+quote-style = "single"

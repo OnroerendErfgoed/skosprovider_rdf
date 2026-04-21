@@ -38,7 +38,7 @@ isodate==0.6.1
     # via rdflib
 language-tags==1.2.0
     # via skosprovider
-lxml==6.0.2
+lxml==6.1.0
     # via pyld
 nodeenv==1.10.0
     # via pre-commit

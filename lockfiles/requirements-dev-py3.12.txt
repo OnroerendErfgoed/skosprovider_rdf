@@ -82,7 +82,7 @@ six==1.17.0
     #   isodate
 skosprovider==1.5.1
     # via skosprovider-rdf (pyproject.toml)
-urllib3==2.6.2
+urllib3==2.7.0
     # via requests
 virtualenv==21.2.3
     # via pre-commit

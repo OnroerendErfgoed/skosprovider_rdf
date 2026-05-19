@@ -60,7 +60,7 @@ pyld==2.0.3
     # via skosprovider
 pyparsing==3.2.5
     # via rdflib
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   skosprovider-rdf (pyproject.toml)
     #   pytest-cov

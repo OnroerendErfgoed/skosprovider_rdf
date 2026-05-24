@@ -54,7 +54,7 @@ pluggy==1.6.0
     #   pytest-cov
 pre-commit==4.5.1
     # via skosprovider-rdf (pyproject.toml)
-pygments==2.19.2
+pygments==2.20.0
     # via pytest
 pyld==2.0.3
     # via skosprovider
